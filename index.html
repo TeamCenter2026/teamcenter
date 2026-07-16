@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#741f35" />
+  <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>TeamCenter 1.0</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-copy">
+        <div>
+          <h1 id="appTitle">TeamCenter</h1>
+          <p id="appSubtitle">Gestionale operativo per società sportive</p>
+        </div>
+      </div>
+      <div class="home-logo-control">
+        <div class="logo-box" id="headerLogoBox"><div class="logo-placeholder">CARICA<br>LOGO</div></div>
+        <label for="headerLogoInput">Logo società</label>
+        <input id="headerLogoInput" type="file" accept="image/png,image/jpeg,image/webp" />
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <section id="homeScreen" class="screen active">
+      <div class="card home-hero">
+        <div class="eyebrow" style="color:#fff;opacity:.75">CSV Breda · Staff Area</div>
+        <h2>Gestisci la squadra direttamente dallo smartphone.</h2>
+        <p>Carica una sola volta il logo ufficiale, prepara le convocazioni e registra gli eventi della partita.</p>
+      </div>
+      <div class="module-grid-home">
+        <button class="module-card profile-card" type="button" data-open-module="profile">
+          <div>
+            <div class="module-icon">👤</div>
+            <h3>Profilo</h3>
+            <p>Imposta nome della società, logo e colori dell’app.</p>
+          </div>
+          <div class="module-arrow">Configura profilo →</div>
+        </button>
+        <button class="module-card" type="button" data-open-module="callups">
+          <div><div class="module-icon">📋</div><h3>Convocazione</h3><p>Prepara la lista dei convocati e genera PDF o foto.</p></div>
+          <div class="module-arrow">Prepara convocazione →</div>
+        </button>
+        <button class="module-card" type="button" data-open-module="match">
+          <div><div class="module-icon">⏱️</div><h3>Gestione match</h3><p>Timer, risultato, eventi e statistiche live.</p></div>
+          <div class="module-arrow">Apri gestione match →</div>
+        </button>
+      </div>
+    </section>
+
+    <section id="profileScreen" class="screen">
+      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
+      <div class="card">
+        <div class="eyebrow">Profilo società</div>
+        <h2>Personalizza la webapp</h2>
+        <p class="section-copy">Queste impostazioni vengono salvate sul dispositivo e applicate a home, convocazioni, match e file generati.</p>
+        <div class="profile-preview">
+          <div class="profile-preview-logo" id="profileLogoPreview"><div class="logo-placeholder">LOGO</div></div>
+          <div><strong id="profileNamePreview">CSV Breda</strong><div class="small-help">Anteprima identità società</div></div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="grid">
+          <div class="field"><label for="profileClubName">Nome società</label><input id="profileClubName" placeholder="Es. CSV Breda" /></div>
+          <div class="field"><label for="profileLogoInput">Logo ufficiale</label><input id="profileLogoInput" type="file" accept="image/png,image/jpeg,image/webp" /></div>
+          <div class="color-row">
+            <div class="field"><label for="profilePrimaryColor">Colore principale</label><input id="profilePrimaryColor" type="color" value="#741f35" /></div>
+            <div class="field"><label for="profileBackgroundColor">Colore di sfondo</label><input id="profileBackgroundColor" type="color" value="#f6f7f9" /></div>
+          </div>
+          <button class="btn btn-primary btn-block" id="saveProfileBtn" type="button">Salva profilo</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="setupScreen" class="screen">
+      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
+      <div class="card">
+        <div class="eyebrow">1. Identità</div>
+        <h2>Logo ufficiale CSV Breda</h2>
+        <p class="section-copy">Carica il file originale PNG o JPG. Verrà memorizzato sul dispositivo e inserito nel report senza modifiche.</p>
+        <div class="logo-upload">
+          <div class="logo-preview" id="setupLogoPreview"><div class="logo-placeholder">LOGO<br>CSV BREDA</div></div>
+          <div style="flex:1">
+            <input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp" />
+            <small style="display:block;color:var(--muted);margin-top:6px">Consigliato: PNG con sfondo trasparente.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">2. Competizione</div>
+        <h2>Configura la partita</h2>
+        <div class="grid grid-2">
+          <div class="field"><label for="teamSelect">Squadra</label><select id="teamSelect"><option>Prima Squadra</option><option>Under 19</option><option>Under 17</option><option>Under 16</option><option>Under 15</option><option>Under 14</option></select></div>
+          <div class="field"><label for="competitionInput">Campionato</label><input id="competitionInput" placeholder="Es. Seconda Categoria" /></div>
+          <div class="field"><label for="seasonInput">Stagione</label><input id="seasonInput" value="2026/2027" /></div>
+          <div class="field"><label for="roundInput">Giornata</label><input id="roundInput" placeholder="Es. 1ª giornata" /></div>
+          <div class="field"><label for="opponentInput">Avversario</label><input id="opponentInput" placeholder="Es. Atletico Roma" /></div>
+          <div class="field"><label for="venueSelect">Sede</label><select id="venueSelect"><option value="home">Casa — Breda Arena</option><option value="away">Trasferta</option></select></div>
+          <div class="field"><label for="matchDateInput">Data</label><input id="matchDateInput" type="date" /></div>
+          <div class="field"><label for="kickoffInput">Orario</label><input id="kickoffInput" type="time" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="note">Questa prima versione salva i dati sul dispositivo utilizzato. La sincronizzazione tra più telefoni richiederà il collegamento a un database online.</div>
+        <div style="height:12px"></div>
+        <button class="btn btn-primary btn-block" id="createMatchBtn" type="button">Avvia gestione partita</button>
+      </div>
+    </section>
+
+
+    <section id="callupsScreen" class="screen">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-go-home>← Home</button>
+        <div class="page-logo-upload">
+          <label for="callupLogoInput">Carica logo ufficiale</label>
+          <div class="logo-preview" id="callupLogoPreview"><div class="logo-placeholder">LOGO</div></div>
+          <input id="callupLogoInput" type="file" accept="image/png,image/jpeg,image/webp" />
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Dati della gara</div>
+        <h2>Prepara la convocazione</h2>
+        <p class="section-copy">L’orario di convocazione viene calcolato automaticamente un’ora e quarantacinque minuti prima della partita.</p>
+        <div class="grid grid-2">
+          <div class="field"><label for="callupCompetition">Campionato</label><input id="callupCompetition" placeholder="Es. Seconda Categoria" /></div>
+          <div class="field"><label for="callupRound">Giornata</label><input id="callupRound" placeholder="Es. 4ª giornata" /></div>
+          <div class="field"><label for="callupDate">Data</label><input id="callupDate" type="date" /></div>
+          <div class="field"><label for="callupOpponent">Avversario</label><input id="callupOpponent" placeholder="Nome della squadra avversaria" /></div>
+          <div class="field"><label for="callupKickoff">Orario partita</label><input id="callupKickoff" type="time" /></div>
+          <div class="field"><label for="callupMeeting">Orario convocazione</label><input id="callupMeeting" type="time" readonly /><div class="small-help" id="callupMeetingHelp">Automatico: 1 ora e 45 minuti prima.</div></div>
+        </div>
+        <div style="height:14px"></div>
+        <div class="field">
+          <label>Dove si gioca?</label>
+          <div class="venue-options">
+            <label class="venue-choice"><input type="radio" name="callupVenue" value="home" checked /><span>🏟️ Casa</span></label>
+            <label class="venue-choice"><input type="radio" name="callupVenue" value="away" /><span>🚌 Trasferta</span></label>
+          </div>
+        </div>
+        <div class="field hidden" id="callupAddressField" style="margin-top:12px"><label for="callupAddress">Indirizzo campo in trasferta</label><input id="callupAddress" placeholder="Via, numero civico, città" /></div>
+        <div style="height:14px"></div>
+        <div class="grid grid-2">
+          <div class="field"><label for="callupCoach">Allenatore</label><input id="callupCoach" placeholder="Nome e cognome allenatore" /></div>
+          <div class="field"><label for="callupSportingDirector">Direttore sportivo</label><input id="callupSportingDirector" placeholder="Nome e cognome direttore sportivo" /></div>
+          <div class="field"><label for="callupManager1">Dirigente 1</label><input id="callupManager1" placeholder="Nome e cognome dirigente" /></div>
+          <div class="field"><label for="callupManager2">Dirigente 2</label><input id="callupManager2" placeholder="Nome e cognome dirigente" /></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="eyebrow">Numeri da 1 a 20</div>
+        <h2>Seleziona i convocati</h2>
+        <p class="section-copy">Tocca il numero e inserisci nome e cognome. Scrivendo il nome, il giocatore viene selezionato automaticamente.</p>
+        <div class="callup-summary"><span>Giocatori compilati</span><strong id="callupSelectedCount">0 / 20</strong></div>
+        <div class="callup-player-grid" id="callupPlayerGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" id="createCallupPreviewBtn">Crea anteprima</button>
+          <button class="btn btn-secondary" type="button" id="resetCallupBtn">Svuota convocazione</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="callupOutputCard">
+        <div class="eyebrow">Anteprima condivisibile</div>
+        <h2>Convocazione CSV Breda</h2>
+        <div class="preview-poster" id="callupHtmlPreview"></div>
+        <div style="height:14px"></div>
+        <div class="button-row">
+          <button class="btn btn-primary" type="button" id="downloadCallupPdfBtn">📄 Salva PDF</button>
+          <button class="btn btn-secondary" type="button" id="downloadCallupImageBtn">🖼️ Salva foto</button>
+          <button class="btn btn-secondary" type="button" id="shareCallupImageBtn">↗ Condividi foto</button>
+        </div>
+        <p class="section-copy" style="margin-top:12px;margin-bottom:0">Il file viene generato in un’unica pagina verticale, pronto come PDF e come immagine da salvare o condividere.</p>
+      </div>
+    </section>
+
+    <section id="liveScreen" class="screen">
+      <div class="score-card">
+        <div class="match-meta" id="liveMeta">Campionato</div>
+        <div class="scoreline">
+          <div class="team-name" id="homeName">CSV BREDA</div>
+          <div class="score"><span id="homeScore">0</span>–<span id="awayScore">0</span></div>
+          <div class="team-name" id="awayName">AVVERSARIO</div>
+        </div>
+        <div class="score-controls">
+          <div class="mini-score"><button data-score-team="home" data-score-delta="-1">−</button><span>CASA</span><button data-score-team="home" data-score-delta="1">＋</button></div>
+          <div class="mini-score"><button data-score-team="away" data-score-delta="-1">−</button><span>OSPITI</span><button data-score-team="away" data-score-delta="1">＋</button></div>
+        </div>
+      </div>
+
+      <div class="card timer-panel" id="timerCard">
+        <div class="period-pill" id="periodLabel">PARTITA NON INIZIATA</div>
+        <div class="timer" id="timerDisplay">00:00:00</div>
+        <div class="stoppage" id="stoppageDisplay"></div>
+        <div class="timer-hint" id="timerHint">Avvia il primo tempo quando l’arbitro fischia.</div>
+        <div class="timer-actions" id="timerActions"></div>
+      </div>
+
+      <div class="card" id="actionsPanel">
+        <div class="eyebrow">Azioni live</div>
+        <h3>Registra con un tap</h3>
+        <div class="possession-switch">
+          <button id="actionTeamBreda" class="active" type="button">CSV Breda</button>
+          <button id="actionTeamOpponent" type="button">Avversario</button>
+        </div>
+        <div class="quick-grid">
+          <button class="action-btn goal" data-action="Goal"><strong>⚽</strong><span>Goal</span></button>
+          <button class="action-btn" data-action="Calcio d’angolo"><strong>🚩</strong><span>Angolo</span><em class="action-count" id="countCorner">0</em></button>
+          <button class="action-btn" data-action="Punizione"><strong>🎯</strong><span>Punizione</span><em class="action-count" id="countFreeKick">0</em></button>
+          <button class="action-btn" data-action="Palla rubata"><strong>🔄</strong><span>Palla rubata</span><em class="action-count" id="countRecovery">0</em></button>
+          <button class="action-btn" data-action="Palla persa"><strong>↘️</strong><span>Palla persa</span><em class="action-count" id="countLoss">0</em></button>
+          <button class="action-btn" data-action="Ammonizione"><strong>🟨</strong><span>Giallo</span></button>
+          <button class="action-btn" data-action="Espulsione"><strong>🟥</strong><span>Rosso</span></button>
+        </div>
+      </div>
+
+      <div class="card" id="timelinePanel">
+        <div class="eyebrow">Cronologia</div>
+        <h3>Eventi registrati</h3>
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+      <div class="card" id="statsPanel">
+        <div class="eyebrow">Riepilogo live</div>
+        <h3>Statistiche CSV Breda</h3>
+        <div class="stat-grid" id="liveStats"></div>
+      </div>
+    </section>
+
+    <section id="reportScreen" class="screen">
+      <div class="card" id="reportContent"></div>
+      <div class="card no-print">
+        <div class="button-row">
+          <button class="btn btn-primary" id="downloadPdfBtn">📄 Scarica / condividi PDF</button>
+          <button class="btn btn-secondary" id="printReportBtn">🖨️ Stampa report</button>
+          <button class="btn btn-secondary" id="backToMatchBtn">← Torna alla partita</button>
+          <button class="btn btn-secondary" type="button" data-go-home>⌂ Home</button><button class="btn btn-danger" id="newMatchBtn">Nuova partita</button>
+        </div>
+        <p class="section-copy" style="margin-top:12px;margin-bottom:0">Il primo pulsante crea direttamente il file PDF. “Stampa report” resta disponibile come alternativa.</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav hidden" id="bottomNav">
+    <button data-target="timerCard" class="active"><span>⏱️</span><span>Timer</span></button>
+    <button data-target="actionsPanel"><span>⚡</span><span>Azioni</span></button>
+    <button data-target="timelinePanel"><span>🧾</span><span>Eventi</span></button>
+    <button data-target="statsPanel"><span>📊</span><span>Statistiche</span></button>
+  </nav>
+</div>
+
+<dialog id="eventDialog">
+  <form method="dialog" class="modal-inner" id="eventForm">
+    <div class="modal-head"><h3 id="modalTitle">Registra evento</h3><button class="icon-btn" value="cancel" type="submit">×</button></div>
+    <input type="hidden" id="eventTypeInput" />
+    <div class="grid">
+      <div class="field" id="scorerField"><label for="scorerSelect">Numero del marcatore</label><select id="scorerSelect"></select></div>
+      <div class="field" id="assistField"><label for="assistSelect">Numero dell’assist</label><select id="assistSelect"></select></div>
+      <div class="field" id="playerField"><label for="playerSelect" id="playerFieldLabel">Numero del giocatore</label><select id="playerSelect"></select></div>
+      <div class="field"><label for="eventNoteInput">Nota facoltativa</label><input id="eventNoteInput" placeholder="Es. rigore, punizione, zona campo…" /></div>
+      <button class="btn btn-primary btn-block" id="saveEventBtn" value="default" type="submit">Registra evento</button>
+    </div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast">Evento registrato</div>
+
+<script src="storage.js"></script>
+<script src="profile.js"></script>
+<script src="callup.js"></script>
+<script src="match.js"></script>
+<script src="image.js"></script>
+<script src="pdf.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

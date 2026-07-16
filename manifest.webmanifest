@@ -1,0 +1,12 @@
+{
+  "name": "TeamCenter",
+  "short_name": "TeamCenter",
+  "description": "Gestionale operativo per società sportive",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7f9",
+  "theme_color": "#741f35",
+  "lang": "it",
+  "icons": []
+}
