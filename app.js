@@ -55,7 +55,7 @@
     document.documentElement.style.setProperty('--granata-soft',shadeHex(primary,83));
     document.documentElement.style.setProperty('--bg',bg);
     const title=$('#appTitle');if(title)title.textContent=`${clubName()} Team Center`;
-    const sub=$('#appSubtitle');if(sub)sub.textContent='Match e convocazioni in un’unica webapp';
+    const sub=$('#appSubtitle');if(sub)sub.textContent=clubName();
     document.title=`${clubName()} Team Center`;
   }
   function fillProfile(){
@@ -365,7 +365,7 @@
     return true;
   }
   function renderCallupHtmlPreview(){
-    const logo=state.logoDataUrl?`<img src="${state.logoDataUrl}" alt="Logo CSV Breda">`:'<div class="logo-placeholder">LOGO</div>';
+    const logo=state.logoDataUrl?`<img src="${state.logoDataUrl}" alt="Logo società">`:'<div class="logo-placeholder">LOGO</div>';
     const venueLabel=state.callup.venue==='home'?'Campo di casa':state.callup.address;
     const dateLabel=formatCallupDate(state.callup.date);
     const leftPlayers=Array.from({length:11},(_,i)=>state.callup.players[i]||{number:i+1,name:''});
@@ -500,18 +500,18 @@
     return types.map(type=>`<tr><td>${escapeHtml(type)}</td><td>${count(type,'breda')}</td><td>${count(type,'opponent')}</td></tr>`).join('');
   }
   function renderReport(){
-    const logo=state.logoDataUrl?`<img class="report-logo" src="${state.logoDataUrl}" alt="Logo CSV Breda">`:'';
+    const logo=state.logoDataUrl?`<img class="report-logo" src="${state.logoDataUrl}" alt="Logo società">`:'';
     const n=teamNames(); const chronological=[...state.events].reverse();
     const rows=chronological.length?chronological.map(ev=>{const l=eventLabel(ev);return `<tr><td>${escapeHtml(ev.time)}</td><td>${escapeHtml(l.title)}</td><td>${escapeHtml(l.sub)}</td></tr>`}).join(''):'<tr><td colspan="3">Nessun evento registrato.</td></tr>';
     $('#reportContent').innerHTML=`
-      <div class="report-head">${logo}<div class="eyebrow">CSV Breda · Match Report</div><h2>${escapeHtml(state.match.competition||'Partita')}</h2><div class="report-score">${escapeHtml(n.home)} ${state.score.home} – ${state.score.away} ${escapeHtml(n.away)}</div><div>${escapeHtml([state.match.team,state.match.round,state.match.season].filter(Boolean).join(' · '))}</div><div>${escapeHtml([reportDate(),state.match.kickoff,state.match.venue==='home'?'Breda Arena':'Trasferta'].filter(Boolean).join(' · '))}</div></div>
+      <div class="report-head">${logo}<div class="eyebrow">${escapeHtml(clubName())} · Match Report</div><h2>${escapeHtml(state.match.competition||'Partita')}</h2><div class="report-score">${escapeHtml(n.home)} ${state.score.home} – ${state.score.away} ${escapeHtml(n.away)}</div><div>${escapeHtml([state.match.team,state.match.round,state.match.season].filter(Boolean).join(' · '))}</div><div>${escapeHtml([reportDate(),state.match.kickoff,state.match.venue==='home'?'Casa':'Trasferta'].filter(Boolean).join(' · '))}</div></div>
       <h3>Tempi di gioco</h3>
       <table class="report-table"><tbody><tr><th>Primo tempo</th><td>${formatFixed(state.timer.firstHalfMs||0)}</td><th>Recupero</th><td>${state.timer.firstHalfMs>45*60*1000?'+'+formatFixed(state.timer.firstHalfMs-45*60*1000):'00:00'}</td></tr><tr><th>Secondo tempo</th><td>${formatFixed(state.timer.secondHalfMs||0)}</td><th>Recupero</th><td>${state.timer.secondHalfMs>45*60*1000?'+'+formatFixed(state.timer.secondHalfMs-45*60*1000):'00:00'}</td></tr></tbody></table>
       <h3 style="margin-top:24px">Statistiche</h3>
-      <table class="report-table"><thead><tr><th>Voce</th><th>CSV Breda</th><th>Avversario</th></tr></thead><tbody><tr><td>Goal</td><td>${bredaScore()}</td><td>${opponentScore()}</td></tr><tr><td>Assist</td><td>${state.events.filter(e=>e.type==='Goal'&&e.team==='breda'&&e.assist&&e.assist.number).length}</td><td>—</td></tr>${statComparisonRows()}</tbody></table>
+      <table class="report-table"><thead><tr><th>Voce</th><th>${escapeHtml(clubName())}</th><th>Avversario</th></tr></thead><tbody><tr><td>Goal</td><td>${bredaScore()}</td><td>${opponentScore()}</td></tr><tr><td>Assist</td><td>${state.events.filter(e=>e.type==='Goal'&&e.team==='breda'&&e.assist&&e.assist.number).length}</td><td>—</td></tr>${statComparisonRows()}</tbody></table>
       <h3 style="margin-top:24px">Cronologia completa</h3>
       <table class="report-table"><thead><tr><th>Minuto</th><th>Evento</th><th>Dettaglio</th></tr></thead><tbody>${rows}</tbody></table>
-      <p style="margin-top:24px;font-size:.72rem;color:var(--muted)">Report generato con TeamCenter 1.0.</p>`;
+      <p style="margin-top:24px;font-size:.72rem;color:var(--muted)">Report generato con TeamCenter 1.0.1.</p>`;
   }
 
 
@@ -632,7 +632,7 @@
         const ix=42+(maxW-iw)/2, iy=PAGE_H-72+(maxH-ih)/2;
         commands.push(`q ${iw.toFixed(2)} 0 0 ${ih.toFixed(2)} ${ix.toFixed(2)} ${iy.toFixed(2)} cm /Im1 Do Q`);
       }
-      text(continuation?'CSV BREDA MATCH REPORT - CONTINUA':'CSV BREDA MATCH REPORT',112,PAGE_H-37,18,true,WHITE);
+      text(continuation?`${pdfAscii(clubName()).toUpperCase()} MATCH REPORT - CONTINUA`:`${pdfAscii(clubName()).toUpperCase()} MATCH REPORT`,112,PAGE_H-37,18,true,WHITE);
       text([state.match.team,state.match.competition,state.match.season].filter(Boolean).join(' · '),112,PAGE_H-57,9,false,WHITE);
       y=PAGE_H-112;
     };
@@ -669,7 +669,7 @@
     newPage(false);
     const names=teamNames();
     text(state.match.competition||'Partita',MARGIN,y,16,true,INK); y-=21;
-    paragraph([state.match.round,reportDate(),state.match.kickoff,state.match.venue==='home'?'Breda Arena':'Trasferta'].filter(Boolean).join(' · '),9,MUTED);
+    paragraph([state.match.round,reportDate(),state.match.kickoff,state.match.venue==='home'?'Casa':'Trasferta'].filter(Boolean).join(' · '),9,MUTED);
     ensureSpace(72); fillRect(MARGIN,y,PAGE_W-MARGIN*2,64,GRANATA_SOFT); strokeRect(MARGIN,y,PAGE_W-MARGIN*2,64,GRANATA);
     text(`${names.home} ${state.score.home} - ${state.score.away} ${names.away}`,MARGIN,y-29,17,true,GRANATA,'center',PAGE_W-MARGIN*2);
     text('RISULTATO FINALE',MARGIN,y-49,8,true,MUTED,'center',PAGE_W-MARGIN*2); y-=82;
@@ -700,7 +700,7 @@
 
     pages.forEach((page,index)=>{
       page.push(`${color(LINE)} RG 0.6 w ${MARGIN} 35 m ${PAGE_W-MARGIN} 35 l S`);
-      page.push(`BT /F1 7 Tf ${color(MUTED)} rg 1 0 0 1 ${MARGIN} 22 Tm (${pdfEscape('TeamCenter 1.0')}) Tj ET`);
+      page.push(`BT /F1 7 Tf ${color(MUTED)} rg 1 0 0 1 ${MARGIN} 22 Tm (${pdfEscape('TeamCenter 1.0.1')}) Tj ET`);
       page.push(`BT /F1 7 Tf ${color(MUTED)} rg 1 0 0 1 ${PAGE_W-MARGIN-45} 22 Tm (${pdfEscape(`Pag. ${index+1}/${pages.length}`)}) Tj ET`);
     });
     return pages;
@@ -708,31 +708,29 @@
   function pdfFileName(){
     const opponent=pdfAscii(state.match.opponent||'avversario').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
     const date=state.match.date||new Date().toISOString().slice(0,10);
-    return `csv-breda-${opponent||'match'}-${date}.pdf`;
+    const club=pdfAscii(clubName()).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    return `${club||'teamcenter'}-${opponent||'match'}-${date}.pdf`;
   }
   async function generateAndDownloadPdf(){
-    const button=$('#downloadPdfBtn'); const oldText=button.textContent;
-    const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-    const iosPreview=isIOS?window.open('about:blank','_blank'):null;
-    button.disabled=true; button.textContent='Generazione PDF…';
+    const button=$('#downloadPdfBtn');
+    const oldText=button.textContent;
+    button.disabled=true;
+    button.textContent='Generazione PDF…';
     try{
       const imageInfo=await prepareLogoForPdf();
-      const pages=buildPdfPages(imageInfo); const bytes=createPdfBytes(pages,imageInfo);
-      const blob=new Blob([bytes],{type:'application/pdf'}); const filename=pdfFileName();
-      const url=URL.createObjectURL(blob);
-      if(iosPreview&&!iosPreview.closed){
-        iosPreview.location.href=url;
-        setTimeout(()=>URL.revokeObjectURL(url),120000);
-        toast('PDF aperto: usa Condividi o Salva');
-        return;
-      }
-      const link=document.createElement('a');
-      link.href=url; link.download=filename; link.rel='noopener'; document.body.appendChild(link); link.click(); link.remove();
-      setTimeout(()=>URL.revokeObjectURL(url),60000); toast('PDF generato');
+      const pages=buildPdfPages(imageInfo);
+      const bytes=createPdfBytes(pages,imageInfo);
+      const blob=new Blob([bytes],{type:'application/pdf'});
+      if(!blob.size)throw new Error('PDF vuoto');
+      const result=await saveOrShareFile(blob,pdfFileName(),`Match Report ${clubName()}`);
+      if(result!=='cancelled')toast('PDF pronto da salvare o condividere');
     }catch(error){
-      if(iosPreview&&!iosPreview.closed)iosPreview.close();
-      console.error(error); toast('Errore nella generazione PDF: usa Stampa report');
-    }finally{button.disabled=false;button.textContent=oldText}
+      console.error(error);
+      toast('Errore nella generazione del PDF');
+    }finally{
+      button.disabled=false;
+      button.textContent=oldText;
+    }
   }
 
   function handleLogoUpload(e){

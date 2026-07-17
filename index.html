@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#741f35" />
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>TeamCenter 1.0</title>
+  <title>TeamCenter 1.0.1</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -20,8 +20,9 @@
         </div>
       </div>
       <div class="home-logo-control">
-        <div class="logo-box" id="headerLogoBox"><div class="logo-placeholder">CARICA<br>LOGO</div></div>
-        <label for="headerLogoInput">Logo società</label>
+        <label class="header-logo-trigger" for="headerLogoInput" aria-label="Carica o modifica logo società">
+          <div class="logo-box" id="headerLogoBox"><div class="logo-placeholder">LOGO</div></div>
+        </label>
         <input id="headerLogoInput" type="file" accept="image/png,image/jpeg,image/webp" />
       </div>
     </div>
@@ -30,27 +31,18 @@
   <main>
 
     <section id="homeScreen" class="screen active">
-      <div class="card home-hero">
-        <div class="eyebrow" style="color:#fff;opacity:.75">CSV Breda · Staff Area</div>
-        <h2>Gestisci la squadra direttamente dallo smartphone.</h2>
-        <p>Carica una sola volta il logo ufficiale, prepara le convocazioni e registra gli eventi della partita.</p>
-      </div>
-      <div class="module-grid-home">
+      <div class="module-grid-home minimal-home">
         <button class="module-card profile-card" type="button" data-open-module="profile">
           <div>
             <div class="module-icon">👤</div>
             <h3>Profilo</h3>
-            <p>Imposta nome della società, logo e colori dell’app.</p>
           </div>
-          <div class="module-arrow">Configura profilo →</div>
         </button>
         <button class="module-card" type="button" data-open-module="callups">
-          <div><div class="module-icon">📋</div><h3>Convocazione</h3><p>Prepara la lista dei convocati e genera PDF o foto.</p></div>
-          <div class="module-arrow">Prepara convocazione →</div>
+          <div><div class="module-icon">📋</div><h3>Convocazione</h3></div>
         </button>
         <button class="module-card" type="button" data-open-module="match">
-          <div><div class="module-icon">⏱️</div><h3>Gestione match</h3><p>Timer, risultato, eventi e statistiche live.</p></div>
-          <div class="module-arrow">Apri gestione match →</div>
+          <div><div class="module-icon">⏱️</div><h3>Gestione Match</h3></div>
         </button>
       </div>
     </section>
@@ -242,12 +234,12 @@
       <div class="card" id="reportContent"></div>
       <div class="card no-print">
         <div class="button-row">
-          <button class="btn btn-primary" id="downloadPdfBtn">📄 Scarica / condividi PDF</button>
+          <button class="btn btn-primary" id="downloadPdfBtn">📄 Salva / condividi PDF</button>
           <button class="btn btn-secondary" id="printReportBtn">🖨️ Stampa report</button>
           <button class="btn btn-secondary" id="backToMatchBtn">← Torna alla partita</button>
           <button class="btn btn-secondary" type="button" data-go-home>⌂ Home</button><button class="btn btn-danger" id="newMatchBtn">Nuova partita</button>
         </div>
-        <p class="section-copy" style="margin-top:12px;margin-bottom:0">Il primo pulsante crea direttamente il file PDF. “Stampa report” resta disponibile come alternativa.</p>
+        <p class="section-copy" style="margin-top:12px;margin-bottom:0">Il PDF può essere salvato o condiviso direttamente dal dispositivo. “Stampa report” resta disponibile come alternativa.</p>
       </div>
     </section>
   </main>

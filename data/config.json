@@ -1,0 +1,11 @@
+{
+  "product": "TeamCenter",
+  "version": "1.0.0",
+  "storage": "local",
+  "driveReady": false,
+  "defaultProfile": {
+    "clubName": "CSV Breda",
+    "primaryColor": "#741f35",
+    "backgroundColor": "#f6f7f9"
+  }
+}
