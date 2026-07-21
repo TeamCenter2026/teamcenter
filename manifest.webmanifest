@@ -1,7 +1,7 @@
 {
   "name": "TeamCenter",
   "short_name": "TeamCenter",
-  "description": "Gestionale operativo per società sportive",
+  "description": "Profilo, allenamenti, convocazioni e gestione match CSV Breda",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

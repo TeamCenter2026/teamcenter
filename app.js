@@ -7,6 +7,7 @@
     screen:'home',
     logoDataUrl:'',
     profile:{clubName:'CSV Breda',primaryColor:'#741f35',backgroundColor:'#f6f7f9'},
+    training:{teamId:'PRIMA',date:'',presentIds:[]},
     callup:{competition:'',round:'',date:'',opponent:'',kickoff:'',meeting:'',meetingDayOffset:0,venue:'home',address:'',coach:'',manager1:'',manager2:'',sportingDirector:'',players:Array.from({length:20},(_,i)=>({number:i+1,name:'',selected:false}))},
     match:{team:'Prima Squadra',competition:'',season:'2026/2027',round:'',opponent:'',venue:'home',date:'',kickoff:''},
     score:{home:0,away:0},
@@ -39,7 +40,7 @@
       const base=emptyState();
       const savedPlayers=Array.isArray(saved.callup?.players)?saved.callup.players:[];
       const players=base.callup.players.map((p,i)=>({...p,...(savedPlayers[i]||{})}));
-      return {...base,...saved,profile:{...base.profile,...saved.profile},callup:{...base.callup,...saved.callup,players},match:{...base.match,...saved.match},timer:{...base.timer,...saved.timer}};
+      return {...base,...saved,profile:{...base.profile,...saved.profile},training:{...base.training,...saved.training,presentIds:Array.isArray(saved.training?.presentIds)?saved.training.presentIds:[]},callup:{...base.callup,...saved.callup,players},match:{...base.match,...saved.match},timer:{...base.timer,...saved.timer}};
     }catch(e){ return emptyState(); }
   }
   function saveState(){ try{localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}catch(e){} }
@@ -57,17 +58,15 @@
     document.documentElement.style.setProperty('--granata-soft',shadeHex(primary,83));
     document.documentElement.style.setProperty('--bg',bg);
     const title=$('#appTitle');if(title)title.textContent=`${clubName()} Team Center`;
-    const sub=$('#appSubtitle');if(sub)sub.textContent='Match e convocazioni in un’unica webapp';
     document.title=`${clubName()} Team Center`;
-    const eyebrow=$('#homeClubEyebrow');if(eyebrow)eyebrow.textContent=`${clubName()} · Staff Area`;
     const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.setAttribute('content',primary);
   }
   function fillProfile(){
-    $('#profileClubName').value=clubName();
-    $('#profilePrimaryColor').value=state.profile.primaryColor||'#741f35';
-    $('#profileBackgroundColor').value=state.profile.backgroundColor||'#f6f7f9';
-    $('#profileNamePreview').textContent=clubName();
-    $('#profileLogoPreview').innerHTML=state.logoDataUrl?`<img src="${state.logoDataUrl}" alt="Logo">`:'<div class="logo-placeholder">LOGO</div>';
+    const name=$('#profileNamePreview');if(name)name.textContent=clubName();
+    const season=$('#profileSeasonValue');if(season)season.textContent=masterApi?.Stagione||state.match.season||'—';
+    const field=$('#profileFieldValue');if(field)field.textContent=masterApi?.Campo||'—';
+    const address=$('#profileAddressValue');if(address)address.textContent=masterApi?.Indirizzo||'—';
+    const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'Configurazione collegata a Google Sheets':'Configurazione locale: API non raggiungibile';
   }
   function toast(message){
     const el=$('#toast'); el.textContent=message; el.classList.add('show');
@@ -112,7 +111,7 @@
   function renderLogo(){
     applyProfile();
     const html=state.logoDataUrl ? `<img src="${state.logoDataUrl}" alt="Logo ufficiale">` : `<div class="logo-placeholder">CARICA<br>LOGO<br>UFFICIALE</div>`;
-    $('#headerLogoBox').innerHTML=html;
+    const headerLogo=$('#headerLogoBox');if(headerLogo)headerLogo.innerHTML=html;
     $('#setupLogoPreview').innerHTML=state.logoDataUrl ? `<img src="${state.logoDataUrl}" alt="Anteprima logo">` : `<div class="logo-placeholder">LOGO<br>CSV BREDA</div>`;
     const callupLogo=$('#callupLogoPreview');
     if(callupLogo)callupLogo.innerHTML=state.logoDataUrl ? `<img src="${state.logoDataUrl}" alt="Anteprima logo">` : `<div class="logo-placeholder">LOGO</div>`;
@@ -128,6 +127,13 @@
     const esiste=squadreApi.some(s=>s.NomeSquadra===valoreCorrente);
     state.match.team=esiste?valoreCorrente:squadreApi[0].NomeSquadra;
     select.value=state.match.team;
+    const trainingSelect=$('#trainingTeamSelect');
+    if(trainingSelect){
+      trainingSelect.innerHTML=squadreApi.map(squadra=>`<option value="${escapeHtml(squadra.IDSquadra)}">${escapeHtml(squadra.NomeSquadra)}</option>`).join('');
+      const valid=squadreApi.some(s=>s.IDSquadra===state.training.teamId);
+      state.training.teamId=valid?state.training.teamId:squadreApi[0].IDSquadra;
+      trainingSelect.value=state.training.teamId;
+    }
   }
 
   async function sincronizzaConfigurazioneApi(){
@@ -146,6 +152,46 @@
     aggiornaSelectSquadre();
     saveState();
     return {master:masterApi,squadre:squadreApi};
+  }
+
+  async function loadTrainingPlayers(){
+    const container=$('#trainingPlayers');
+    if(!container)return;
+    const teamId=$('#trainingTeamSelect')?.value||state.training.teamId;
+    state.training.teamId=teamId;
+    container.innerHTML='<div class="empty">Caricamento rosa…</div>';
+    try{
+      const players=await window.TeamCenterAPI.getGiocatori(teamId);
+      const active=(Array.isArray(players)?players:[]).filter(p=>String(p.Attivo||'SI').toUpperCase()!=='NO');
+      state.trainingPlayers=active;
+      renderTrainingPlayers();
+    }catch(error){
+      console.error(error);
+      state.trainingPlayers=[];
+      container.innerHTML='<div class="empty">Impossibile caricare la rosa.</div>';
+    }
+  }
+  function renderTrainingPlayers(){
+    const container=$('#trainingPlayers');if(!container)return;
+    const players=Array.isArray(state.trainingPlayers)?state.trainingPlayers:[];
+    if(!players.length){container.innerHTML='<div class="empty">Nessun giocatore presente nella rosa.</div>';updateTrainingCount();return;}
+    const present=new Set(state.training.presentIds||[]);
+    container.innerHTML=players.map(p=>{
+      const id=String(p.IDGiocatore||'');
+      const selected=present.has(id);
+      return `<button class="training-player ${selected?'present':''}" type="button" data-training-player="${escapeHtml(id)}"><span>${escapeHtml([p.Cognome,p.Nome].filter(Boolean).join(' '))}</span><span class="presence-mark">${selected?'✓':''}</span></button>`;
+    }).join('');
+    updateTrainingCount();
+  }
+  function updateTrainingCount(){
+    const count=$('#trainingCount');if(count)count.textContent=`${(state.training.presentIds||[]).length} presenti`;
+  }
+  function fillTraining(){
+    const today=new Date().toISOString().slice(0,10);
+    if(!state.training.date)state.training.date=today;
+    const date=$('#trainingDateInput');if(date)date.value=state.training.date;
+    const select=$('#trainingTeamSelect');if(select&&state.training.teamId)select.value=state.training.teamId;
+    loadTrainingPlayers();
   }
 
   function fillSetup(){
@@ -779,6 +825,7 @@
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
     if(module==='profile'){fillProfile();showScreen('profile')}
+    if(module==='training'){fillTraining();showScreen('training')}
     if(module==='match'){fillSetup();showScreen('setup')}
     if(module==='callups'){fillCallupForm();showScreen('callups')}
     if(e.target.closest('[data-go-home]'))showScreen('home');
@@ -797,15 +844,23 @@
   $('#shareCallupImageBtn').addEventListener('click',shareCallupImage);
   $('#downloadCallupPdfBtn').addEventListener('click',downloadCallupPdf);
 
-  $('#profileClubName').addEventListener('input',()=>{$('#profileNamePreview').textContent=$('#profileClubName').value||'Società'});
-  $('#saveProfileBtn').addEventListener('click',()=>{
-    state.profile.clubName=$('#profileClubName').value.trim()||'CSV Breda';
-    state.profile.primaryColor=$('#profilePrimaryColor').value;
-    state.profile.backgroundColor=$('#profileBackgroundColor').value;
-    saveState();applyProfile();renderLogo();fillProfile();toast('Profilo salvato');showScreen('home');
+
+  $('#trainingTeamSelect')?.addEventListener('change',e=>{state.training.teamId=e.target.value;state.training.presentIds=[];saveState();loadTrainingPlayers()});
+  $('#trainingDateInput')?.addEventListener('change',e=>{state.training.date=e.target.value;saveState()});
+  $('#trainingPlayers')?.addEventListener('click',e=>{
+    const button=e.target.closest('[data-training-player]');if(!button)return;
+    const id=button.dataset.trainingPlayer;
+    const present=new Set(state.training.presentIds||[]);
+    present.has(id)?present.delete(id):present.add(id);
+    state.training.presentIds=[...present];saveState();renderTrainingPlayers();
   });
-  $('#profilePrimaryColor').addEventListener('input',e=>{document.documentElement.style.setProperty('--granata',e.target.value)});
-  $('#profileBackgroundColor').addEventListener('input',e=>{document.documentElement.style.setProperty('--bg',e.target.value)});
+  $('#trainingSelectAllBtn')?.addEventListener('click',()=>{
+    const players=Array.isArray(state.trainingPlayers)?state.trainingPlayers:[];
+    const allIds=players.map(p=>String(p.IDGiocatore||'')).filter(Boolean);
+    state.training.presentIds=(state.training.presentIds||[]).length===allIds.length?[]:allIds;
+    saveState();renderTrainingPlayers();
+  });
+  $('#saveTrainingDraftBtn')?.addEventListener('click',()=>{saveState();toast('Bozza allenamento salvata sul dispositivo')});
 
   $('#createMatchBtn').addEventListener('click',()=>{
     readSetup();
@@ -831,6 +886,7 @@
     const today=new Date().toISOString().slice(0,10);
     if(!state.match.date)state.match.date=today;
     if(!state.callup.date)state.callup.date=today;
+    if(!state.training.date)state.training.date=today;
     try{
       await sincronizzaConfigurazioneApi();
       console.info('TeamCenter collegato alle API', {master:masterApi,squadre:squadreApi});
@@ -840,7 +896,7 @@
     }
     applyProfile();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else showScreen('home');
+    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else showScreen('home');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

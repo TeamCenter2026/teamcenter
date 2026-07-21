@@ -6,51 +6,36 @@
   <meta name="theme-color" content="#741f35" />
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>TeamCenter 1.0</title>
+  <title>CSV Breda TeamCenter</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 <div class="app-shell">
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-copy">
-        <div>
-          <h1 id="appTitle">TeamCenter</h1>
-          <p id="appSubtitle">Gestionale operativo per società sportive</p>
-        </div>
-      </div>
-      <div class="home-logo-control">
-        <div class="logo-box" id="headerLogoBox"><div class="logo-placeholder">CARICA<br>LOGO</div></div>
-        <label for="headerLogoInput">Logo società</label>
-        <input id="headerLogoInput" type="file" accept="image/png,image/jpeg,image/webp" />
-      </div>
+  <header class="topbar compact-topbar">
+    <div class="brand compact-brand">
+      <h1 id="appTitle">TeamCenter</h1>
     </div>
   </header>
 
   <main>
 
-    <section id="homeScreen" class="screen active">
-      <div class="card home-hero">
-        <div class="eyebrow" id="homeClubEyebrow" style="color:#fff;opacity:.75">CSV Breda · Staff Area</div>
-        <h2>Gestisci la squadra direttamente dallo smartphone.</h2>
-        <p>Carica una sola volta il logo ufficiale, prepara le convocazioni e registra gli eventi della partita.</p>
-      </div>
-      <div class="module-grid-home">
-        <button class="module-card profile-card" type="button" data-open-module="profile">
-          <div>
-            <div class="module-icon">👤</div>
-            <h3>Profilo</h3>
-            <p>Imposta nome della società, logo e colori dell’app.</p>
-          </div>
-          <div class="module-arrow">Configura profilo →</div>
+    <section id="homeScreen" class="screen active minimal-home">
+      <div class="minimal-home-grid">
+        <button class="minimal-module-button" type="button" data-open-module="profile">
+          <span class="minimal-module-icon">👤</span>
+          <span>Profilo</span>
         </button>
-        <button class="module-card" type="button" data-open-module="callups">
-          <div><div class="module-icon">📋</div><h3>Convocazione</h3><p>Prepara la lista dei convocati e genera PDF o foto.</p></div>
-          <div class="module-arrow">Prepara convocazione →</div>
+        <button class="minimal-module-button" type="button" data-open-module="training">
+          <span class="minimal-module-icon">🏃</span>
+          <span>Allenamenti</span>
         </button>
-        <button class="module-card" type="button" data-open-module="match">
-          <div><div class="module-icon">⏱️</div><h3>Gestione match</h3><p>Timer, risultato, eventi e statistiche live.</p></div>
-          <div class="module-arrow">Apri gestione match →</div>
+        <button class="minimal-module-button" type="button" data-open-module="callups">
+          <span class="minimal-module-icon">📋</span>
+          <span>Convocazioni</span>
+        </button>
+        <button class="minimal-module-button" type="button" data-open-module="match">
+          <span class="minimal-module-icon">⏱️</span>
+          <span>Gestione Match</span>
         </button>
       </div>
     </section>
@@ -59,22 +44,34 @@
       <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
       <div class="card">
         <div class="eyebrow">Profilo società</div>
-        <h2>Personalizza la webapp</h2>
-        <p class="section-copy">Queste impostazioni vengono salvate sul dispositivo e applicate a home, convocazioni, match e file generati.</p>
-        <div class="profile-preview">
-          <div class="profile-preview-logo" id="profileLogoPreview"><div class="logo-placeholder">LOGO</div></div>
-          <div><strong id="profileNamePreview">CSV Breda</strong><div class="small-help">Anteprima identità società</div></div>
+        <h2 id="profileNamePreview">CSV Breda</h2>
+        <div class="profile-cloud-grid">
+          <div><small>Stagione</small><strong id="profileSeasonValue">2026/2027</strong></div>
+          <div><small>Campo</small><strong id="profileFieldValue">Breda Arena</strong></div>
+          <div class="profile-cloud-address"><small>Indirizzo</small><strong id="profileAddressValue">Via Ercole Marelli 29</strong></div>
         </div>
-        <div style="height:16px"></div>
-        <div class="grid">
-          <div class="field"><label for="profileClubName">Nome società</label><input id="profileClubName" placeholder="Es. CSV Breda" /></div>
-          <div class="field"><label for="profileLogoInput">Logo ufficiale</label><input id="profileLogoInput" type="file" accept="image/png,image/jpeg,image/webp" /></div>
-          <div class="color-row">
-            <div class="field"><label for="profilePrimaryColor">Colore principale</label><input id="profilePrimaryColor" type="color" value="#741f35" /></div>
-            <div class="field"><label for="profileBackgroundColor">Colore di sfondo</label><input id="profileBackgroundColor" type="color" value="#f6f7f9" /></div>
-          </div>
-          <button class="btn btn-primary btn-block" id="saveProfileBtn" type="button">Salva profilo</button>
+        <div class="cloud-status" id="profileCloudStatus">Configurazione collegata a Google Sheets</div>
+      </div>
+    </section>
+
+    <section id="trainingScreen" class="screen">
+      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
+      <div class="card">
+        <div class="eyebrow">Allenamenti</div>
+        <h2>Registro presenze</h2>
+        <div class="grid grid-2">
+          <div class="field"><label for="trainingTeamSelect">Squadra</label><select id="trainingTeamSelect"></select></div>
+          <div class="field"><label for="trainingDateInput">Data</label><input id="trainingDateInput" type="date" /></div>
         </div>
+      </div>
+      <div class="card">
+        <div class="training-toolbar">
+          <div><strong id="trainingCount">0 presenti</strong><div class="small-help">Tocca un giocatore per segnare la presenza.</div></div>
+          <button class="btn btn-secondary" id="trainingSelectAllBtn" type="button">Tutti presenti</button>
+        </div>
+        <div id="trainingPlayers" class="training-player-list"><div class="empty">Seleziona una squadra.</div></div>
+        <div style="height:14px"></div>
+        <button class="btn btn-primary btn-block" id="saveTrainingDraftBtn" type="button">Salva bozza sul dispositivo</button>
       </div>
     </section>
 
