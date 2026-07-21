@@ -1,4 +1,4 @@
-# TeamCenter 1.0.1
+# TeamCenter 1.0
 
 Versione ufficiale pronta per GitHub Pages.
 
@@ -14,10 +14,3 @@ Carica **tutti i file e le cartelle** nella root del repository GitHub. `index.h
 
 ## Limiti della 1.0
 Google Drive, storico online e autenticazione verranno collegati nelle versioni successive.
-
-
-## Aggiornamento 1.0.1
-- Home minimal
-- Logo senza riquadro
-- Gestione Match con maiuscola
-- Salvataggio/condivisione PDF Match corretti
