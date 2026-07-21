@@ -9,3 +9,6 @@ Home minimale con quattro aree:
 - Gestione Match
 
 Il profilo e l’elenco squadre vengono letti dal database Google Sheets tramite API.
+
+
+Versione 1.3: logo ufficiale caricato dalla API nella testata della home.

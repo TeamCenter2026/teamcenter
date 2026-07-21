@@ -252,3 +252,10 @@
 .training-player .presence-mark{width:28px;height:28px;border-radius:999px;border:2px solid var(--line);display:grid;place-items:center;flex:0 0 auto}
 .training-player.present .presence-mark{background:var(--granata);border-color:var(--granata);color:#fff}
 @media(max-width:560px){.minimal-home-grid{grid-template-columns:1fr}.minimal-module-button{min-height:112px;flex-direction:row;justify-content:flex-start;padding:18px 22px}.minimal-module-icon{width:54px;height:54px}.profile-cloud-grid{grid-template-columns:1fr}.profile-cloud-address{grid-column:auto}.training-toolbar{align-items:flex-start;flex-direction:column}.training-toolbar .btn{width:100%}}
+
+/* TeamCenter 1.3 - logo ufficiale nella home */
+.compact-brand{flex-direction:column;gap:8px}
+.home-club-logo{width:76px;height:76px;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.home-club-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.home-logo-placeholder{width:64px;height:64px;border:1px dashed rgba(255,255,255,.65);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#fff}
+@media(max-width:560px){.home-club-logo{width:66px;height:66px}.compact-topbar{padding-top:calc(10px + env(safe-area-inset-top))}}

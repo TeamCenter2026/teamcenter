@@ -58,6 +58,12 @@
     document.documentElement.style.setProperty('--granata-soft',shadeHex(primary,83));
     document.documentElement.style.setProperty('--bg',bg);
     const title=$('#appTitle');if(title)title.textContent=`${clubName()} Team Center`;
+    const homeLogo=$('#homeClubLogo');
+    if(homeLogo){
+      homeLogo.innerHTML=state.logoDataUrl
+        ? `<img src="${state.logoDataUrl}" alt="Logo ufficiale ${escapeHtml(clubName())}">`
+        : '<span class="home-logo-placeholder">CSV</span>';
+    }
     document.title=`${clubName()} Team Center`;
     const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.setAttribute('content',primary);
   }
@@ -138,12 +144,17 @@
 
   async function sincronizzaConfigurazioneApi(){
     if(!window.TeamCenterAPI)throw new Error('Configurazione API assente');
-    const [master,squadre]=await Promise.all([
+    const [master,squadre,logo] = await Promise.all([
       window.TeamCenterAPI.getMaster(),
-      window.TeamCenterAPI.getSquadre()
+      window.TeamCenterAPI.getSquadre(),
+      window.TeamCenterAPI.getLogo().catch(error => {
+        console.warn('Logo non disponibile:', error);
+        return null;
+      })
     ]);
     masterApi=master||{};
     squadreApi=Array.isArray(squadre)?squadre:[];
+    if(logo?.dataUrl) state.logoDataUrl=logo.dataUrl;
     state.profile.clubName=masterApi.NomeSocieta||state.profile.clubName;
     state.profile.primaryColor=masterApi.ColorePrimario||state.profile.primaryColor;
     state.profile.backgroundColor=masterApi.ColoreSecondario||state.profile.backgroundColor;
