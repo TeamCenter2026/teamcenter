@@ -1,0 +1,16 @@
+TEAMCENTER 1.4.1 - FIX CACHE
+
+1. Apri il repository GitHub TeamCenter.
+2. Carica TUTTI i file contenuti in questa cartella, direttamente nella root del repository.
+3. Sostituisci i file già esistenti.
+4. Commit suggerito:
+   TeamCenter 1.4.1 - Fix cache profilo società
+5. Attendi 1-2 minuti.
+6. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=141
+7. Premi CTRL+F5.
+
+Se ancora appare la vecchia versione:
+- Chrome > F12 > Application > Service Workers > Unregister
+- Application > Storage > Clear site data
+- Ricarica la pagina.
