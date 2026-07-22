@@ -408,3 +408,65 @@
   .training-status-select{width:100%;min-width:0}
   .training-summary-grid{grid-template-columns:1fr 1fr}
 }
+
+
+/* TeamCenter 1.9 - Convocazioni */
+.callup-card{max-width:840px;margin-left:auto;margin-right:auto}
+.callup-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px}
+.callup-heading h2{margin-bottom:4px}
+.callup-sync-badge{background:#e9f8ef;color:#1c7a42;padding:8px 12px;border-radius:999px;font-size:.76rem;font-weight:900;white-space:nowrap}
+.callup-address-box{margin-top:14px;padding:13px 15px;background:var(--granata-soft);border-radius:14px;color:var(--granata-dark);font-weight:800}
+.callup-toolbar{display:grid;grid-template-columns:1fr auto auto;align-items:end;gap:10px}
+.callup-check-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.callup-check-card{position:relative;display:flex;align-items:center;gap:12px;padding:13px;border:1px solid rgba(31,41,55,.12);border-radius:15px;background:#fff;cursor:pointer}
+.callup-check-card input{position:absolute;opacity:0;pointer-events:none}
+.callup-check-mark{display:grid;place-items:center;width:28px;height:28px;border:2px solid #c7cbd1;border-radius:9px;color:transparent;font-weight:950;flex:0 0 auto}
+.callup-check-card:has(input:checked){border-color:var(--granata);background:var(--granata-soft)}
+.callup-check-card input:checked + .callup-check-mark{background:var(--granata);border-color:var(--granata);color:#fff}
+.callup-check-copy{display:grid;gap:2px;min-width:0}
+.callup-check-copy strong{overflow:hidden;text-overflow:ellipsis}
+.callup-check-copy small{color:var(--muted)}
+.callup-empty{padding:24px 12px;text-align:center;color:var(--muted);font-weight:750}
+.callup-staff-groups{display:grid;gap:20px}
+.callup-staff-group h3{font-size:.92rem;color:var(--granata);margin:0 0 -4px}
+.callup-message{min-height:24px;margin-top:12px;text-align:center;color:#1c7a42;font-weight:850}
+.callup-message.error{color:var(--danger)}
+.callup-preview{overflow:auto;border-radius:18px;background:#e9eaed;padding:14px}
+.callup-preview-sheet{width:760px;max-width:100%;margin:auto;background:#f6f7f9;padding:28px;border-radius:14px;color:#202124}
+.callup-preview-header{display:flex;align-items:center;gap:20px;background:var(--granata);color:#fff;margin:-28px -28px 24px;padding:22px 28px;border-radius:14px 14px 0 0}
+.callup-preview-logo{width:88px;height:88px;display:grid;place-items:center}
+.callup-preview-logo img{max-width:100%;max-height:100%;object-fit:contain}
+.callup-preview-header div:last-child{display:grid;gap:4px}
+.callup-preview-header strong{font-size:1.65rem}
+.callup-preview-header span{font-size:1rem;font-weight:900;letter-spacing:.08em}
+.callup-preview-match{display:grid;gap:6px}
+.callup-preview-match>span{color:var(--muted);font-weight:750}
+.callup-preview-match h3{font-size:1.45rem;color:var(--granata);margin:12px 0}
+.callup-preview-info{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.callup-preview-info>div{display:grid;gap:5px;background:#fff;padding:12px;border-radius:12px}
+.callup-preview-info small{color:var(--muted);font-weight:900}
+.callup-preview-address{display:grid;gap:4px;background:#fff;padding:12px;border-radius:12px;margin-bottom:18px}
+.callup-preview-address strong{color:var(--granata)}
+.callup-preview-title{font-weight:950;color:var(--granata);margin:18px 0 8px}
+.callup-preview-players{display:grid;grid-template-columns:42px 1fr 42px 1fr;border:1px solid #dadde2;border-radius:10px;overflow:hidden}
+.callup-preview-num,.callup-preview-name{padding:8px;border-bottom:1px solid #e1e3e6;background:#fff}
+.callup-preview-num{font-weight:950;color:var(--granata);text-align:center}
+.callup-preview-name{font-weight:750}
+.callup-preview-staff{display:grid;grid-template-columns:200px 1fr;border:1px solid #dadde2;border-radius:10px;overflow:hidden}
+.callup-preview-staff>div{padding:8px;background:#fff;border-bottom:1px solid #e1e3e6}
+.callup-preview-staff-role{font-weight:900;color:var(--granata)}
+.callup-export-buttons{margin-top:16px}
+.callup-history{display:grid;gap:10px;margin-top:14px}
+.callup-history-card{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px;border:1px solid rgba(31,41,55,.1);border-radius:15px;background:#fff}
+.callup-history-card>div{display:grid;gap:4px}
+.callup-history-card span,.callup-history-card small{color:var(--muted);font-size:.8rem}
+
+@media(max-width:720px){
+  .callup-heading{flex-direction:column;align-items:stretch}
+  .callup-sync-badge{align-self:flex-start}
+  .callup-toolbar{grid-template-columns:1fr 1fr}
+  .callup-toolbar .field{grid-column:1/-1}
+  .callup-check-list{grid-template-columns:1fr}
+  .callup-preview-sheet{min-width:680px}
+  .callup-preview{overflow-x:auto}
+}

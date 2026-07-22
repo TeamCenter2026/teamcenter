@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.8" />
+  <link rel="stylesheet" href="styles.css?v=1.9" />
 </head>
 <body>
 <div class="app-shell">
@@ -406,72 +406,132 @@
     </section>
 
 
+
     <section id="callupsScreen" class="screen">
       <div class="page-tools">
         <button class="back-link" type="button" data-go-home>← Home</button>
-        <div class="page-logo-upload">
-          <label for="callupLogoInput">Carica logo ufficiale</label>
-          <div class="logo-preview" id="callupLogoPreview"><div class="logo-placeholder">LOGO</div></div>
-          <input id="callupLogoInput" type="file" accept="image/png,image/jpeg,image/webp" />
-        </div>
       </div>
 
-      <div class="card">
-        <div class="eyebrow">Dati della gara</div>
-        <h2>Prepara la convocazione</h2>
-        <p class="section-copy">L’orario di convocazione viene calcolato automaticamente un’ora e quarantacinque minuti prima della partita.</p>
-        <div class="grid grid-2">
-          <div class="field"><label for="callupCompetition">Campionato</label><input id="callupCompetition" placeholder="Es. Seconda Categoria" /></div>
-          <div class="field"><label for="callupRound">Giornata</label><input id="callupRound" placeholder="Es. 4ª giornata" /></div>
-          <div class="field"><label for="callupDate">Data</label><input id="callupDate" type="date" /></div>
-          <div class="field"><label for="callupOpponent">Avversario</label><input id="callupOpponent" placeholder="Nome della squadra avversaria" /></div>
-          <div class="field"><label for="callupKickoff">Orario partita</label><input id="callupKickoff" type="time" /></div>
-          <div class="field"><label for="callupMeeting">Orario convocazione</label><input id="callupMeeting" type="time" readonly /><div class="small-help" id="callupMeetingHelp">Automatico: 1 ora e 45 minuti prima.</div></div>
+      <div class="card callup-card">
+        <div class="eyebrow">Convocazioni</div>
+        <div class="callup-heading">
+          <div>
+            <h2>Nuova convocazione</h2>
+            <p class="section-copy">Compila i dati della gara e seleziona giocatori e staff.</p>
+          </div>
+          <span class="callup-sync-badge">Google Sheets sincronizzato</span>
         </div>
-        <div style="height:14px"></div>
-        <div class="field">
-          <label>Dove si gioca?</label>
-          <div class="venue-options">
-            <label class="venue-choice"><input type="radio" name="callupVenue" value="home" checked /><span>🏟️ Casa</span></label>
-            <label class="venue-choice"><input type="radio" name="callupVenue" value="away" /><span>🚌 Trasferta</span></label>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label for="callupTeamSelect">Squadra</label>
+            <select id="callupTeamSelect" required></select>
+          </div>
+          <div class="field">
+            <label for="callupCompetitionInput">Campionato</label>
+            <input id="callupCompetitionInput" placeholder="Es. Seconda Categoria" required />
+          </div>
+          <div class="field">
+            <label for="callupRoundInput">Giornata</label>
+            <input id="callupRoundInput" placeholder="Es. 4ª giornata" required />
+          </div>
+          <div class="field">
+            <label for="callupDateInput">Data</label>
+            <input id="callupDateInput" type="date" required />
+          </div>
+          <div class="field">
+            <label for="callupOpponentInput">Avversario</label>
+            <input id="callupOpponentInput" placeholder="Nome squadra avversaria" required />
+          </div>
+          <div class="field">
+            <label for="callupKickoffInput">Orario partita</label>
+            <input id="callupKickoffInput" type="time" required />
+          </div>
+          <div class="field">
+            <label for="callupMeetingInput">Orario convocazione</label>
+            <input id="callupMeetingInput" type="time" readonly />
+            <div class="small-help">Calcolato automaticamente 1 ora e 45 minuti prima.</div>
+          </div>
+          <div class="field">
+            <label for="callupVenueSelect">Sede</label>
+            <select id="callupVenueSelect">
+              <option value="CASA">Casa</option>
+              <option value="TRASFERTA">Trasferta</option>
+            </select>
           </div>
         </div>
-        <div class="field hidden" id="callupAddressField" style="margin-top:12px"><label for="callupAddress">Indirizzo campo in trasferta</label><input id="callupAddress" placeholder="Via, numero civico, città" /></div>
-        <div style="height:14px"></div>
-        <div class="grid grid-2">
-          <div class="field"><label for="callupCoach">Allenatore</label><input id="callupCoach" placeholder="Nome e cognome allenatore" /></div>
-          <div class="field"><label for="callupSportingDirector">Direttore sportivo</label><input id="callupSportingDirector" placeholder="Nome e cognome direttore sportivo" /></div>
-          <div class="field"><label for="callupManager1">Dirigente 1</label><input id="callupManager1" placeholder="Nome e cognome dirigente" /></div>
-          <div class="field"><label for="callupManager2">Dirigente 2</label><input id="callupManager2" placeholder="Nome e cognome dirigente" /></div>
+
+        <div id="callupHomeAddress" class="callup-address-box"></div>
+
+        <div id="callupAwayAddressField" class="field hidden">
+          <label for="callupAwayAddressInput">Indirizzo campo in trasferta</label>
+          <input id="callupAwayAddressInput" placeholder="Via, numero civico, città" />
         </div>
       </div>
 
-      <div class="card">
-        <div class="eyebrow">Numeri da 1 a 20</div>
-        <h2>Seleziona i convocati</h2>
-        <p class="section-copy">Tocca il numero e inserisci nome e cognome. Scrivendo il nome, il giocatore viene selezionato automaticamente.</p>
-        <div class="callup-summary"><span>Giocatori compilati</span><strong id="callupSelectedCount">0 / 20</strong></div>
-        <div class="callup-player-grid" id="callupPlayerGrid"></div>
+      <div class="card callup-card">
+        <div class="callup-heading">
+          <div>
+            <div class="eyebrow">Giocatori</div>
+            <h2>Seleziona i convocati</h2>
+          </div>
+          <strong id="callupPlayersCount">0 selezionati</strong>
+        </div>
+
+        <div class="callup-toolbar">
+          <div class="field">
+            <label for="callupPlayerSearch">Cerca giocatore</label>
+            <input id="callupPlayerSearch" type="search" placeholder="Nome o cognome" />
+          </div>
+          <button id="callupSelectAllPlayers" class="btn btn-secondary" type="button">Seleziona tutti</button>
+          <button id="callupClearPlayers" class="btn btn-secondary" type="button">Azzera</button>
+        </div>
+
+        <div id="callupPlayersLoading" class="callup-empty">Caricamento giocatori…</div>
+        <div id="callupPlayersList" class="callup-check-list"></div>
       </div>
 
-      <div class="card">
+      <div class="card callup-card">
+        <div class="callup-heading">
+          <div>
+            <div class="eyebrow">Staff</div>
+            <h2>Seleziona lo staff</h2>
+          </div>
+          <strong id="callupStaffCount">0 selezionati</strong>
+        </div>
+
+        <p class="section-copy">Sono mostrati tutti i componenti attivi, raggruppati per ruolo.</p>
+        <div id="callupStaffLoading" class="callup-empty">Caricamento staff…</div>
+        <div id="callupStaffList" class="callup-staff-groups"></div>
+      </div>
+
+      <div class="card callup-card">
         <div class="button-row">
-          <button class="btn btn-primary" type="button" id="createCallupPreviewBtn">Crea anteprima</button>
-          <button class="btn btn-secondary" type="button" id="resetCallupBtn">Svuota convocazione</button>
+          <button id="callupPreviewBtn" class="btn btn-primary" type="button">Crea anteprima</button>
+          <button id="callupSaveBtn" class="btn btn-secondary" type="button">Salva convocazione</button>
+          <button id="callupResetBtn" class="btn btn-secondary" type="button">Svuota</button>
         </div>
+        <div id="callupMessage" class="callup-message" role="status" aria-live="polite"></div>
       </div>
 
-      <div class="card hidden" id="callupOutputCard">
+      <div id="callupPreviewCard" class="card callup-card hidden">
         <div class="eyebrow">Anteprima condivisibile</div>
-        <h2>Convocazione CSV Breda</h2>
-        <div class="preview-poster" id="callupHtmlPreview"></div>
-        <div style="height:14px"></div>
-        <div class="button-row">
-          <button class="btn btn-primary" type="button" id="downloadCallupPdfBtn">📄 Salva PDF</button>
-          <button class="btn btn-secondary" type="button" id="downloadCallupImageBtn">🖼️ Salva foto</button>
-          <button class="btn btn-secondary" type="button" id="shareCallupImageBtn">↗ Condividi foto</button>
+        <h2>Convocazione</h2>
+        <div id="callupPreview" class="callup-preview"></div>
+
+        <div class="button-row callup-export-buttons">
+          <button id="callupPdfBtn" class="btn btn-primary" type="button">📄 Salva PDF</button>
+          <button id="callupImageBtn" class="btn btn-secondary" type="button">🖼️ Salva foto</button>
+          <button id="callupShareBtn" class="btn btn-secondary" type="button">↗ Condividi</button>
         </div>
-        <p class="section-copy" style="margin-top:12px;margin-bottom:0">Il file viene generato in un’unica pagina verticale, pronto come PDF e come immagine da salvare o condividere.</p>
+      </div>
+
+      <div class="card callup-card">
+        <div class="eyebrow">Archivio</div>
+        <h2>Ultime convocazioni</h2>
+        <div id="callupHistory" class="callup-history">
+          <div class="callup-empty">Nessuna convocazione salvata.</div>
+        </div>
       </div>
     </section>
 
@@ -566,14 +626,15 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.8"></script>
-<script src="storage.js?v=1.8"></script>
-<script src="profile.js?v=1.8"></script>
-<script src="callup.js?v=1.8"></script>
-<script src="match.js?v=1.8"></script>
-<script src="image.js?v=1.8"></script>
-<script src="pdf.js?v=1.8"></script>
-<script src="allenamenti.js?v=1.8"></script>
-<script src="app.js?v=1.8"></script>
+<script src="api.js?v=1.9"></script>
+<script src="storage.js?v=1.9"></script>
+<script src="profile.js?v=1.9"></script>
+<script src="callup.js?v=1.9"></script>
+<script src="match.js?v=1.9"></script>
+<script src="image.js?v=1.9"></script>
+<script src="pdf.js?v=1.9"></script>
+<script src="allenamenti.js?v=1.9"></script>
+<script src="convocazioni.js?v=1.9"></script>
+<script src="app.js?v=1.9"></script>
 </body>
 </html>

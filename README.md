@@ -1,3 +1,3 @@
-# TeamCenter 1.8
+# TeamCenter 1.9
 
-Versione con Profilo, Rosa, Staff e modulo Allenamenti sincronizzato con Google Sheets.
+Profilo, Rosa, Staff, Allenamenti e Convocazioni sincronizzati con Google Sheets.

@@ -43,6 +43,8 @@ window.TeamCenterAPI = (() => {
     getStaff: () => request('staff'),
     saveStaff: data => request('salvaStaff', data),
     getAllenamenti: () => request('allenamenti'),
-    saveAllenamento: data => request('salvaAllenamento', data)
+    saveAllenamento: data => request('salvaAllenamento', data),
+    getConvocazioni: () => request('convocazioni'),
+    saveConvocazione: data => request('salvaConvocazione', data)
   });
 })();

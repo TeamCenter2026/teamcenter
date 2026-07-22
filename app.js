@@ -1360,7 +1360,7 @@
     if(module==='staff'){apriStaff()}
     if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}
     if(module==='match'){fillSetup();showScreen('setup')}
-    if(module==='callups'){fillCallupForm();showScreen('callups')}
+    if(module==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}
     if(e.target.closest('[data-go-home]'))showScreen('home');
     const num=e.target.closest('[data-toggle-callup-player]')?.dataset.toggleCallupPlayer;
     if(num){const p=state.callup.players.find(x=>x.number===Number(num));if(p){p.selected=!p.selected;saveState();renderCallupPlayers()}}
@@ -1429,7 +1429,7 @@
     }
     applyProfile();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else if(state.screen==='staff'){apriStaff()}else if(state.screen==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}else showScreen('home');
+    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else if(state.screen==='staff'){apriStaff()}else if(state.screen==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}else if(state.screen==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}else showScreen('home');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }
