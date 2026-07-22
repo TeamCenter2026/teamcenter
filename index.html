@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.7" />
+  <link rel="stylesheet" href="styles.css?v=1.8" />
 </head>
 <body>
 <div class="app-shell">
@@ -288,26 +288,85 @@
       </div>
     </section>
 
+
     <section id="trainingScreen" class="screen">
-      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
-      <div class="card">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-go-home>← Home</button>
+      </div>
+
+      <div class="card training-card">
         <div class="eyebrow">Allenamenti</div>
-        <h2>Registro presenze</h2>
+        <div class="training-heading">
+          <div>
+            <h2>Registra le presenze</h2>
+            <p class="section-copy">Seleziona la squadra e una delle tre sedute settimanali.</p>
+          </div>
+          <span class="training-sync-badge">Google Sheets sincronizzato</span>
+        </div>
+
         <div class="grid grid-2">
-          <div class="field"><label for="trainingTeamSelect">Squadra</label><select id="trainingTeamSelect"></select></div>
-          <div class="field"><label for="trainingDateInput">Data</label><input id="trainingDateInput" type="date" /></div>
+          <div class="field">
+            <label for="trainingTeamSelect">Squadra</label>
+            <select id="trainingTeamSelect" required></select>
+          </div>
+          <div class="field">
+            <label for="trainingSessionSelect">Seduta settimanale</label>
+            <select id="trainingSessionSelect" required>
+              <option value="Allenamento 1">Allenamento 1</option>
+              <option value="Allenamento 2">Allenamento 2</option>
+              <option value="Allenamento 3">Allenamento 3</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="training-actions">
+          <button id="trainingSetAllPresent" class="btn btn-secondary" type="button">Imposta tutti presenti</button>
+          <button id="trainingClearAll" class="btn btn-secondary" type="button">Azzera selezioni</button>
         </div>
       </div>
-      <div class="card">
-        <div class="training-toolbar">
-          <div><strong id="trainingCount">0 presenti</strong><div class="small-help">Tocca un giocatore per segnare la presenza.</div></div>
-          <button class="btn btn-secondary" id="trainingSelectAllBtn" type="button">Tutti presenti</button>
+
+      <div class="card training-card">
+        <div class="training-heading">
+          <div>
+            <div class="eyebrow">Giocatori</div>
+            <h2>Stato presenze</h2>
+          </div>
+          <strong id="trainingPlayersCount">0 giocatori</strong>
         </div>
-        <div id="trainingPlayers" class="training-player-list"><div class="empty">Seleziona una squadra.</div></div>
-        <div style="height:14px"></div>
-        <button class="btn btn-primary btn-block" id="saveTrainingDraftBtn" type="button">Salva bozza sul dispositivo</button>
+
+        <div class="field">
+          <label for="trainingPlayerSearch">Cerca giocatore</label>
+          <input id="trainingPlayerSearch" type="search" placeholder="Nome o cognome" autocomplete="off" />
+        </div>
+
+        <div id="trainingLoading" class="training-empty">Caricamento giocatori…</div>
+        <div id="trainingEmpty" class="training-empty hidden">Nessun giocatore disponibile.</div>
+        <div id="trainingPlayersList" class="training-player-list"></div>
+      </div>
+
+      <div class="card training-card">
+        <div class="eyebrow">Riepilogo</div>
+        <div class="training-summary-grid">
+          <div class="training-summary-item present"><span>Presenti</span><strong id="trainingPresentCount">0</strong></div>
+          <div class="training-summary-item absent"><span>Assenti</span><strong id="trainingAbsentCount">0</strong></div>
+          <div class="training-summary-item justified"><span>Giustificati</span><strong id="trainingJustifiedCount">0</strong></div>
+          <div class="training-summary-item injured"><span>Infortunati</span><strong id="trainingInjuredCount">0</strong></div>
+          <div class="training-summary-item unset"><span>Non selezionati</span><strong id="trainingUnsetCount">0</strong></div>
+        </div>
+
+        <button id="saveTrainingBtn" class="btn btn-primary btn-block" type="button">Salva allenamento</button>
+        <div id="trainingMessage" class="training-message" role="status" aria-live="polite"></div>
+      </div>
+
+      <div class="card training-card">
+        <div class="eyebrow">Archivio</div>
+        <h2>Ultimi allenamenti</h2>
+        <div id="trainingHistory" class="training-history">
+          <div class="training-empty">Nessun allenamento salvato.</div>
+        </div>
       </div>
     </section>
+
 
     <section id="setupScreen" class="screen">
       <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
@@ -507,13 +566,14 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.7"></script>
-<script src="storage.js?v=1.7"></script>
-<script src="profile.js?v=1.7"></script>
-<script src="callup.js?v=1.7"></script>
-<script src="match.js?v=1.7"></script>
-<script src="image.js?v=1.7"></script>
-<script src="pdf.js?v=1.7"></script>
-<script src="app.js?v=1.7"></script>
+<script src="api.js?v=1.8"></script>
+<script src="storage.js?v=1.8"></script>
+<script src="profile.js?v=1.8"></script>
+<script src="callup.js?v=1.8"></script>
+<script src="match.js?v=1.8"></script>
+<script src="image.js?v=1.8"></script>
+<script src="pdf.js?v=1.8"></script>
+<script src="allenamenti.js?v=1.8"></script>
+<script src="app.js?v=1.8"></script>
 </body>
 </html>

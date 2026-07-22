@@ -1,3 +1,3 @@
-# TeamCenter 1.7
+# TeamCenter 1.8
 
-Versione con Profilo società protetto, Rosa e modulo Staff.
+Versione con Profilo, Rosa, Staff e modulo Allenamenti sincronizzato con Google Sheets.
