@@ -91,7 +91,7 @@
     const primaryName=$('#profilePrimaryColorName');if(primaryName)primaryName.textContent=colorDisplayName(values.primary,'Colore primario');
     const secondaryName=$('#profileSecondaryColorName');if(secondaryName)secondaryName.textContent=colorDisplayName(values.secondary,'Colore secondario');
     const lastUpdate=$('#profileLastUpdate');if(lastUpdate)lastUpdate.textContent=formatProfileUpdate(values.updatedAt);
-    const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'🟢 Sincronizzato con Google Sheets':'⚠️ Configurazione locale: API non raggiungibile';
+    const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'Google Sheets sincronizzato':'Configurazione locale: API non raggiungibile';
   }
 
   function colorDisplayName(hex,fallback){
@@ -115,6 +115,77 @@
     clearTimeout(el._timer);el._timer=setTimeout(()=>el.classList.remove('show'),2200);
   }
 
+
+  function getAdminToken(){
+    return sessionStorage.getItem('teamcenterAdminToken')||'';
+  }
+
+  function clearAdminToken(){
+    sessionStorage.removeItem('teamcenterAdminToken');
+  }
+
+  async function apriProfiloAmministratore(){
+    const token=getAdminToken();
+    if(token){
+      try{
+        await window.TeamCenterAPI.verificaSessioneAdmin(token);
+        fillProfile();
+        showScreen('profile');
+        return;
+      }catch(error){
+        clearAdminToken();
+      }
+    }
+    const input=$('#adminPasswordInput');
+    const message=$('#adminLoginMessage');
+    if(input)input.value='';
+    if(message)message.textContent='';
+    showScreen('adminLogin');
+    setTimeout(()=>input?.focus(),50);
+  }
+
+  async function loginAmministratore(event){
+    event?.preventDefault();
+    const input=$('#adminPasswordInput');
+    const button=$('#adminLoginBtn');
+    const message=$('#adminLoginMessage');
+    const password=input?.value||'';
+    if(!password){
+      if(message)message.textContent='Inserisci la password.';
+      input?.focus();
+      return;
+    }
+    const oldText=button?.textContent;
+    if(button){button.disabled=true;button.textContent='Accesso in corso…';}
+    if(message)message.textContent='';
+    try{
+      const sessione=await window.TeamCenterAPI.loginAdmin(password);
+      if(!sessione?.token)throw new Error('Token di sessione non ricevuto.');
+      sessionStorage.setItem('teamcenterAdminToken',sessione.token);
+      if(input)input.value='';
+      fillProfile();
+      showScreen('profile');
+      toast('Accesso amministratore effettuato');
+    }catch(error){
+      clearAdminToken();
+      if(message)message.textContent=error.message||'Password non corretta.';
+    }finally{
+      if(button){button.disabled=false;button.textContent=oldText||'Accedi';}
+    }
+  }
+
+  async function logoutAmministratore(){
+    const token=getAdminToken();
+    clearAdminToken();
+    try{
+      if(token)await window.TeamCenterAPI.logoutAdmin(token);
+    }catch(error){
+      console.warn('Logout API non completato:',error);
+    }
+    showScreen('home');
+    toast('Sessione amministratore chiusa');
+  }
+
   async function salvaProfiloSocieta(event){
     event?.preventDefault();
     const button=$('#saveProfileBtn');
@@ -133,7 +204,12 @@
     const confirmation=$('#profileSaveConfirmation');if(confirmation)confirmation.classList.remove('show');
     const status=$('#profileCloudStatus');if(status)status.textContent='Sincronizzazione in corso…';
     try{
-      const saved=await window.TeamCenterAPI.saveMaster(data);
+      const token=sessionStorage.getItem('teamcenterAdminToken')||'';
+      if(!token){
+        showScreen('adminLogin');
+        throw new Error('Sessione amministratore scaduta. Accedi di nuovo.');
+      }
+      const saved=await window.TeamCenterAPI.saveMaster(data,token);
       masterApi=saved||{...data};
       state.master={...masterApi};
       state.profile.clubName=masterApi.NomeSocieta||data.nomeSocieta;
@@ -912,12 +988,14 @@
   ['#logoInput','#headerLogoInput','#callupLogoInput','#profileLogoInput'].forEach(selector=>$(selector)?.addEventListener('change',handleLogoUpload));
 
   $('#profileForm')?.addEventListener('submit',salvaProfiloSocieta);
+  $('#adminLoginForm')?.addEventListener('submit',loginAmministratore);
+  $('#adminLogoutBtn')?.addEventListener('click',logoutAmministratore);
   $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profilePrimaryColorValue');if(out)out.value=value;const name=$('#profilePrimaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore primario')});
   $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
-    if(module==='profile'){fillProfile();showScreen('profile')}
+    if(module==='profile'){apriProfiloAmministratore()}
     if(module==='training'){fillTraining();showScreen('training')}
     if(module==='match'){fillSetup();showScreen('setup')}
     if(module==='callups'){fillCallupForm();showScreen('callups')}

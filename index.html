@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.5.0" />
+  <link rel="stylesheet" href="styles.css?v=1.5.1" />
 </head>
 <body>
 <div class="app-shell">
@@ -41,8 +41,26 @@
       </div>
     </section>
 
-    <section id="profileScreen" class="screen">
+
+    <section id="adminLoginScreen" class="screen">
       <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
+      <div class="card admin-login-card">
+        <div class="eyebrow">Area riservata</div>
+        <h2>Accesso amministratori</h2>
+        <p class="section-copy">Inserisci la password amministratore per aprire il Profilo società.</p>
+        <form id="adminLoginForm" class="admin-login-form">
+          <div class="field">
+            <label for="adminPasswordInput">Password</label>
+            <input id="adminPasswordInput" type="password" autocomplete="current-password" required />
+          </div>
+          <button id="adminLoginBtn" class="btn btn-primary btn-block" type="submit">Accedi</button>
+          <div id="adminLoginMessage" class="admin-login-message" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="profileScreen" class="screen">
+      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button><button class="admin-logout-btn" id="adminLogoutBtn" type="button">Esci</button></div>
 
       <div class="card profile-editor-card">
         <div class="eyebrow">Profilo società</div>
@@ -52,7 +70,7 @@
           </div>
           <div>
             <h2 id="profileNamePreview">CSV Breda</h2>
-            <div class="cloud-status" id="profileCloudStatus">Caricamento configurazione…</div>
+            <div class="cloud-status" id="profileCloudStatus">Google Sheets sincronizzato</div>
           </div>
         </div>
 
@@ -89,8 +107,6 @@
               </div>
             </div>
           </div>
-
-          <div class="profile-logo-note">Il logo viene letto da Google Drive tramite il campo <strong>LogoFile</strong> del foglio MASTER.</div>
           <button class="btn btn-primary btn-block" id="saveProfileBtn" type="submit">💾 Salva profilo società</button>
           <div id="profileSaveConfirmation" class="profile-save-confirmation" role="status" aria-live="polite"></div>
           <div class="profile-last-update"><span>Ultimo aggiornamento</span><strong id="profileLastUpdate">Non disponibile</strong></div>
@@ -317,13 +333,13 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.5.0"></script>
-<script src="storage.js?v=1.5.0"></script>
-<script src="profile.js?v=1.5.0"></script>
-<script src="callup.js?v=1.5.0"></script>
-<script src="match.js?v=1.5.0"></script>
-<script src="image.js?v=1.5.0"></script>
-<script src="pdf.js?v=1.5.0"></script>
-<script src="app.js?v=1.5.0"></script>
+<script src="api.js?v=1.5.1"></script>
+<script src="storage.js?v=1.5.1"></script>
+<script src="profile.js?v=1.5.1"></script>
+<script src="callup.js?v=1.5.1"></script>
+<script src="match.js?v=1.5.1"></script>
+<script src="image.js?v=1.5.1"></script>
+<script src="pdf.js?v=1.5.1"></script>
+<script src="app.js?v=1.5.1"></script>
 </body>
 </html>

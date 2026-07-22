@@ -32,7 +32,10 @@ window.TeamCenterAPI = (() => {
     baseUrl: BASE_URL,
     ping: () => request('ping'),
     getMaster: () => request('master'),
-    saveMaster: data => request('salvaMaster', data),
+    loginAdmin: password => request('loginAdmin', { password }),
+    verificaSessioneAdmin: token => request('verificaSessioneAdmin', { token }),
+    logoutAdmin: token => request('logoutAdmin', { token }),
+    saveMaster: (data, token) => request('salvaMaster', { ...data, token }),
     getLogo: () => request('logo'),
     getSquadre: () => request('squadre'),
     getGiocatori: idSquadra => request('giocatori', { idSquadra })

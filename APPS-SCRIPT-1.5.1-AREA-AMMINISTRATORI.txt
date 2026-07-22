@@ -1,0 +1,182 @@
+TEAMCENTER 1.5.1 — PROTEZIONE PROFILO SOCIETÀ
+
+IMPORTANTE
+La password non deve essere scritta su GitHub, nel foglio Google o nel codice pubblico.
+Va salvata nelle Proprietà dello script di Apps Script.
+
+────────────────────────────────────────
+1. IMPOSTA LA PASSWORD AMMINISTRATORE
+────────────────────────────────────────
+
+In Apps Script:
+
+1. Apri Impostazioni progetto (icona ingranaggio).
+2. Scorri fino a "Proprietà script".
+3. Premi "Aggiungi proprietà script".
+4. Nome proprietà:
+   ADMIN_PASSWORD
+5. Valore:
+   scegli la tua password personale.
+6. Salva.
+
+────────────────────────────────────────
+2. AGGIUNGI QUESTE FUNZIONI IN CODICE.GS
+────────────────────────────────────────
+
+function loginAdminTeamCenter_(parametri) {
+  const passwordInserita = String(
+    parametri.password || ""
+  );
+
+  const passwordCorretta =
+    PropertiesService
+      .getScriptProperties()
+      .getProperty("ADMIN_PASSWORD");
+
+  if (!passwordCorretta) {
+    throw new Error(
+      "Password amministratore non configurata nelle Proprietà dello script."
+    );
+  }
+
+  if (
+    !passwordInserita ||
+    passwordInserita !== passwordCorretta
+  ) {
+    throw new Error(
+      "Password amministratore non corretta."
+    );
+  }
+
+  const token =
+    Utilities.getUuid() +
+    Utilities.getUuid();
+
+  CacheService
+    .getScriptCache()
+    .put(
+      "ADMIN_SESSION_" + token,
+      "VALIDA",
+      3600
+    );
+
+  return {
+    token: token,
+    durataMinuti: 60
+  };
+}
+
+
+function verificaSessioneAdminTeamCenter_(token) {
+  const tokenPulito =
+    String(token || "").trim();
+
+  if (!tokenPulito) {
+    throw new Error(
+      "Sessione amministratore mancante."
+    );
+  }
+
+  const sessione =
+    CacheService
+      .getScriptCache()
+      .get(
+        "ADMIN_SESSION_" + tokenPulito
+      );
+
+  if (sessione !== "VALIDA") {
+    throw new Error(
+      "Sessione amministratore scaduta. Accedi nuovamente."
+    );
+  }
+
+  return {
+    valida: true
+  };
+}
+
+
+function logoutAdminTeamCenter_(token) {
+  const tokenPulito =
+    String(token || "").trim();
+
+  if (tokenPulito) {
+    CacheService
+      .getScriptCache()
+      .remove(
+        "ADMIN_SESSION_" + tokenPulito
+      );
+  }
+
+  return {
+    logout: true
+  };
+}
+
+────────────────────────────────────────
+3. PROTEGGI salvaMasterTeamCenter_
+────────────────────────────────────────
+
+All'inizio della funzione:
+
+function salvaMasterTeamCenter_(parametri) {
+
+aggiungi immediatamente questa riga:
+
+  verificaSessioneAdminTeamCenter_(parametri.token);
+
+Quindi l'inizio deve diventare:
+
+function salvaMasterTeamCenter_(parametri) {
+  verificaSessioneAdminTeamCenter_(parametri.token);
+
+  const spreadsheet =
+    SpreadsheetApp.getActiveSpreadsheet();
+
+────────────────────────────────────────
+4. AGGIUNGI I CASE NELLO SWITCH DI doGet(e)
+────────────────────────────────────────
+
+Inserisci questi tre case prima di "case salvamaster":
+
+case "loginadmin":
+  dati =
+    loginAdminTeamCenter_(parametri);
+  break;
+
+case "verificasessioneadmin":
+  dati =
+    verificaSessioneAdminTeamCenter_(
+      parametri.token
+    );
+  break;
+
+case "logoutadmin":
+  dati =
+    logoutAdminTeamCenter_(
+      parametri.token
+    );
+  break;
+
+Il case salvaMaster deve restare così:
+
+case "salvamaster":
+  dati =
+    salvaMasterTeamCenter_(
+      parametri
+    );
+  break;
+
+────────────────────────────────────────
+5. SALVA E RIDISTRIBUISCI
+────────────────────────────────────────
+
+1. Premi CTRL + S.
+2. Distribuisci.
+3. Gestisci deployment.
+4. Matita.
+5. Nuova versione.
+6. Distribuisci.
+
+La sessione amministratore dura 60 minuti.
+La password resta solo nelle Proprietà dello script.
