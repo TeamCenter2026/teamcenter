@@ -75,7 +75,8 @@
       field:master.Campo||'',
       address:master.Indirizzo||'',
       primary:master.ColorePrimario||state.profile.primaryColor||'#741f35',
-      secondary:master.ColoreSecondario||state.profile.backgroundColor||'#f6f7f9'
+      secondary:master.ColoreSecondario||state.profile.backgroundColor||'#f6f7f9',
+      updatedAt:master.UltimoAggiornamento||master.ultimoAggiornamento||''
     };
     const name=$('#profileNamePreview');if(name)name.textContent=values.name;
     const logo=$('#profileLogoPreview');if(logo)logo.innerHTML=state.logoDataUrl?`<img src="${state.logoDataUrl}" alt="Logo ufficiale ${escapeHtml(values.name)}">`:'<div class="logo-placeholder">LOGO</div>';
@@ -87,7 +88,31 @@
     const secondaryInput=$('#profileSecondaryColorInput');if(secondaryInput)secondaryInput.value=values.secondary;
     const primaryValue=$('#profilePrimaryColorValue');if(primaryValue)primaryValue.value=values.primary.toUpperCase();
     const secondaryValue=$('#profileSecondaryColorValue');if(secondaryValue)secondaryValue.value=values.secondary.toUpperCase();
-    const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'Configurazione collegata a Google Sheets':'Configurazione locale: API non raggiungibile';
+    const primaryName=$('#profilePrimaryColorName');if(primaryName)primaryName.textContent=colorDisplayName(values.primary,'Colore primario');
+    const secondaryName=$('#profileSecondaryColorName');if(secondaryName)secondaryName.textContent=colorDisplayName(values.secondary,'Colore secondario');
+    const lastUpdate=$('#profileLastUpdate');if(lastUpdate)lastUpdate.textContent=formatProfileUpdate(values.updatedAt);
+    const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'🟢 Sincronizzato con Google Sheets':'⚠️ Configurazione locale: API non raggiungibile';
+  }
+
+  function colorDisplayName(hex,fallback){
+    const value=String(hex||'').trim().toUpperCase();
+    if(value==='#751D2D'||value==='#741F35')return 'Granata Breda';
+    if(value==='#FFFFFF'||value==='#F6F7F9')return 'Bianco';
+    return fallback;
+  }
+  function formatProfileUpdate(value){
+    if(!value)return 'Non disponibile';
+    const raw=String(value).trim();
+    const parsed=new Date(raw);
+    if(!Number.isNaN(parsed.getTime())){
+      return new Intl.DateTimeFormat('it-IT',{dateStyle:'long',timeStyle:'short'}).format(parsed);
+    }
+    return raw;
+  }
+  function showProfileSaveConfirmation(message){
+    const el=$('#profileSaveConfirmation');if(!el)return;
+    el.textContent=message;el.classList.add('show');
+    clearTimeout(el._timer);el._timer=setTimeout(()=>el.classList.remove('show'),2200);
   }
 
   async function salvaProfiloSocieta(event){
@@ -105,7 +130,8 @@
     if(!data.nomeSocieta){toast('Inserisci il nome della società');$('#profileClubNameInput')?.focus();return;}
     const oldText=button?.textContent;
     if(button){button.disabled=true;button.textContent='Salvataggio in corso…';}
-    const status=$('#profileCloudStatus');if(status)status.textContent='Salvataggio su Google Sheets…';
+    const confirmation=$('#profileSaveConfirmation');if(confirmation)confirmation.classList.remove('show');
+    const status=$('#profileCloudStatus');if(status)status.textContent='Sincronizzazione in corso…';
     try{
       const saved=await window.TeamCenterAPI.saveMaster(data);
       masterApi=saved||{...data};
@@ -115,10 +141,12 @@
       state.profile.backgroundColor=masterApi.ColoreSecondario||data.coloreSecondario;
       state.match.season=masterApi.Stagione||data.stagione;
       saveState();applyProfile();fillProfile();
-      toast('Profilo società salvato');
+      showProfileSaveConfirmation('✅ Profilo società aggiornato');
+      toast('Profilo società aggiornato');
     }catch(error){
       console.error('Errore salvataggio profilo:',error);
-      if(status)status.textContent='Errore nel salvataggio';
+      if(status)status.textContent='❌ Errore nel salvataggio';
+      showProfileSaveConfirmation('❌ Salvataggio non riuscito');
       toast(error.message||'Impossibile salvare il profilo');
     }finally{
       if(button){button.disabled=false;button.textContent=oldText||'💾 Salva profilo società';}
@@ -884,8 +912,8 @@
   ['#logoInput','#headerLogoInput','#callupLogoInput','#profileLogoInput'].forEach(selector=>$(selector)?.addEventListener('change',handleLogoUpload));
 
   $('#profileForm')?.addEventListener('submit',salvaProfiloSocieta);
-  $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const out=$('#profilePrimaryColorValue');if(out)out.value=e.target.value.toUpperCase()});
-  $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const out=$('#profileSecondaryColorValue');if(out)out.value=e.target.value.toUpperCase()});
+  $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profilePrimaryColorValue');if(out)out.value=value;const name=$('#profilePrimaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore primario')});
+  $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;

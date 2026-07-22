@@ -1,14 +1,3 @@
-# TeamCenter 1.2
+# TeamCenter 1.5
 
-Versione CSV Breda collegata a Google Apps Script.
-
-Home minimale con quattro aree:
-- Profilo
-- Allenamenti
-- Convocazioni
-- Gestione Match
-
-Il profilo e l’elenco squadre vengono letti dal database Google Sheets tramite API.
-
-
-Versione 1.3: logo ufficiale caricato dalla API nella testata della home.
+Profilo società collegato a Google Sheets con logo Drive, colori, stato sincronizzazione, conferma di salvataggio e ultimo aggiornamento.

@@ -275,3 +275,19 @@
 .profile-logo-note{padding:12px 14px;border-radius:12px;background:var(--granata-soft,#f3e9ec);font-size:.88rem;line-height:1.4}
 #saveProfileBtn:disabled{opacity:.65;cursor:wait}
 @media(max-width:620px){.profile-editor-head{align-items:flex-start}.profile-logo-preview{width:78px;height:78px;flex-basis:78px}.profile-editor-card .grid-2{grid-template-columns:1fr}}
+
+
+/* TeamCenter 1.5 - rifinitura Profilo società */
+.profile-logo-preview{width:120px;height:120px;flex:0 0 120px;border-radius:24px}
+.profile-logo-preview img{padding:7px}
+.cloud-status{display:inline-flex;align-items:center;min-height:38px;padding:8px 14px;border-radius:14px;background:#eaf9ef;border:1px solid #afe9c0;color:#075f2c;font-weight:800;font-size:.82rem}
+.profile-color-copy{display:flex;flex-direction:column;gap:2px;line-height:1.15}
+.profile-color-copy strong{font-size:.94rem}
+.profile-color-copy output{display:block;font-size:.78rem;color:var(--muted);font-weight:750;letter-spacing:.035em}
+.profile-save-confirmation{min-height:0;text-align:center;font-weight:850;color:#08752f;opacity:0;transform:translateY(-4px);transition:opacity .18s ease,transform .18s ease}
+.profile-save-confirmation.show{min-height:24px;opacity:1;transform:translateY(0)}
+.profile-last-update{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 14px;border-radius:12px;background:#f7f7f8;border:1px solid var(--line,#d9dde3);font-size:.83rem}
+.profile-last-update span{color:var(--muted);font-weight:750}
+.profile-last-update strong{text-align:right}
+#saveProfileBtn{min-height:58px;font-size:1rem;box-shadow:0 10px 24px rgba(117,29,45,.18)}
+@media(max-width:620px){.profile-logo-preview{width:104px;height:104px;flex-basis:104px}.profile-editor-head{gap:14px}.profile-last-update{align-items:flex-start;flex-direction:column;gap:4px}.profile-last-update strong{text-align:left}}
