@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.5.1" />
+  <link rel="stylesheet" href="styles.css?v=1.6" />
 </head>
 <body>
 <div class="app-shell">
@@ -25,6 +25,10 @@
         <button class="minimal-module-button" type="button" data-open-module="profile">
           <span class="minimal-module-icon">👤</span>
           <span>Profilo</span>
+        </button>
+        <button class="minimal-module-button" type="button" data-open-module="roster">
+          <span class="minimal-module-icon">👥</span>
+          <span>Rosa</span>
         </button>
         <button class="minimal-module-button" type="button" data-open-module="training">
           <span class="minimal-module-icon">🏃</span>
@@ -110,6 +114,81 @@
           <button class="btn btn-primary btn-block" id="saveProfileBtn" type="submit">💾 Salva profilo società</button>
           <div id="profileSaveConfirmation" class="profile-save-confirmation" role="status" aria-live="polite"></div>
           <div class="profile-last-update"><span>Ultimo aggiornamento</span><strong id="profileLastUpdate">Non disponibile</strong></div>
+        </form>
+      </div>
+    </section>
+
+
+    <section id="rosterScreen" class="screen">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-go-home>← Home</button>
+      </div>
+
+      <div class="card roster-card">
+        <div class="eyebrow">Rosa</div>
+        <div class="roster-heading">
+          <div>
+            <h2>Giocatori</h2>
+            <p class="section-copy">Gestisci nome, cognome, anno e stato dei giocatori.</p>
+          </div>
+          <button id="openPlayerFormBtn" class="btn btn-primary roster-add-top" type="button">＋ Nuovo giocatore</button>
+        </div>
+
+        <div class="roster-toolbar">
+          <div class="field">
+            <label for="rosterTeamSelect">Squadra</label>
+            <select id="rosterTeamSelect"></select>
+          </div>
+          <div class="field">
+            <label for="rosterSearchInput">Cerca giocatore</label>
+            <input id="rosterSearchInput" type="search" placeholder="Nome o cognome" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="roster-summary">
+          <strong id="rosterCount">0 giocatori</strong>
+          <span id="rosterActiveCount">0 attivi</span>
+        </div>
+
+        <div id="rosterLoading" class="roster-empty">Caricamento rosa…</div>
+        <div id="rosterEmpty" class="roster-empty hidden">Nessun giocatore presente.</div>
+        <div id="rosterList" class="roster-list"></div>
+      </div>
+
+      <div id="playerFormPanel" class="card player-form-card hidden">
+        <div class="roster-heading">
+          <div>
+            <div class="eyebrow" id="playerFormEyebrow">Nuovo giocatore</div>
+            <h2 id="playerFormTitle">Aggiungi giocatore</h2>
+          </div>
+          <button id="closePlayerFormBtn" class="icon-close-btn" type="button" aria-label="Chiudi modulo">×</button>
+        </div>
+
+        <form id="playerForm" class="player-form">
+          <input id="playerIdInput" type="hidden" />
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="playerLastNameInput">Cognome</label>
+              <input id="playerLastNameInput" autocomplete="family-name" required />
+            </div>
+            <div class="field">
+              <label for="playerFirstNameInput">Nome</label>
+              <input id="playerFirstNameInput" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="playerYearInput">Anno</label>
+              <input id="playerYearInput" type="number" inputmode="numeric" min="1980" max="2030" placeholder="Es. 2012" required />
+            </div>
+            <div class="field">
+              <label for="playerActiveSelect">Stato</label>
+              <select id="playerActiveSelect">
+                <option value="SI">Attivo</option>
+                <option value="NO">Non attivo</option>
+              </select>
+            </div>
+          </div>
+          <button id="savePlayerBtn" class="btn btn-primary btn-block" type="submit">Salva giocatore</button>
+          <div id="playerFormMessage" class="admin-login-message" role="status" aria-live="polite"></div>
         </form>
       </div>
     </section>
@@ -333,13 +412,13 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.5.1"></script>
-<script src="storage.js?v=1.5.1"></script>
-<script src="profile.js?v=1.5.1"></script>
-<script src="callup.js?v=1.5.1"></script>
-<script src="match.js?v=1.5.1"></script>
-<script src="image.js?v=1.5.1"></script>
-<script src="pdf.js?v=1.5.1"></script>
-<script src="app.js?v=1.5.1"></script>
+<script src="api.js?v=1.6"></script>
+<script src="storage.js?v=1.6"></script>
+<script src="profile.js?v=1.6"></script>
+<script src="callup.js?v=1.6"></script>
+<script src="match.js?v=1.6"></script>
+<script src="image.js?v=1.6"></script>
+<script src="pdf.js?v=1.6"></script>
+<script src="app.js?v=1.6"></script>
 </body>
 </html>

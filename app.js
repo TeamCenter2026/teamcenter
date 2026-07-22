@@ -21,6 +21,8 @@
   let state = loadState();
   let squadreApi = [];
   let masterApi = null;
+  let rosaApi = [];
+  let rosterTeamId = '';
   let tickHandle = null;
 
   const $ = (s) => document.querySelector(s);
@@ -357,6 +359,165 @@
     const date=$('#trainingDateInput');if(date)date.value=state.training.date;
     const select=$('#trainingTeamSelect');if(select&&state.training.teamId)select.value=state.training.teamId;
     loadTrainingPlayers();
+  }
+
+
+  function normalizzaStatoGiocatore(value){
+    return String(value||'SI').trim().toUpperCase()==='NO'?'NO':'SI';
+  }
+
+  function nomeSquadraDaId(idSquadra){
+    const squadra=squadreApi.find(item=>String(item.IDSquadra||'').trim()===String(idSquadra||'').trim());
+    return squadra?.NomeSquadra||squadra?.Squadra||squadra?.Nome||idSquadra||'Squadra';
+  }
+
+  function popolaSelettoreRosa(){
+    const select=$('#rosterTeamSelect');
+    if(!select)return;
+    const attive=(squadreApi||[]).filter(s=>String(s.Attiva||'SI').trim().toUpperCase()!=='NO');
+    select.innerHTML=attive.map(s=>{
+      const id=String(s.IDSquadra||'').trim();
+      return `<option value="${escapeHtml(id)}">${escapeHtml(nomeSquadraDaId(id))}</option>`;
+    }).join('');
+    if(!rosterTeamId||!attive.some(s=>String(s.IDSquadra||'').trim()===rosterTeamId)){
+      rosterTeamId=String(attive[0]?.IDSquadra||'').trim();
+    }
+    select.value=rosterTeamId;
+  }
+
+  async function apriRosa(){
+    popolaSelettoreRosa();
+    showScreen('roster');
+    await caricaRosa();
+  }
+
+  async function caricaRosa(){
+    const loading=$('#rosterLoading');
+    const empty=$('#rosterEmpty');
+    const list=$('#rosterList');
+    if(loading){loading.classList.remove('hidden');loading.textContent='Caricamento rosa…';}
+    if(empty)empty.classList.add('hidden');
+    if(list)list.innerHTML='';
+    try{
+      rosterTeamId=$('#rosterTeamSelect')?.value||rosterTeamId||'';
+      rosaApi=await window.TeamCenterAPI.getGiocatori(rosterTeamId);
+      if(!Array.isArray(rosaApi))rosaApi=[];
+      renderRosa();
+    }catch(error){
+      console.error('Errore caricamento rosa:',error);
+      rosaApi=[];
+      if(loading)loading.textContent=error.message||'Impossibile caricare la rosa.';
+      aggiornaConteggioRosa([]);
+    }
+  }
+
+  function giocatoriFiltrati(){
+    const query=String($('#rosterSearchInput')?.value||'').trim().toLowerCase();
+    const ordinati=[...rosaApi].sort((a,b)=>{
+      const ac=`${a.Cognome||''} ${a.Nome||''}`.trim();
+      const bc=`${b.Cognome||''} ${b.Nome||''}`.trim();
+      return ac.localeCompare(bc,'it',{sensitivity:'base'});
+    });
+    if(!query)return ordinati;
+    return ordinati.filter(g=>`${g.Cognome||''} ${g.Nome||''}`.toLowerCase().includes(query));
+  }
+
+  function aggiornaConteggioRosa(giocatori){
+    const totale=Array.isArray(giocatori)?giocatori.length:0;
+    const attivi=(giocatori||[]).filter(g=>normalizzaStatoGiocatore(g.Attivo)==='SI').length;
+    const count=$('#rosterCount');
+    const active=$('#rosterActiveCount');
+    if(count)count.textContent=`${totale} ${totale===1?'giocatore':'giocatori'}`;
+    if(active)active.textContent=`${attivi} attivi`;
+  }
+
+  function renderRosa(){
+    const loading=$('#rosterLoading');
+    const empty=$('#rosterEmpty');
+    const list=$('#rosterList');
+    if(loading)loading.classList.add('hidden');
+    const giocatori=giocatoriFiltrati();
+    aggiornaConteggioRosa(rosaApi);
+    if(!list)return;
+    if(!giocatori.length){
+      list.innerHTML='';
+      if(empty){
+        empty.textContent=rosaApi.length?'Nessun giocatore trovato.':'Nessun giocatore presente.';
+        empty.classList.remove('hidden');
+      }
+      return;
+    }
+    if(empty)empty.classList.add('hidden');
+    list.innerHTML=giocatori.map(g=>{
+      const id=String(g.IDGiocatore||'').trim();
+      const attivo=normalizzaStatoGiocatore(g.Attivo)==='SI';
+      const anno=String(g.Anno||'').trim()||'—';
+      return `<article class="player-card ${attivo?'':'inactive'}">
+        <div class="player-card-main">
+          <strong>${escapeHtml(`${g.Cognome||''} ${g.Nome||''}`.trim())}</strong>
+          <span>Anno ${escapeHtml(anno)}</span>
+        </div>
+        <div class="player-card-side">
+          <span class="player-status ${attivo?'active':'inactive'}">${attivo?'Attivo':'Non attivo'}</span>
+          <button class="player-edit-btn" type="button" data-edit-player="${escapeHtml(id)}">Modifica</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function apriModuloGiocatore(giocatore=null){
+    const panel=$('#playerFormPanel');
+    const form=$('#playerForm');
+    form?.reset();
+    const editing=Boolean(giocatore);
+    $('#playerIdInput').value=giocatore?.IDGiocatore||'';
+    $('#playerLastNameInput').value=giocatore?.Cognome||'';
+    $('#playerFirstNameInput').value=giocatore?.Nome||'';
+    $('#playerYearInput').value=giocatore?.Anno||'';
+    $('#playerActiveSelect').value=normalizzaStatoGiocatore(giocatore?.Attivo);
+    $('#playerFormEyebrow').textContent=editing?'Modifica giocatore':'Nuovo giocatore';
+    $('#playerFormTitle').textContent=editing?'Aggiorna giocatore':'Aggiungi giocatore';
+    $('#savePlayerBtn').textContent=editing?'Salva modifiche':'Salva giocatore';
+    $('#playerFormMessage').textContent='';
+    panel?.classList.remove('hidden');
+    setTimeout(()=>$('#playerLastNameInput')?.focus(),50);
+    panel?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function chiudiModuloGiocatore(){
+    $('#playerFormPanel')?.classList.add('hidden');
+    $('#playerFormMessage').textContent='';
+  }
+
+  async function salvaGiocatoreDaForm(event){
+    event?.preventDefault();
+    const button=$('#savePlayerBtn');
+    const message=$('#playerFormMessage');
+    const data={
+      idGiocatore:$('#playerIdInput')?.value.trim()||'',
+      idSquadra:$('#rosterTeamSelect')?.value||rosterTeamId,
+      cognome:$('#playerLastNameInput')?.value.trim()||'',
+      nome:$('#playerFirstNameInput')?.value.trim()||'',
+      anno:$('#playerYearInput')?.value.trim()||'',
+      attivo:$('#playerActiveSelect')?.value||'SI'
+    };
+    if(!data.cognome||!data.nome||!data.anno){
+      if(message)message.textContent='Compila cognome, nome e anno.';
+      return;
+    }
+    const oldText=button?.textContent;
+    if(button){button.disabled=true;button.textContent='Salvataggio…';}
+    if(message)message.textContent='';
+    try{
+      await window.TeamCenterAPI.saveGiocatore(data);
+      chiudiModuloGiocatore();
+      await caricaRosa();
+      toast(data.idGiocatore?'Giocatore aggiornato':'Giocatore aggiunto');
+    }catch(error){
+      if(message)message.textContent=error.message||'Salvataggio non riuscito.';
+    }finally{
+      if(button){button.disabled=false;button.textContent=oldText||'Salva giocatore';}
+    }
   }
 
   function fillSetup(){
@@ -990,12 +1151,24 @@
   $('#profileForm')?.addEventListener('submit',salvaProfiloSocieta);
   $('#adminLoginForm')?.addEventListener('submit',loginAmministratore);
   $('#adminLogoutBtn')?.addEventListener('click',logoutAmministratore);
+  $('#rosterTeamSelect')?.addEventListener('change',async event=>{rosterTeamId=event.target.value;chiudiModuloGiocatore();await caricaRosa();});
+  $('#rosterSearchInput')?.addEventListener('input',renderRosa);
+  $('#openPlayerFormBtn')?.addEventListener('click',()=>apriModuloGiocatore());
+  $('#closePlayerFormBtn')?.addEventListener('click',chiudiModuloGiocatore);
+  $('#playerForm')?.addEventListener('submit',salvaGiocatoreDaForm);
+  $('#rosterList')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-edit-player]');
+    if(!button)return;
+    const player=rosaApi.find(g=>String(g.IDGiocatore||'')===button.dataset.editPlayer);
+    if(player)apriModuloGiocatore(player);
+  });
   $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profilePrimaryColorValue');if(out)out.value=value;const name=$('#profilePrimaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore primario')});
   $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
     if(module==='profile'){apriProfiloAmministratore()}
+    if(module==='roster'){apriRosa()}
     if(module==='training'){fillTraining();showScreen('training')}
     if(module==='match'){fillSetup();showScreen('setup')}
     if(module==='callups'){fillCallupForm();showScreen('callups')}
@@ -1067,7 +1240,7 @@
     }
     applyProfile();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else showScreen('home');
+    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else showScreen('home');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

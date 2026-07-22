@@ -38,6 +38,7 @@ window.TeamCenterAPI = (() => {
     saveMaster: (data, token) => request('salvaMaster', { ...data, token }),
     getLogo: () => request('logo'),
     getSquadre: () => request('squadre'),
-    getGiocatori: idSquadra => request('giocatori', { idSquadra })
+    getGiocatori: idSquadra => request('giocatori', { idSquadra }),
+    saveGiocatore: data => request('salvaGiocatore', data)
   });
 })();

@@ -1,0 +1,44 @@
+TEAMCENTER 1.6 — MODULO ROSA
+
+FUNZIONI INCLUSE
+- Nuovo pulsante Rosa nella Home
+- Selezione squadra
+- Ricerca per nome o cognome
+- Conteggio giocatori e giocatori attivi
+- Inserimento nuovo giocatore
+- Modifica di nome, cognome, anno e stato
+- Nessun numero di maglia
+- ID giocatore generato automaticamente
+
+PRIMA DI AGGIORNARE GITHUB
+
+1. Apri il foglio GIOCATORI.
+2. La prima riga deve avere ESATTAMENTE queste colonne:
+
+IDGiocatore | IDSquadra | Cognome | Nome | Anno | Attivo
+
+3. In Apps Script sostituisci tutto Codice.gs con il contenuto del file:
+   CODICE-GS-COMPLETO-1.6.txt
+
+4. Salva Apps Script.
+5. Distribuisci > Gestisci deployment > Matita > Nuova versione > Distribuisci.
+
+AGGIORNAMENTO GITHUB
+
+1. Carica tutti i file della cartella teamcenter-main.
+2. Commit:
+   TeamCenter 1.6 - Modulo Rosa
+3. Attendi Actions verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=160
+5. Premi CTRL + F5.
+
+TEST
+
+- Apri Rosa
+- Seleziona una squadra
+- Premi Nuovo giocatore
+- Inserisci Cognome, Nome, Anno e Stato
+- Salva
+- Modifica lo stesso giocatore
+- Prova la barra di ricerca

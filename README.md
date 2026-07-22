@@ -1,3 +1,3 @@
-# TeamCenter 1.5
+# TeamCenter 1.6
 
-Profilo società collegato a Google Sheets con logo Drive, colori, stato sincronizzazione, conferma di salvataggio e ultimo aggiornamento.
+Versione con Profilo società protetto e modulo Rosa collegato a Google Sheets.
