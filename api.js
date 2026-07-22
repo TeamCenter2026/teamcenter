@@ -39,6 +39,8 @@ window.TeamCenterAPI = (() => {
     getLogo: () => request('logo'),
     getSquadre: () => request('squadre'),
     getGiocatori: idSquadra => request('giocatori', { idSquadra }),
-    saveGiocatore: data => request('salvaGiocatore', data)
+    saveGiocatore: data => request('salvaGiocatore', data),
+    getStaff: () => request('staff'),
+    saveStaff: data => request('salvaStaff', data)
   });
 })();

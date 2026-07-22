@@ -23,6 +23,7 @@
   let masterApi = null;
   let rosaApi = [];
   let rosterTeamId = '';
+  let staffApi = [];
   let tickHandle = null;
 
   const $ = (s) => document.querySelector(s);
@@ -517,6 +518,181 @@
       if(message)message.textContent=error.message||'Salvataggio non riuscito.';
     }finally{
       if(button){button.disabled=false;button.textContent=oldText||'Salva giocatore';}
+    }
+  }
+
+
+  const STAFF_ROLES = [
+    'Allenatore',
+    'Viceallenatore',
+    'Preparatore atletico',
+    'Preparatore portieri',
+    'Dirigente',
+    'Direttore'
+  ];
+
+  function normalizzaStatoStaff(value){
+    return String(value||'SI').trim().toUpperCase()==='NO'?'NO':'SI';
+  }
+
+  async function apriStaff(){
+    showScreen('staff');
+    await caricaStaff();
+  }
+
+  async function caricaStaff(){
+    const loading=$('#staffLoading');
+    const empty=$('#staffEmpty');
+    const list=$('#staffList');
+
+    if(loading){
+      loading.classList.remove('hidden');
+      loading.textContent='Caricamento staff…';
+    }
+    if(empty)empty.classList.add('hidden');
+    if(list)list.innerHTML='';
+
+    try{
+      staffApi=await window.TeamCenterAPI.getStaff();
+      if(!Array.isArray(staffApi))staffApi=[];
+      renderStaff();
+    }catch(error){
+      console.error('Errore caricamento staff:',error);
+      staffApi=[];
+      if(loading)loading.textContent=error.message||'Impossibile caricare lo staff.';
+      aggiornaConteggioStaff([]);
+    }
+  }
+
+  function staffFiltrato(){
+    const query=String($('#staffSearchInput')?.value||'').trim().toLowerCase();
+    const role=String($('#staffRoleFilter')?.value||'').trim();
+
+    return [...staffApi]
+      .filter(item=>!role||String(item.Ruolo||'').trim()===role)
+      .filter(item=>{
+        if(!query)return true;
+        return `${item.Cognome||''} ${item.Nome||''}`.toLowerCase().includes(query);
+      })
+      .sort((a,b)=>{
+        const ruoloA=STAFF_ROLES.indexOf(String(a.Ruolo||''));
+        const ruoloB=STAFF_ROLES.indexOf(String(b.Ruolo||''));
+        if(ruoloA!==ruoloB)return ruoloA-ruoloB;
+        const ac=`${a.Cognome||''} ${a.Nome||''}`.trim();
+        const bc=`${b.Cognome||''} ${b.Nome||''}`.trim();
+        return ac.localeCompare(bc,'it',{sensitivity:'base'});
+      });
+  }
+
+  function aggiornaConteggioStaff(elementi){
+    const totale=Array.isArray(elementi)?elementi.length:0;
+    const attivi=(elementi||[]).filter(item=>normalizzaStatoStaff(item.Attivo)==='SI').length;
+    if($('#staffCount'))$('#staffCount').textContent=`${totale} ${totale===1?'componente':'componenti'}`;
+    if($('#staffActiveCount'))$('#staffActiveCount').textContent=`${attivi} attivi`;
+  }
+
+  function renderStaff(){
+    const loading=$('#staffLoading');
+    const empty=$('#staffEmpty');
+    const list=$('#staffList');
+    if(loading)loading.classList.add('hidden');
+
+    const elementi=staffFiltrato();
+    aggiornaConteggioStaff(staffApi);
+
+    if(!list)return;
+
+    if(!elementi.length){
+      list.innerHTML='';
+      if(empty){
+        empty.textContent=staffApi.length?'Nessun componente trovato.':'Nessun componente presente.';
+        empty.classList.remove('hidden');
+      }
+      return;
+    }
+
+    if(empty)empty.classList.add('hidden');
+
+    list.innerHTML=elementi.map(item=>{
+      const id=String(item.IDStaff||'').trim();
+      const attivo=normalizzaStatoStaff(item.Attivo)==='SI';
+      return `<article class="staff-member-card ${attivo?'':'inactive'}">
+        <div class="staff-member-main">
+          <strong>${escapeHtml(`${item.Cognome||''} ${item.Nome||''}`.trim())}</strong>
+          <span>${escapeHtml(item.Ruolo||'—')}</span>
+        </div>
+        <div class="staff-member-side">
+          <span class="player-status ${attivo?'active':'inactive'}">${attivo?'Attivo':'Non attivo'}</span>
+          <button class="player-edit-btn" type="button" data-edit-staff="${escapeHtml(id)}">Modifica</button>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function apriModuloStaff(item=null){
+    const panel=$('#staffFormPanel');
+    $('#staffForm')?.reset();
+
+    const editing=Boolean(item);
+    $('#staffIdInput').value=item?.IDStaff||'';
+    $('#staffLastNameInput').value=item?.Cognome||'';
+    $('#staffFirstNameInput').value=item?.Nome||'';
+    $('#staffRoleInput').value=item?.Ruolo||'';
+    $('#staffActiveSelect').value=normalizzaStatoStaff(item?.Attivo);
+
+    $('#staffFormEyebrow').textContent=editing?'Modifica componente':'Nuovo componente';
+    $('#staffFormTitle').textContent=editing?'Aggiorna componente':'Aggiungi componente';
+    $('#saveStaffBtn').textContent=editing?'Salva modifiche':'Salva componente';
+    $('#staffFormMessage').textContent='';
+
+    panel?.classList.remove('hidden');
+    setTimeout(()=>$('#staffLastNameInput')?.focus(),50);
+    panel?.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  function chiudiModuloStaff(){
+    $('#staffFormPanel')?.classList.add('hidden');
+    if($('#staffFormMessage'))$('#staffFormMessage').textContent='';
+  }
+
+  async function salvaStaffDaForm(event){
+    event?.preventDefault();
+
+    const button=$('#saveStaffBtn');
+    const message=$('#staffFormMessage');
+
+    const data={
+      idStaff:$('#staffIdInput')?.value.trim()||'',
+      cognome:$('#staffLastNameInput')?.value.trim()||'',
+      nome:$('#staffFirstNameInput')?.value.trim()||'',
+      ruolo:$('#staffRoleInput')?.value||'',
+      attivo:$('#staffActiveSelect')?.value||'SI'
+    };
+
+    if(!data.cognome||!data.nome||!data.ruolo){
+      if(message)message.textContent='Compila cognome, nome e ruolo.';
+      return;
+    }
+
+    const oldText=button?.textContent;
+    if(button){
+      button.disabled=true;
+      button.textContent='Salvataggio…';
+    }
+    if(message)message.textContent='';
+
+    try{
+      await window.TeamCenterAPI.saveStaff(data);
+      chiudiModuloStaff();
+      await caricaStaff();
+      toast(data.idStaff?'Componente aggiornato':'Componente aggiunto');
+    }catch(error){
+      if(message)message.textContent=error.message||'Salvataggio non riuscito.';
+    }finally{
+      if(button){
+        button.disabled=false;
+        button.textContent=oldText||'Salva componente';
+      }
     }
   }
 
@@ -1156,6 +1332,18 @@
   $('#openPlayerFormBtn')?.addEventListener('click',()=>apriModuloGiocatore());
   $('#closePlayerFormBtn')?.addEventListener('click',chiudiModuloGiocatore);
   $('#playerForm')?.addEventListener('submit',salvaGiocatoreDaForm);
+  $('#staffSearchInput')?.addEventListener('input',renderStaff);
+  $('#staffRoleFilter')?.addEventListener('change',renderStaff);
+  $('#openStaffFormBtn')?.addEventListener('click',()=>apriModuloStaff());
+  $('#closeStaffFormBtn')?.addEventListener('click',chiudiModuloStaff);
+  $('#staffForm')?.addEventListener('submit',salvaStaffDaForm);
+  $('#staffList')?.addEventListener('click',event=>{
+    const button=event.target.closest('[data-edit-staff]');
+    if(!button)return;
+    const item=staffApi.find(s=>String(s.IDStaff||'')===button.dataset.editStaff);
+    if(item)apriModuloStaff(item);
+  });
+
   $('#rosterList')?.addEventListener('click',event=>{
     const button=event.target.closest('[data-edit-player]');
     if(!button)return;
@@ -1169,6 +1357,7 @@
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
     if(module==='profile'){apriProfiloAmministratore()}
     if(module==='roster'){apriRosa()}
+    if(module==='staff'){apriStaff()}
     if(module==='training'){fillTraining();showScreen('training')}
     if(module==='match'){fillSetup();showScreen('setup')}
     if(module==='callups'){fillCallupForm();showScreen('callups')}
@@ -1240,7 +1429,7 @@
     }
     applyProfile();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else showScreen('home');
+    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else if(state.screen==='staff'){apriStaff()}else showScreen('home');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.6" />
+  <link rel="stylesheet" href="styles.css?v=1.7" />
 </head>
 <body>
 <div class="app-shell">
@@ -29,6 +29,10 @@
         <button class="minimal-module-button" type="button" data-open-module="roster">
           <span class="minimal-module-icon">👥</span>
           <span>Rosa</span>
+        </button>
+        <button class="minimal-module-button" type="button" data-open-module="staff">
+          <span class="minimal-module-icon">🧑‍💼</span>
+          <span>Staff</span>
         </button>
         <button class="minimal-module-button" type="button" data-open-module="training">
           <span class="minimal-module-icon">🏃</span>
@@ -189,6 +193,97 @@
           </div>
           <button id="savePlayerBtn" class="btn btn-primary btn-block" type="submit">Salva giocatore</button>
           <div id="playerFormMessage" class="admin-login-message" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+
+    <section id="staffScreen" class="screen">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-go-home>← Home</button>
+      </div>
+
+      <div class="card staff-card">
+        <div class="eyebrow">Staff</div>
+        <div class="staff-heading">
+          <div>
+            <h2>Componenti dello staff</h2>
+            <p class="section-copy">Gestisci nome, cognome, ruolo e stato.</p>
+          </div>
+          <button id="openStaffFormBtn" class="btn btn-primary staff-add-top" type="button">＋ Nuovo componente</button>
+        </div>
+
+        <div class="staff-toolbar">
+          <div class="field">
+            <label for="staffRoleFilter">Ruolo</label>
+            <select id="staffRoleFilter">
+              <option value="">Tutti i ruoli</option>
+              <option value="Allenatore">Allenatore</option>
+              <option value="Viceallenatore">Viceallenatore</option>
+              <option value="Preparatore atletico">Preparatore atletico</option>
+              <option value="Preparatore portieri">Preparatore portieri</option>
+              <option value="Dirigente">Dirigente</option>
+              <option value="Direttore">Direttore</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="staffSearchInput">Cerca componente</label>
+            <input id="staffSearchInput" type="search" placeholder="Nome o cognome" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="staff-summary">
+          <strong id="staffCount">0 componenti</strong>
+          <span id="staffActiveCount">0 attivi</span>
+        </div>
+
+        <div id="staffLoading" class="staff-empty">Caricamento staff…</div>
+        <div id="staffEmpty" class="staff-empty hidden">Nessun componente presente.</div>
+        <div id="staffList" class="staff-list"></div>
+      </div>
+
+      <div id="staffFormPanel" class="card staff-form-card hidden">
+        <div class="staff-heading">
+          <div>
+            <div class="eyebrow" id="staffFormEyebrow">Nuovo componente</div>
+            <h2 id="staffFormTitle">Aggiungi componente</h2>
+          </div>
+          <button id="closeStaffFormBtn" class="icon-close-btn" type="button" aria-label="Chiudi modulo">×</button>
+        </div>
+
+        <form id="staffForm" class="staff-form">
+          <input id="staffIdInput" type="hidden" />
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="staffLastNameInput">Cognome</label>
+              <input id="staffLastNameInput" autocomplete="family-name" required />
+            </div>
+            <div class="field">
+              <label for="staffFirstNameInput">Nome</label>
+              <input id="staffFirstNameInput" autocomplete="given-name" required />
+            </div>
+            <div class="field">
+              <label for="staffRoleInput">Ruolo</label>
+              <select id="staffRoleInput" required>
+                <option value="">Seleziona ruolo</option>
+                <option value="Allenatore">Allenatore</option>
+                <option value="Viceallenatore">Viceallenatore</option>
+                <option value="Preparatore atletico">Preparatore atletico</option>
+                <option value="Preparatore portieri">Preparatore portieri</option>
+                <option value="Dirigente">Dirigente</option>
+                <option value="Direttore">Direttore</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="staffActiveSelect">Stato</label>
+              <select id="staffActiveSelect">
+                <option value="SI">Attivo</option>
+                <option value="NO">Non attivo</option>
+              </select>
+            </div>
+          </div>
+          <button id="saveStaffBtn" class="btn btn-primary btn-block" type="submit">Salva componente</button>
+          <div id="staffFormMessage" class="admin-login-message" role="status" aria-live="polite"></div>
         </form>
       </div>
     </section>
@@ -412,13 +507,13 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.6"></script>
-<script src="storage.js?v=1.6"></script>
-<script src="profile.js?v=1.6"></script>
-<script src="callup.js?v=1.6"></script>
-<script src="match.js?v=1.6"></script>
-<script src="image.js?v=1.6"></script>
-<script src="pdf.js?v=1.6"></script>
-<script src="app.js?v=1.6"></script>
+<script src="api.js?v=1.7"></script>
+<script src="storage.js?v=1.7"></script>
+<script src="profile.js?v=1.7"></script>
+<script src="callup.js?v=1.7"></script>
+<script src="match.js?v=1.7"></script>
+<script src="image.js?v=1.7"></script>
+<script src="pdf.js?v=1.7"></script>
+<script src="app.js?v=1.7"></script>
 </body>
 </html>

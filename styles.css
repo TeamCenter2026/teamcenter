@@ -333,3 +333,31 @@
   .player-card{align-items:flex-start}
   .player-card-side{display:grid;justify-items:end;gap:5px}
 }
+
+
+/* TeamCenter 1.7 - Staff */
+.staff-card,.staff-form-card{max-width:760px;margin-left:auto;margin-right:auto}
+.staff-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.staff-heading h2{margin-bottom:4px}
+.staff-add-top{white-space:nowrap}
+.staff-toolbar{display:grid;grid-template-columns:1fr 1.25fr;gap:14px;margin-top:22px}
+.staff-summary{display:flex;justify-content:space-between;align-items:center;margin:18px 0 10px;padding:11px 14px;border-radius:14px;background:var(--granata-soft);color:var(--granata-dark);font-size:.88rem}
+.staff-list{display:grid;gap:10px}
+.staff-empty{padding:30px 14px;text-align:center;color:var(--muted);font-weight:700}
+.staff-member-card{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:15px 14px;border:1px solid rgba(31,41,55,.1);border-radius:16px;background:#fff;box-shadow:0 5px 16px rgba(31,41,55,.045)}
+.staff-member-card.inactive{opacity:.68;background:#f7f7f8}
+.staff-member-main{display:grid;gap:4px;min-width:0}
+.staff-member-main strong{font-size:1rem;overflow:hidden;text-overflow:ellipsis}
+.staff-member-main span{font-size:.82rem;color:var(--muted)}
+.staff-member-side{display:flex;align-items:center;gap:10px}
+.staff-form-card{margin-top:16px}
+.staff-form{margin-top:18px}
+
+@media (max-width:640px){
+  .staff-heading{align-items:stretch}
+  .staff-heading:not(.staff-form-card .staff-heading){flex-direction:column}
+  .staff-add-top{width:100%}
+  .staff-toolbar{grid-template-columns:1fr}
+  .staff-member-card{align-items:flex-start}
+  .staff-member-side{display:grid;justify-items:end;gap:5px}
+}
