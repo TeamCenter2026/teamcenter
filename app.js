@@ -68,11 +68,61 @@
     const themeMeta=document.querySelector('meta[name="theme-color"]');if(themeMeta)themeMeta.setAttribute('content',primary);
   }
   function fillProfile(){
-    const name=$('#profileNamePreview');if(name)name.textContent=clubName();
-    const season=$('#profileSeasonValue');if(season)season.textContent=masterApi?.Stagione||state.match.season||'—';
-    const field=$('#profileFieldValue');if(field)field.textContent=masterApi?.Campo||'—';
-    const address=$('#profileAddressValue');if(address)address.textContent=masterApi?.Indirizzo||'—';
+    const master=masterApi||state.master||{};
+    const values={
+      name:master.NomeSocieta||state.profile.clubName||'CSV Breda',
+      season:master.Stagione||state.match.season||'',
+      field:master.Campo||'',
+      address:master.Indirizzo||'',
+      primary:master.ColorePrimario||state.profile.primaryColor||'#741f35',
+      secondary:master.ColoreSecondario||state.profile.backgroundColor||'#f6f7f9'
+    };
+    const name=$('#profileNamePreview');if(name)name.textContent=values.name;
+    const logo=$('#profileLogoPreview');if(logo)logo.innerHTML=state.logoDataUrl?`<img src="${state.logoDataUrl}" alt="Logo ufficiale ${escapeHtml(values.name)}">`:'<div class="logo-placeholder">LOGO</div>';
+    const clubInput=$('#profileClubNameInput');if(clubInput)clubInput.value=values.name;
+    const seasonInput=$('#profileSeasonInput');if(seasonInput)seasonInput.value=values.season;
+    const fieldInput=$('#profileFieldInput');if(fieldInput)fieldInput.value=values.field;
+    const addressInput=$('#profileAddressInput');if(addressInput)addressInput.value=values.address;
+    const primaryInput=$('#profilePrimaryColorInput');if(primaryInput)primaryInput.value=values.primary;
+    const secondaryInput=$('#profileSecondaryColorInput');if(secondaryInput)secondaryInput.value=values.secondary;
+    const primaryValue=$('#profilePrimaryColorValue');if(primaryValue)primaryValue.value=values.primary.toUpperCase();
+    const secondaryValue=$('#profileSecondaryColorValue');if(secondaryValue)secondaryValue.value=values.secondary.toUpperCase();
     const status=$('#profileCloudStatus');if(status)status.textContent=masterApi?'Configurazione collegata a Google Sheets':'Configurazione locale: API non raggiungibile';
+  }
+
+  async function salvaProfiloSocieta(event){
+    event?.preventDefault();
+    const button=$('#saveProfileBtn');
+    if(!window.TeamCenterAPI?.saveMaster){toast('Funzione di salvataggio non disponibile');return;}
+    const data={
+      nomeSocieta:$('#profileClubNameInput')?.value.trim()||'',
+      stagione:$('#profileSeasonInput')?.value.trim()||'',
+      campo:$('#profileFieldInput')?.value.trim()||'',
+      indirizzo:$('#profileAddressInput')?.value.trim()||'',
+      colorePrimario:$('#profilePrimaryColorInput')?.value||'#741f35',
+      coloreSecondario:$('#profileSecondaryColorInput')?.value||'#f6f7f9'
+    };
+    if(!data.nomeSocieta){toast('Inserisci il nome della società');$('#profileClubNameInput')?.focus();return;}
+    const oldText=button?.textContent;
+    if(button){button.disabled=true;button.textContent='Salvataggio in corso…';}
+    const status=$('#profileCloudStatus');if(status)status.textContent='Salvataggio su Google Sheets…';
+    try{
+      const saved=await window.TeamCenterAPI.saveMaster(data);
+      masterApi=saved||{...data};
+      state.master={...masterApi};
+      state.profile.clubName=masterApi.NomeSocieta||data.nomeSocieta;
+      state.profile.primaryColor=masterApi.ColorePrimario||data.colorePrimario;
+      state.profile.backgroundColor=masterApi.ColoreSecondario||data.coloreSecondario;
+      state.match.season=masterApi.Stagione||data.stagione;
+      saveState();applyProfile();fillProfile();
+      toast('Profilo società salvato');
+    }catch(error){
+      console.error('Errore salvataggio profilo:',error);
+      if(status)status.textContent='Errore nel salvataggio';
+      toast(error.message||'Impossibile salvare il profilo');
+    }finally{
+      if(button){button.disabled=false;button.textContent=oldText||'💾 Salva profilo società';}
+    }
   }
   function toast(message){
     const el=$('#toast'); el.textContent=message; el.classList.add('show');
@@ -832,6 +882,10 @@
     const reader=new FileReader(); reader.onload=()=>{state.logoDataUrl=reader.result;saveState();renderLogo();toast('Logo ufficiale salvato')};reader.readAsDataURL(file);
   }
   ['#logoInput','#headerLogoInput','#callupLogoInput','#profileLogoInput'].forEach(selector=>$(selector)?.addEventListener('change',handleLogoUpload));
+
+  $('#profileForm')?.addEventListener('submit',salvaProfiloSocieta);
+  $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const out=$('#profilePrimaryColorValue');if(out)out.value=e.target.value.toUpperCase()});
+  $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const out=$('#profileSecondaryColorValue');if(out)out.value=e.target.value.toUpperCase()});
 
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;

@@ -43,15 +43,56 @@
 
     <section id="profileScreen" class="screen">
       <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
-      <div class="card">
+
+      <div class="card profile-editor-card">
         <div class="eyebrow">Profilo società</div>
-        <h2 id="profileNamePreview">CSV Breda</h2>
-        <div class="profile-cloud-grid">
-          <div><small>Stagione</small><strong id="profileSeasonValue">2026/2027</strong></div>
-          <div><small>Campo</small><strong id="profileFieldValue">Breda Arena</strong></div>
-          <div class="profile-cloud-address"><small>Indirizzo</small><strong id="profileAddressValue">Via Ercole Marelli 29</strong></div>
+        <div class="profile-editor-head">
+          <div id="profileLogoPreview" class="profile-logo-preview" aria-label="Logo ufficiale società">
+            <div class="logo-placeholder">LOGO</div>
+          </div>
+          <div>
+            <h2 id="profileNamePreview">CSV Breda</h2>
+            <div class="cloud-status" id="profileCloudStatus">Caricamento configurazione…</div>
+          </div>
         </div>
-        <div class="cloud-status" id="profileCloudStatus">Configurazione collegata a Google Sheets</div>
+
+        <form id="profileForm" class="profile-form">
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="profileClubNameInput">Nome società</label>
+              <input id="profileClubNameInput" name="nomeSocieta" autocomplete="organization" required />
+            </div>
+            <div class="field">
+              <label for="profileSeasonInput">Stagione</label>
+              <input id="profileSeasonInput" name="stagione" placeholder="Es. 2026/2027" />
+            </div>
+            <div class="field">
+              <label for="profileFieldInput">Campo sportivo</label>
+              <input id="profileFieldInput" name="campo" placeholder="Es. Breda Arena" />
+            </div>
+            <div class="field">
+              <label for="profileAddressInput">Indirizzo</label>
+              <input id="profileAddressInput" name="indirizzo" autocomplete="street-address" placeholder="Via e numero civico" />
+            </div>
+            <div class="field profile-color-field">
+              <label for="profilePrimaryColorInput">Colore primario</label>
+              <div class="color-input-row">
+                <input id="profilePrimaryColorInput" name="colorePrimario" type="color" value="#741f35" />
+                <output id="profilePrimaryColorValue">#741F35</output>
+              </div>
+            </div>
+            <div class="field profile-color-field">
+              <label for="profileSecondaryColorInput">Colore secondario</label>
+              <div class="color-input-row">
+                <input id="profileSecondaryColorInput" name="coloreSecondario" type="color" value="#f6f7f9" />
+                <output id="profileSecondaryColorValue">#F6F7F9</output>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-logo-note">Il logo viene letto da Google Drive tramite il campo <strong>LogoFile</strong> del foglio MASTER.</div>
+          <button class="btn btn-primary btn-block" id="saveProfileBtn" type="submit">💾 Salva profilo società</button>
+        </form>
       </div>
     </section>
 

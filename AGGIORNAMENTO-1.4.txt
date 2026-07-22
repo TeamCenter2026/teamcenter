@@ -1,0 +1,9 @@
+TEAMCENTER 1.4 - PROFILO SOCIETA
+
+1. Carica tutti i file di questa cartella nel repository GitHub sostituendo quelli esistenti.
+2. Commit: TeamCenter 1.4 - Profilo societa modificabile
+3. Attendi GitHub Pages e apri: https://teamcenter2026.github.io/teamcenter/?v=14
+4. Apri Profilo, modifica un campo e premi Salva profilo societa.
+5. Controlla che il foglio MASTER sia stato aggiornato.
+
+Richiede il deployment Apps Script con action=salvaMaster gia pubblicato.
