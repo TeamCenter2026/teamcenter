@@ -60,7 +60,7 @@
     document.documentElement.style.setProperty('--granata-dark',shadeHex(primary,-28));
     document.documentElement.style.setProperty('--granata-soft',shadeHex(primary,83));
     document.documentElement.style.setProperty('--bg',bg);
-    const title=$('#appTitle');if(title)title.textContent=`${clubName()} Team Center`;
+    const title=$('#appTitle');if(title)title.textContent=clubName().toUpperCase();
     const homeLogo=$('#homeClubLogo');
     if(homeLogo){
       homeLogo.innerHTML=state.logoDataUrl
@@ -301,25 +301,52 @@
 
   async function sincronizzaConfigurazioneApi(){
     if(!window.TeamCenterAPI)throw new Error('Configurazione API assente');
-    const [master,squadre,logo] = await Promise.all([
-      window.TeamCenterAPI.getMaster(),
-      window.TeamCenterAPI.getSquadre(),
-      window.TeamCenterAPI.getLogo().catch(error => {
-        console.warn('Logo non disponibile:', error);
+
+    let master;
+    let squadre;
+    let logo;
+
+    if(window.TeamCenterBootstrap?.ready){
+      const prefetched=await window.TeamCenterBootstrap.ready;
+      master=prefetched?.master;
+      squadre=prefetched?.teams;
+      logo=prefetched?.logo;
+    }
+
+    if(!master){
+      master=await window.TeamCenterAPI.getMaster();
+    }
+
+    if(!Array.isArray(squadre)||!squadre.length){
+      squadre=await window.TeamCenterAPI.getSquadre();
+    }
+
+    if(!logo){
+      logo=await window.TeamCenterAPI.getLogo().catch(error=>{
+        console.warn('Logo non disponibile:',error);
         return null;
-      })
-    ]);
+      });
+    }
+
     masterApi=master||{};
     squadreApi=Array.isArray(squadre)?squadre:[];
-    if(logo?.dataUrl) state.logoDataUrl=logo.dataUrl;
-    state.profile.clubName=masterApi.NomeSocieta||state.profile.clubName;
-    state.profile.primaryColor=masterApi.ColorePrimario||state.profile.primaryColor;
-    state.profile.backgroundColor=masterApi.ColoreSecondario||state.profile.backgroundColor;
+
+    if(logo?.dataUrl){
+      state.logoDataUrl=logo.dataUrl;
+    }
+
+    state.profile.clubName=masterApi.NomeSocieta||state.profile.clubName||'CSV Breda';
+    state.profile.primaryColor=masterApi.ColorePrimario||state.profile.primaryColor||'#741f35';
+    state.profile.backgroundColor=masterApi.ColoreSecondario||state.profile.backgroundColor||'#f6f7f9';
     state.match.season=masterApi.Stagione||state.match.season;
     state.master={...masterApi};
+
     aggiornaSelectSquadre();
+    applyProfile();
+    renderLogo();
     saveState();
-    return {master:masterApi,squadre:squadreApi};
+
+    return {master:masterApi,squadre:squadreApi,logo};
   }
 
   async function loadTrainingPlayers(){
@@ -1365,17 +1392,17 @@
     const num=e.target.closest('[data-toggle-callup-player]')?.dataset.toggleCallupPlayer;
     if(num){const p=state.callup.players.find(x=>x.number===Number(num));if(p){p.selected=!p.selected;saveState();renderCallupPlayers()}}
   });
-  $('#callupsScreen').addEventListener('input',e=>{
+  $('#callupsScreen')?.addEventListener('input',e=>{
     const num=e.target.dataset.callupPlayerName;
     if(num){const p=state.callup.players.find(x=>x.number===Number(num));if(p){p.name=e.target.value;p.selected=Boolean(e.target.value.trim());saveState();e.target.closest('.callup-player')?.classList.toggle('selected',p.selected);$('#callupSelectedCount').textContent=`${state.callup.players.filter(x=>x.name.trim()).length} / 20`}return}
     syncCallupForm();
   });
-  $('#callupsScreen').addEventListener('change',e=>{if(e.target.name==='callupVenue'||['callupKickoff','callupDate'].includes(e.target.id))syncCallupForm()});
-  $('#createCallupPreviewBtn').addEventListener('click',()=>{if(validateCallup()){renderCallupHtmlPreview();$('#callupOutputCard').scrollIntoView({behavior:'smooth',block:'start'})}});
-  $('#resetCallupBtn').addEventListener('click',()=>{if(confirm('Svuotare tutti i dati della convocazione?')){const date=new Date().toISOString().slice(0,10);state.callup=emptyState().callup;state.callup.date=date;saveState();fillCallupForm();$('#callupOutputCard').classList.add('hidden');toast('Convocazione svuotata')}});
-  $('#downloadCallupImageBtn').addEventListener('click',downloadCallupImage);
-  $('#shareCallupImageBtn').addEventListener('click',shareCallupImage);
-  $('#downloadCallupPdfBtn').addEventListener('click',downloadCallupPdf);
+  $('#callupsScreen')?.addEventListener('change',e=>{if(e.target.name==='callupVenue'||['callupKickoff','callupDate'].includes(e.target.id))syncCallupForm()});
+  $('#createCallupPreviewBtn')?.addEventListener('click',()=>{if(validateCallup()){renderCallupHtmlPreview();$('#callupOutputCard').scrollIntoView({behavior:'smooth',block:'start'})}});
+  $('#resetCallupBtn')?.addEventListener('click',()=>{if(confirm('Svuotare tutti i dati della convocazione?')){const date=new Date().toISOString().slice(0,10);state.callup=emptyState().callup;state.callup.date=date;saveState();fillCallupForm();$('#callupOutputCard').classList.add('hidden');toast('Convocazione svuotata')}});
+  $('#downloadCallupImageBtn')?.addEventListener('click',downloadCallupImage);
+  $('#shareCallupImageBtn')?.addEventListener('click',shareCallupImage);
+  $('#downloadCallupPdfBtn')?.addEventListener('click',downloadCallupPdf);
 
 
   $('#trainingTeamSelect')?.addEventListener('change',e=>{state.training.teamId=e.target.value;state.training.presentIds=[];saveState();loadTrainingPlayers()});
@@ -1395,7 +1422,7 @@
   });
   $('#saveTrainingDraftBtn')?.addEventListener('click',()=>{saveState();toast('Bozza allenamento salvata sul dispositivo')});
 
-  $('#createMatchBtn').addEventListener('click',()=>{
+  $('#createMatchBtn')?.addEventListener('click',()=>{
     readSetup();
     if(!state.match.opponent){toast('Inserisci la squadra avversaria');$('#opponentInput').focus();return;}
     state.screen='live';saveState();renderAll();showScreen('live');
@@ -1406,14 +1433,14 @@
     const del=e.target.closest('[data-delete-event]')?.dataset.deleteEvent;if(del)deleteEvent(del);
     const scoreBtn=e.target.closest('[data-score-team]');if(scoreBtn){const t=scoreBtn.dataset.scoreTeam,d=Number(scoreBtn.dataset.scoreDelta);state.score[t]=Math.max(0,state.score[t]+d);saveState();renderScore();renderStats();}
   });
-  $('#actionTeamBreda').addEventListener('click',()=>{state.actionTeam='breda';saveState();renderActionTeam()});
-  $('#actionTeamOpponent').addEventListener('click',()=>{state.actionTeam='opponent';saveState();renderActionTeam()});
-  $('#eventForm').addEventListener('submit',e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();if(saveModalEvent())$('#eventDialog').close();});
-  $('#bottomNav').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#bottomNav button').forEach(x=>x.classList.toggle('active',x===b));document.getElementById(b.dataset.target)?.scrollIntoView({behavior:'smooth',block:'start'});});
-  $('#downloadPdfBtn').addEventListener('click',generateAndDownloadPdf);
-  $('#printReportBtn').addEventListener('click',()=>window.print());
-  $('#backToMatchBtn').addEventListener('click',()=>{renderAll();showScreen('live')});
-  $('#newMatchBtn').addEventListener('click',()=>{if(confirm('Creare una nuova partita? I dati della gara corrente verranno cancellati.')){const logo=state.logoDataUrl;state=emptyState();state.logoDataUrl=logo;saveState();fillSetup();showScreen('setup')}});
+  $('#actionTeamBreda')?.addEventListener('click',()=>{state.actionTeam='breda';saveState();renderActionTeam()});
+  $('#actionTeamOpponent')?.addEventListener('click',()=>{state.actionTeam='opponent';saveState();renderActionTeam()});
+  $('#eventForm')?.addEventListener('submit',e=>{if(e.submitter?.value==='cancel')return;e.preventDefault();if(saveModalEvent())$('#eventDialog').close();});
+  $('#bottomNav')?.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#bottomNav button').forEach(x=>x.classList.toggle('active',x===b));document.getElementById(b.dataset.target)?.scrollIntoView({behavior:'smooth',block:'start'});});
+  $('#downloadPdfBtn')?.addEventListener('click',generateAndDownloadPdf);
+  $('#printReportBtn')?.addEventListener('click',()=>window.print());
+  $('#backToMatchBtn')?.addEventListener('click',()=>{renderAll();showScreen('live')});
+  $('#newMatchBtn')?.addEventListener('click',()=>{if(confirm('Creare una nuova partita? I dati della gara corrente verranno cancellati.')){const logo=state.logoDataUrl;state=emptyState();state.logoDataUrl=logo;saveState();fillSetup();showScreen('setup')}});
 
   async function bootstrap(){
     const today=new Date().toISOString().slice(0,10);
@@ -1428,8 +1455,29 @@
       toast('API non raggiungibile: uso dati salvati');
     }
     applyProfile();
+    renderLogo();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){renderReport();showScreen('report')}else if(state.screen==='live'){showScreen('live')}else if(state.screen==='setup'){showScreen('setup')}else if(state.screen==='callups'){showScreen('callups')}else if(state.screen==='training'){fillTraining();showScreen('training')}else if(state.screen==='profile'){fillProfile();showScreen('profile')}else if(state.screen==='roster'){apriRosa()}else if(state.screen==='staff'){apriStaff()}else if(state.screen==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}else if(state.screen==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}else showScreen('home');
+    if(state.screen==='report'){
+      renderReport();showScreen('report');
+    }else if(state.screen==='live'){
+      showScreen('live');
+    }else if(state.screen==='setup'){
+      showScreen('setup');
+    }else if(state.screen==='profile'){
+      fillProfile();showScreen('profile');
+    }else if(state.screen==='roster'){
+      await apriRosa();
+    }else if(state.screen==='staff'){
+      await apriStaff();
+    }else if(state.screen==='training'){
+      showScreen('training');
+      await window.TeamCenterAllenamenti?.open();
+    }else if(state.screen==='callups'){
+      showScreen('callups');
+      await window.TeamCenterConvocazioni?.open();
+    }else{
+      showScreen('home');
+    }
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

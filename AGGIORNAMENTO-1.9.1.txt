@@ -1,0 +1,54 @@
+TEAMCENTER 1.8 — MODULO ALLENAMENTI
+
+FUNZIONI INCLUSE
+- Selezione squadra
+- Selezione Allenamento 1, Allenamento 2 o Allenamento 3
+- Caricamento automatico dei giocatori attivi della Rosa
+- Stato per ogni giocatore:
+  Presente
+  Assente
+  Giustificato
+  Infortunato
+- Comando rapido Imposta tutti presenti
+- Comando Azzera selezioni
+- Riepilogo automatico
+- Salvataggio su Google Sheets
+- Archivio degli ultimi allenamenti
+
+FOGLIO GOOGLE ALLENAMENTI
+
+La prima riga deve contenere ESATTAMENTE:
+
+IDAllenamento | IDSquadra | Squadra | Seduta | Presenze | UltimoAggiornamento
+
+APPS SCRIPT
+
+1. Apri il file CODICE-GS-COMPLETO-1.8.txt.
+2. Copia tutto.
+3. Sostituisci completamente il contenuto di Codice.gs.
+4. Salva.
+5. Distribuisci > Gestisci deployment.
+6. Premi la matita.
+7. Seleziona Nuova versione.
+8. Distribuisci.
+
+GITHUB
+
+1. Carica tutti i file contenuti nella cartella teamcenter-main.
+2. Usa il commit:
+   TeamCenter 1.8 - Modulo Allenamenti
+3. Attendi che GitHub Actions diventi verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=180
+5. Premi CTRL + F5.
+
+TEST
+
+1. Apri Allenamenti.
+2. Seleziona una squadra.
+3. Scegli Allenamento 1, 2 oppure 3.
+4. Premi Imposta tutti presenti.
+5. Modifica alcuni giocatori come Assente, Giustificato o Infortunato.
+6. Controlla il riepilogo.
+7. Salva.
+8. Verifica la nuova riga nel foglio ALLENAMENTI.

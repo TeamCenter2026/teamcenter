@@ -1,60 +1,64 @@
-TEAMCENTER 1.9 — MODULO CONVOCAZIONI
+TEAMCENTER 1.9.1 — CORREZIONE AVVIO, PROFILO E LOGO
 
-FUNZIONI INCLUSE
-- Selezione squadra
-- Campionato
-- Giornata
-- Data
-- Avversario
-- Orario partita
-- Orario convocazione automatico: 1 ora e 45 minuti prima
-- Casa o trasferta
-- Indirizzo del campo
-- Caricamento giocatori attivi dalla Rosa
-- Ricerca e selezione multipla giocatori
-- Selezione staff attivo raggruppato per ruolo
-- Anteprima convocazione
-- Salvataggio su Google Sheets
-- Archivio ultime convocazioni
-- Esportazione PDF
-- Esportazione foto
-- Condivisione foto
+PROBLEMA RISOLTO
 
-FOGLIO GOOGLE CONVOCAZIONI
+La versione 1.9 poteva interrompere JavaScript prima del bootstrap perché alcuni
+listener facevano riferimento a vecchi elementi HTML non più presenti.
 
-La prima riga deve contenere ESATTAMENTE:
+Conseguenze:
+- titolo TEAMCENTER invece di CSV Breda;
+- logo assente;
+- dati MASTER non applicati;
+- moduli Allenamenti e Convocazioni non inizializzati correttamente.
 
-IDConvocazione | IDSquadra | Squadra | Campionato | Giornata | Data | Avversario | OrarioPartita | OrarioConvocazione | Sede | Indirizzo | Giocatori | Staff | UltimoAggiornamento
+MODIFICHE
+
+- Nuovo file bootstrap.js.
+- MASTER, logo e squadre vengono caricati prima di app.js.
+- Titolo Home impostato sul nome società.
+- Logo ufficiale applicato alla Home.
+- Colori applicati dal foglio MASTER.
+- Listener legacy resi sicuri.
+- Ripristino corretto della schermata Allenamenti.
+- Ripristino corretto della schermata Convocazioni.
+- Cache aggiornata alla versione 1.9.1.
+- Allenamenti e Convocazioni aggiunti agli asset del Service Worker.
+
+INSTALLAZIONE
+
+1. Carica su GitHub TUTTI i file della cartella teamcenter-main.
+2. Commit consigliato:
+   TeamCenter 1.9.1 - Fix bootstrap profilo e logo
+3. Attendi GitHub Actions verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=191
+5. Premi CTRL + F5.
+
+PULIZIA CACHE, SE NECESSARIA
+
+Chrome:
+- F12
+- Application
+- Service Workers
+- Unregister
+- Storage
+- Clear site data
+- Ricarica con ?v=191
 
 APPS SCRIPT
 
-1. Apri CODICE-GS-COMPLETO-1.9.txt.
-2. Copia tutto.
-3. Sostituisci completamente Codice.gs.
-4. Salva.
-5. Distribuisci > Gestisci deployment.
-6. Premi la matita.
-7. Seleziona Nuova versione.
-8. Distribuisci.
+La logica backend non cambia.
+È comunque incluso CODICE-GS-COMPLETO-1.9.1.txt.
 
-GITHUB
-
-1. Carica tutti i file della cartella teamcenter-main.
-2. Commit:
-   TeamCenter 1.9 - Modulo Convocazioni
-3. Attendi GitHub Actions verde.
-4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=190
-5. Premi CTRL + F5.
+Puoi sostituire Codice.gs e creare una nuova distribuzione, ma per la sola
+correzione della Home non è indispensabile se il deployment 1.9 risponde già.
 
 TEST
 
-1. Apri Convocazioni.
-2. Seleziona una squadra.
-3. Compila campionato, giornata, data, avversario e orario.
-4. Controlla il calcolo automatico della convocazione.
-5. Seleziona giocatori e staff.
-6. Crea l'anteprima.
-7. Salva.
-8. Controlla il foglio CONVOCAZIONI.
-9. Prova PDF, foto e condivisione.
+1. Apri la Home.
+2. Controlla che compaia CSV BREDA.
+3. Controlla il logo ufficiale.
+4. Controlla i colori societari.
+5. Apri Rosa, Staff, Allenamenti e Convocazioni.
+6. Ricarica la pagina mentre sei dentro Allenamenti o Convocazioni.
+7. Verifica che il modulo venga inizializzato correttamente.

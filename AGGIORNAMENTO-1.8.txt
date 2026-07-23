@@ -1,54 +1,51 @@
-TEAMCENTER 1.8 — MODULO ALLENAMENTI
+TEAMCENTER 1.7 — MODULO STAFF
 
 FUNZIONI INCLUSE
-- Selezione squadra
-- Selezione Allenamento 1, Allenamento 2 o Allenamento 3
-- Caricamento automatico dei giocatori attivi della Rosa
-- Stato per ogni giocatore:
-  Presente
-  Assente
-  Giustificato
-  Infortunato
-- Comando rapido Imposta tutti presenti
-- Comando Azzera selezioni
-- Riepilogo automatico
-- Salvataggio su Google Sheets
-- Archivio degli ultimi allenamenti
+- Nuovo pulsante Staff nella Home
+- Elenco completo dei componenti
+- Ricerca per nome o cognome
+- Filtro per ruolo
+- Inserimento nuovo componente
+- Modifica di nome, cognome, ruolo e stato
+- Nessuna associazione con le squadre
 
-FOGLIO GOOGLE ALLENAMENTI
+RUOLI
+- Allenatore
+- Viceallenatore
+- Preparatore atletico
+- Preparatore portieri
+- Dirigente
+- Direttore
 
-La prima riga deve contenere ESATTAMENTE:
+PRIMA DI AGGIORNARE GITHUB
 
-IDAllenamento | IDSquadra | Squadra | Seduta | Presenze | UltimoAggiornamento
+1. Apri il foglio STAFF.
+2. La prima riga deve avere ESATTAMENTE queste colonne:
 
-APPS SCRIPT
+IDStaff | Cognome | Nome | Ruolo | Attivo
 
-1. Apri il file CODICE-GS-COMPLETO-1.8.txt.
-2. Copia tutto.
-3. Sostituisci completamente il contenuto di Codice.gs.
-4. Salva.
-5. Distribuisci > Gestisci deployment.
-6. Premi la matita.
-7. Seleziona Nuova versione.
-8. Distribuisci.
+3. In Apps Script sostituisci tutto Codice.gs con il contenuto del file:
+   CODICE-GS-COMPLETO-1.7.txt
 
-GITHUB
+4. Salva Apps Script.
+5. Distribuisci > Gestisci deployment > Matita > Nuova versione > Distribuisci.
 
-1. Carica tutti i file contenuti nella cartella teamcenter-main.
-2. Usa il commit:
-   TeamCenter 1.8 - Modulo Allenamenti
-3. Attendi che GitHub Actions diventi verde.
+AGGIORNAMENTO GITHUB
+
+1. Carica tutti i file della cartella teamcenter-main.
+2. Commit:
+   TeamCenter 1.7 - Modulo Staff
+3. Attendi Actions verde.
 4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=180
+   https://teamcenter2026.github.io/teamcenter/?v=170
 5. Premi CTRL + F5.
 
 TEST
 
-1. Apri Allenamenti.
-2. Seleziona una squadra.
-3. Scegli Allenamento 1, 2 oppure 3.
-4. Premi Imposta tutti presenti.
-5. Modifica alcuni giocatori come Assente, Giustificato o Infortunato.
-6. Controlla il riepilogo.
-7. Salva.
-8. Verifica la nuova riga nel foglio ALLENAMENTI.
+- Apri Staff
+- Premi Nuovo componente
+- Inserisci Cognome, Nome, Ruolo e Stato
+- Salva
+- Modifica lo stesso componente
+- Prova la ricerca
+- Prova il filtro per ruolo
