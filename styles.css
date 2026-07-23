@@ -492,3 +492,41 @@
 .callup-preview-staff-white>div{background:#fff;border-bottom:1px solid #d9dce1}
 .callup-preview-staff-name{font-weight:800;color:#202124}
 @media(max-width:720px){.callup-preview-header-inner{justify-content:flex-start}}
+
+
+/* TeamCenter 2.0 - Gestione Match stabile */
+.match20-card{margin-bottom:18px}
+.match20-heading{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+.match20-heading h2{margin-bottom:4px}
+.match20-sync{font-size:.78rem;font-weight:800;color:var(--granata);background:var(--granata-soft);padding:7px 10px;border-radius:999px;white-space:nowrap}
+.match20-callup-summary{display:grid;gap:5px;padding:16px;border:1px solid var(--border);border-radius:16px;background:#fff;margin:16px 0}
+.match20-callup-summary strong{font-size:1.15rem;color:var(--granata)}
+.match20-callup-summary span{color:var(--muted)}
+.match20-callup-summary b{font-size:.92rem}
+.match20-score-card{margin-bottom:18px}
+.match20-timer-card{text-align:center}
+.match20-recovery{min-height:24px;font-weight:900;color:var(--granata);margin-top:5px}
+.match20-timer-buttons{justify-content:center;margin-top:18px}
+.btn-danger{background:#a51f2d;color:#fff;border-color:#a51f2d}
+.match20-team-toggle{display:flex;gap:5px;background:#eef0f3;padding:4px;border-radius:14px}
+.match20-team-toggle button{border:0;background:transparent;padding:9px 12px;border-radius:10px;font-weight:850;color:var(--muted)}
+.match20-team-toggle button.active{background:var(--granata);color:#fff}
+.match20-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.match20-actions button{min-height:88px;border:1px solid var(--border);background:#fff;border-radius:16px;display:grid;place-items:center;align-content:center;gap:6px;font-size:1.45rem;font-weight:900}
+.match20-actions button span{font-size:.82rem;color:#2c2f34}
+.match20-events{display:grid;gap:8px}
+.match20-event{display:grid;grid-template-columns:70px 34px 1fr 36px;align-items:center;gap:8px;padding:11px 8px;border-bottom:1px solid var(--border)}
+.match20-event-time{font-weight:950;color:var(--granata);font-variant-numeric:tabular-nums}
+.match20-event-icon{font-size:1.25rem;text-align:center}
+.match20-event-body{display:grid;gap:3px}
+.match20-event-body span{font-size:.82rem;color:var(--muted)}
+.match20-event>button{border:0;background:#f0f1f3;border-radius:50%;width:30px;height:30px;font-size:1.2rem}
+.match20-dialog{max-width:520px;width:calc(100% - 28px)}
+.match20-dialog::backdrop{background:rgba(25,28,33,.65)}
+@media(max-width:720px){
+  .match20-heading{display:grid}
+  .match20-sync{width:max-content}
+  .match20-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .match20-timer-buttons .btn{width:100%}
+  .match20-event{grid-template-columns:58px 30px 1fr 34px}
+}

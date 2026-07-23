@@ -1,3 +1,3 @@
-# TeamCenter 1.9.2
+# TeamCenter 2.0.0
 
-Nuovo layout bianco per Convocazioni.
+Gestione Match stabile collegata alle Convocazioni e al foglio MATCH.

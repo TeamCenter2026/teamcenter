@@ -45,6 +45,8 @@ window.TeamCenterAPI = (() => {
     getAllenamenti: () => request('allenamenti'),
     saveAllenamento: data => request('salvaAllenamento', data),
     getConvocazioni: () => request('convocazioni'),
-    saveConvocazione: data => request('salvaConvocazione', data)
+    saveConvocazione: data => request('salvaConvocazione', data),
+    getMatch: () => request('match'),
+    saveMatch: data => request('salvaMatch', data)
   });
 })();

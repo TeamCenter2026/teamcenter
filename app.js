@@ -1386,7 +1386,7 @@
     if(module==='roster'){apriRosa()}
     if(module==='staff'){apriStaff()}
     if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}
-    if(module==='match'){fillSetup();showScreen('setup')}
+    if(module==='match'){window.TeamCenterMatch?.open()}
     if(module==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}
     if(e.target.closest('[data-go-home]'))showScreen('home');
     const num=e.target.closest('[data-toggle-callup-player]')?.dataset.toggleCallupPlayer;

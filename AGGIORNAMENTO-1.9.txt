@@ -1,60 +1,18 @@
-TEAMCENTER 1.9 — MODULO CONVOCAZIONI
+TEAMCENTER 1.9.2 — NUOVO LAYOUT CONVOCAZIONI
 
-FUNZIONI INCLUSE
-- Selezione squadra
-- Campionato
-- Giornata
-- Data
-- Avversario
-- Orario partita
-- Orario convocazione automatico: 1 ora e 45 minuti prima
-- Casa o trasferta
-- Indirizzo del campo
-- Caricamento giocatori attivi dalla Rosa
-- Ricerca e selezione multipla giocatori
-- Selezione staff attivo raggruppato per ruolo
-- Anteprima convocazione
-- Salvataggio su Google Sheets
-- Archivio ultime convocazioni
-- Esportazione PDF
-- Esportazione foto
-- Condivisione foto
+- Foglio completamente bianco.
+- Logo ufficiale a sinistra del blocco titolo.
+- Logo + titolo centrati complessivamente nel foglio.
+- CSV BREDA e CONVOCAZIONE in granata.
+- Sottile linea granata sotto l'intestazione.
+- Eliminato il banner pieno granata.
+- Riquadri bianchi con bordo sottile.
+- Tabelle giocatori e staff con separatori puliti.
+- Stesso layout per anteprima, PDF, immagine e condivisione.
+- Nessuna modifica ai fogli Google o ai dati salvati.
 
-FOGLIO GOOGLE CONVOCAZIONI
-
-La prima riga deve contenere ESATTAMENTE:
-
-IDConvocazione | IDSquadra | Squadra | Campionato | Giornata | Data | Avversario | OrarioPartita | OrarioConvocazione | Sede | Indirizzo | Giocatori | Staff | UltimoAggiornamento
-
-APPS SCRIPT
-
-1. Apri CODICE-GS-COMPLETO-1.9.txt.
-2. Copia tutto.
-3. Sostituisci completamente Codice.gs.
-4. Salva.
-5. Distribuisci > Gestisci deployment.
-6. Premi la matita.
-7. Seleziona Nuova versione.
-8. Distribuisci.
-
-GITHUB
-
-1. Carica tutti i file della cartella teamcenter-main.
-2. Commit:
-   TeamCenter 1.9 - Modulo Convocazioni
-3. Attendi GitHub Actions verde.
-4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=190
-5. Premi CTRL + F5.
-
-TEST
-
-1. Apri Convocazioni.
-2. Seleziona una squadra.
-3. Compila campionato, giornata, data, avversario e orario.
-4. Controlla il calcolo automatico della convocazione.
-5. Seleziona giocatori e staff.
-6. Crea l'anteprima.
-7. Salva.
-8. Controlla il foglio CONVOCAZIONI.
-9. Prova PDF, foto e condivisione.
+INSTALLAZIONE
+1. Carica tutti i file della cartella teamcenter-main su GitHub.
+2. Commit: TeamCenter 1.9.2 - Nuovo layout convocazioni
+3. Apri https://teamcenter2026.github.io/teamcenter/?v=192
+4. Premi CTRL + F5.

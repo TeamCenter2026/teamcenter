@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=1.9.2" />
+  <link rel="stylesheet" href="styles.css?v=2.0.0" />
 </head>
 <body>
 <div class="app-shell">
@@ -535,6 +535,143 @@
       </div>
     </section>
 
+
+    <section id="matchCenterScreen" class="screen">
+      <div class="page-tools">
+        <button id="matchBackHomeBtn" class="back-link" type="button">← Home</button>
+      </div>
+
+      <div class="card match20-card" id="match20SetupCard">
+        <div class="eyebrow">Gestione Match</div>
+        <div class="match20-heading">
+          <div>
+            <h2>Seleziona la convocazione</h2>
+            <p class="section-copy">I dati della gara, i convocati e lo staff vengono caricati dal foglio CONVOCAZIONI.</p>
+          </div>
+          <span class="match20-sync">Google Sheets sincronizzato</span>
+        </div>
+
+        <div class="field">
+          <label for="match20CallupSelect">Convocazione</label>
+          <select id="match20CallupSelect">
+            <option value="">Caricamento convocazioni…</option>
+          </select>
+        </div>
+
+        <div id="match20CallupSummary" class="match20-callup-summary">
+          Seleziona una convocazione salvata.
+        </div>
+
+        <div class="button-row">
+          <button id="match20StartBtn" class="btn btn-primary" type="button" disabled>Avvia gestione partita</button>
+          <button id="match20RefreshBtn" class="btn btn-secondary" type="button">Aggiorna elenco</button>
+        </div>
+        <div id="match20Message" class="callup-message" role="status" aria-live="polite"></div>
+      </div>
+
+      <div id="match20LiveArea" class="hidden">
+        <div class="score-card match20-score-card">
+          <div id="match20Meta" class="match-meta">Campionato · Giornata</div>
+          <div class="scoreline">
+            <div id="match20HomeName" class="team-name">CSV BREDA</div>
+            <div class="score"><span id="match20HomeScore">0</span>–<span id="match20AwayScore">0</span></div>
+            <div id="match20AwayName" class="team-name">AVVERSARIO</div>
+          </div>
+          <div class="score-controls">
+            <div class="mini-score">
+              <button type="button" data-match20-score="home" data-delta="-1">−</button>
+              <span>CASA</span>
+              <button type="button" data-match20-score="home" data-delta="1">＋</button>
+            </div>
+            <div class="mini-score">
+              <button type="button" data-match20-score="away" data-delta="-1">−</button>
+              <span>OSPITI</span>
+              <button type="button" data-match20-score="away" data-delta="1">＋</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card timer-panel match20-timer-card">
+          <div id="match20Period" class="period-pill">PARTITA NON INIZIATA</div>
+          <div id="match20Clock" class="timer-display">00:00:00</div>
+          <div id="match20Recovery" class="match20-recovery"></div>
+
+          <div class="button-row match20-timer-buttons">
+            <button class="btn btn-primary" type="button" data-match20-timer="start-first">Avvia 1° tempo</button>
+            <button class="btn btn-secondary" type="button" data-match20-timer="pause">Pausa</button>
+            <button class="btn btn-secondary" type="button" data-match20-timer="resume">Riprendi</button>
+            <button class="btn btn-secondary" type="button" data-match20-timer="end-first">Fine 1° tempo</button>
+            <button class="btn btn-primary" type="button" data-match20-timer="start-second">Avvia 2° tempo</button>
+            <button class="btn btn-danger" type="button" data-match20-timer="end-match">Fine partita</button>
+          </div>
+        </div>
+
+        <div class="card match20-card">
+          <div class="match20-heading">
+            <div>
+              <div class="eyebrow">Eventi live</div>
+              <h2>Registra l’evento</h2>
+            </div>
+            <div class="match20-team-toggle">
+              <button id="match20TeamBreda" class="active" type="button">CSV Breda</button>
+              <button id="match20TeamOpponent" type="button">Avversario</button>
+            </div>
+          </div>
+
+          <div class="match20-actions">
+            <button type="button" data-match20-action="Gol">⚽<span>Gol</span></button>
+            <button type="button" data-match20-action="Assist">🅰️<span>Assist</span></button>
+            <button type="button" data-match20-action="Ammonizione">🟨<span>Ammonizione</span></button>
+            <button type="button" data-match20-action="Espulsione">🟥<span>Espulsione</span></button>
+            <button type="button" data-match20-action="Corner">🏳️<span>Corner</span></button>
+            <button type="button" data-match20-action="Punizione">🎯<span>Punizione</span></button>
+            <button type="button" data-match20-action="Palla recuperata">🛡️<span>Palla recuperata</span></button>
+            <button type="button" data-match20-action="Palla persa">❌<span>Palla persa</span></button>
+          </div>
+        </div>
+
+        <div class="card match20-card">
+          <div class="match20-heading">
+            <div>
+              <div class="eyebrow">Cronologia</div>
+              <h2>Eventi partita</h2>
+            </div>
+            <button id="match20SaveBtn" class="btn btn-primary" type="button">Salva Match</button>
+          </div>
+          <div id="match20Events" class="match20-events">
+            <div class="callup-empty">Nessun evento registrato.</div>
+          </div>
+          <div id="match20SaveMessage" class="callup-message" role="status" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <dialog id="match20EventDialog" class="event-dialog match20-dialog">
+      <form id="match20EventForm" method="dialog">
+        <div class="modal-head">
+          <h3 id="match20DialogTitle">Registra evento</h3>
+          <button value="cancel" class="icon-button" aria-label="Chiudi" type="submit">×</button>
+        </div>
+
+        <input id="match20EventType" type="hidden">
+
+        <div id="match20PlayerField" class="field">
+          <label id="match20PlayerLabel" for="match20PlayerSelect">Giocatore convocato</label>
+          <select id="match20PlayerSelect"></select>
+        </div>
+
+        <div class="field">
+          <label for="match20EventNote">Nota facoltativa</label>
+          <input id="match20EventNote" placeholder="Nota sull’evento">
+        </div>
+
+        <div class="button-row">
+          <button class="btn btn-secondary" value="cancel" type="submit">Annulla</button>
+          <button id="match20ConfirmEvent" class="btn btn-primary" value="default" type="submit">Registra</button>
+        </div>
+      </form>
+    </dialog>
+
     <section id="liveScreen" class="screen">
       <div class="score-card">
         <div class="match-meta" id="liveMeta">Campionato</div>
@@ -626,16 +763,16 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=1.9.2"></script>
-<script src="bootstrap.js?v=1.9.2"></script>
-<script src="storage.js?v=1.9.2"></script>
-<script src="profile.js?v=1.9.2"></script>
-<script src="callup.js?v=1.9.2"></script>
-<script src="match.js?v=1.9.2"></script>
-<script src="image.js?v=1.9.2"></script>
-<script src="pdf.js?v=1.9.2"></script>
-<script src="allenamenti.js?v=1.9.2"></script>
-<script src="convocazioni.js?v=1.9.2"></script>
-<script src="app.js?v=1.9.2"></script>
+<script src="api.js?v=2.0.0"></script>
+<script src="bootstrap.js?v=2.0.0"></script>
+<script src="storage.js?v=2.0.0"></script>
+<script src="profile.js?v=2.0.0"></script>
+<script src="callup.js?v=2.0.0"></script>
+<script src="match.js?v=2.0.0"></script>
+<script src="image.js?v=2.0.0"></script>
+<script src="pdf.js?v=2.0.0"></script>
+<script src="allenamenti.js?v=2.0.0"></script>
+<script src="convocazioni.js?v=2.0.0"></script>
+<script src="app.js?v=2.0.0"></script>
 </body>
 </html>
