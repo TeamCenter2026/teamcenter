@@ -365,7 +365,6 @@ window.TeamCenterConvocazioni = (() => {
     const rows = Array.from({ length: Math.max(left.length, right.length) }, (_, index) => {
       const first = left[index];
       const second = right[index];
-
       return `<div class="callup-preview-num">${first ? index + 1 : ''}</div>
         <div class="callup-preview-name">${first ? escapeHtml(fullName(first)) : ''}</div>
         <div class="callup-preview-num">${second ? split + index + 1 : ''}</div>
@@ -375,44 +374,51 @@ window.TeamCenterConvocazioni = (() => {
     const staffRows = data.staff.length
       ? data.staff.map(item =>
           `<div class="callup-preview-staff-role">${escapeHtml(item.Ruolo || '')}</div>
-           <div>${escapeHtml(fullName(item))}</div>`
+           <div class="callup-preview-staff-name">${escapeHtml(fullName(item))}</div>`
         ).join('')
-      : '<div class="callup-preview-staff-role">Staff</div><div>—</div>';
+      : '<div class="callup-preview-staff-role">Staff</div><div class="callup-preview-staff-name">—</div>';
 
     $('#callupPreview').innerHTML = `
-      <div class="callup-preview-sheet">
-        <div class="callup-preview-header">
-          <div class="callup-preview-logo">
-            ${state.logo ? `<img src="${state.logo}" alt="Logo società">` : ''}
+      <div class="callup-preview-sheet callup-preview-sheet-white">
+        <div class="callup-preview-header-white">
+          <div class="callup-preview-header-inner">
+            <div class="callup-preview-logo-white">
+              ${state.logo ? `<img src="${state.logo}" alt="Logo società">` : ''}
+            </div>
+            <div class="callup-preview-title-block">
+              <strong>${escapeHtml(state.master.NomeSocieta || 'CSV Breda')}</strong>
+              <span>CONVOCAZIONE</span>
+            </div>
           </div>
-          <div>
-            <strong>${escapeHtml(state.master.NomeSocieta || 'TeamCenter')}</strong>
-            <span>CONVOCAZIONE</span>
-          </div>
+          <div class="callup-preview-header-line"></div>
         </div>
 
-        <div class="callup-preview-match">
+        <div class="callup-preview-match callup-preview-match-white">
           <strong>${escapeHtml(data.squadra)}</strong>
           <span>${escapeHtml(data.campionato)} · ${escapeHtml(data.giornata)}</span>
           <h3>${escapeHtml(state.master.NomeSocieta || '')} – ${escapeHtml(data.avversario)}</h3>
         </div>
 
-        <div class="callup-preview-info">
+        <div class="callup-preview-info callup-preview-info-white">
           <div><small>DATA</small><strong>${escapeHtml(formatDate(data.data))}</strong></div>
           <div><small>PARTITA</small><strong>${escapeHtml(data.orarioPartita)}</strong></div>
           <div><small>CONVOCAZIONE</small><strong>${escapeHtml(data.orarioConvocazione)}</strong></div>
         </div>
 
-        <div class="callup-preview-address">
+        <div class="callup-preview-address callup-preview-address-white">
           <strong>${escapeHtml(data.sede)}</strong>
           <span>${escapeHtml(data.indirizzo)}</span>
         </div>
 
         <div class="callup-preview-title">GIOCATORI CONVOCATI</div>
-        <div class="callup-preview-players">${rows}</div>
+        <div class="callup-preview-table-head">
+          <span>N.</span><span>GIOCATORE</span><span>N.</span><span>GIOCATORE</span>
+        </div>
+        <div class="callup-preview-players callup-preview-players-white">${rows}</div>
 
         <div class="callup-preview-title">STAFF</div>
-        <div class="callup-preview-staff">${staffRows}</div>
+        <div class="callup-preview-staff-head"><span>RUOLO</span><span>NOME</span></div>
+        <div class="callup-preview-staff callup-preview-staff-white">${staffRows}</div>
       </div>`;
   }
 
@@ -536,29 +542,54 @@ window.TeamCenterConvocazioni = (() => {
     const ctx = canvas.getContext('2d');
     const primary = state.master.ColorePrimario || '#741f35';
     const ink = '#202124';
-    const muted = '#5f6368';
+    const muted = '#666970';
+    const line = '#d9dce1';
 
-    ctx.fillStyle = '#f4f5f7';
+    ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = primary;
-    ctx.fillRect(0, 0, canvas.width, 210);
+    const logoBox = 150;
+    const textWidth = 470;
+    const headerGap = 28;
+    const headerWidth = logoBox + headerGap + textWidth;
+    const headerX = (canvas.width - headerWidth) / 2;
+    const headerY = 54;
 
     if (state.logo) {
       try {
         const logo = await loadImage(state.logo);
-        const scale = Math.min(145 / logo.width, 145 / logo.height);
-        ctx.drawImage(logo, 70, 32, logo.width * scale, logo.height * scale);
+        const scale = Math.min(logoBox / logo.width, logoBox / logo.height);
+        const logoW = logo.width * scale;
+        const logoH = logo.height * scale;
+        ctx.drawImage(
+          logo,
+          headerX + (logoBox - logoW) / 2,
+          headerY + (logoBox - logoH) / 2,
+          logoW,
+          logoH
+        );
       } catch (error) {}
     }
 
-    ctx.fillStyle = '#fff';
-    ctx.font = '900 52px Arial';
-    ctx.fillText(String(state.master.NomeSocieta || 'TEAMCENTER').toUpperCase(), 260, 95);
-    ctx.font = '800 34px Arial';
-    ctx.fillText('CONVOCAZIONE', 260, 150);
+    ctx.fillStyle = primary;
+    ctx.textAlign = 'left';
+    ctx.font = '900 54px Arial';
+    ctx.fillText(
+      String(state.master.NomeSocieta || 'CSV BREDA').toUpperCase(),
+      headerX + logoBox + headerGap,
+      headerY + 66
+    );
+    ctx.font = '900 34px Arial';
+    ctx.fillText('CONVOCAZIONE', headerX + logoBox + headerGap, headerY + 116);
 
-    let y = 275;
+    ctx.strokeStyle = primary;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(70, 235);
+    ctx.lineTo(1170, 235);
+    ctx.stroke();
+
+    let y = 305;
 
     ctx.fillStyle = ink;
     ctx.font = '900 36px Arial';
@@ -569,12 +600,12 @@ window.TeamCenterConvocazioni = (() => {
     ctx.font = '700 25px Arial';
     ctx.fillText(`${data.campionato} · ${data.giornata}`, 70, y);
 
-    y += 65;
+    y += 68;
     ctx.fillStyle = primary;
     ctx.font = '900 42px Arial';
     ctx.fillText(`${state.master.NomeSocieta || ''} - ${data.avversario}`, 70, y);
 
-    y += 80;
+    y += 82;
     const info = [
       ['DATA', formatDate(data.data)],
       ['PARTITA', data.orarioPartita],
@@ -583,33 +614,60 @@ window.TeamCenterConvocazioni = (() => {
 
     info.forEach((item, index) => {
       const x = 70 + index * 375;
-      ctx.fillStyle = '#fff';
-      roundRect(ctx, x, y, 340, 105, 18);
+      ctx.fillStyle = '#ffffff';
+      roundRect(ctx, x, y, 340, 108, 16);
       ctx.fill();
+      ctx.strokeStyle = line;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
       ctx.fillStyle = muted;
       ctx.font = '800 18px Arial';
-      ctx.fillText(item[0], x + 22, y + 32);
+      ctx.fillText(item[0], x + 22, y + 33);
+
       ctx.fillStyle = ink;
       ctx.font = '900 31px Arial';
-      ctx.fillText(item[1], x + 22, y + 76);
+      ctx.fillText(item[1], x + 22, y + 77);
     });
 
     y += 145;
-    ctx.fillStyle = '#fff';
-    roundRect(ctx, 70, y, 1100, 78, 16);
+
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, 70, y, 1100, 82, 16);
     ctx.fill();
+    ctx.strokeStyle = line;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
     ctx.fillStyle = primary;
     ctx.font = '900 22px Arial';
-    ctx.fillText(data.sede, 92, y + 30);
+    ctx.fillText(data.sede, 92, y + 31);
+
     ctx.fillStyle = ink;
     ctx.font = '700 23px Arial';
-    ctx.fillText(data.indirizzo, 92, y + 60);
+    ctx.fillText(data.indirizzo, 92, y + 62);
 
-    y += 125;
+    y += 130;
+
     ctx.fillStyle = primary;
     ctx.font = '900 27px Arial';
     ctx.fillText('GIOCATORI CONVOCATI', 70, y);
-    y += 28;
+
+    y += 38;
+    ctx.font = '900 18px Arial';
+    ctx.fillText('N.', 88, y);
+    ctx.fillText('GIOCATORE', 135, y);
+    ctx.fillText('N.', 645, y);
+    ctx.fillText('GIOCATORE', 692, y);
+
+    ctx.strokeStyle = primary;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(70, y + 14);
+    ctx.lineTo(1170, y + 14);
+    ctx.stroke();
+
+    y += 32;
 
     const split = Math.ceil(data.giocatori.length / 2);
     const left = data.giocatori.slice(0, split);
@@ -619,43 +677,68 @@ window.TeamCenterConvocazioni = (() => {
 
     for (let index = 0; index < rows; index += 1) {
       const rowY = y + index * rowHeight;
-      ctx.fillStyle = index % 2 === 0 ? '#fff' : '#eceef1';
-      ctx.fillRect(70, rowY, 1100, rowHeight - 3);
-
       const first = left[index];
       const second = right[index];
 
       ctx.fillStyle = primary;
-      ctx.font = '900 22px Arial';
-      if (first) ctx.fillText(String(index + 1), 88, rowY + 34);
-      if (second) ctx.fillText(String(split + index + 1), 645, rowY + 34);
-
-      ctx.fillStyle = ink;
-      ctx.font = '800 22px Arial';
-      if (first) ctx.fillText(fullName(first), 130, rowY + 34);
-      if (second) ctx.fillText(fullName(second), 690, rowY + 34);
-    }
-
-    y += rows * rowHeight + 58;
-    ctx.fillStyle = primary;
-    ctx.font = '900 27px Arial';
-    ctx.fillText('STAFF', 70, y);
-    y += 28;
-
-    const staff = data.staff.length ? data.staff : [{ Ruolo: 'Staff', Cognome: '—', Nome: '' }];
-
-    staff.forEach((item, index) => {
-      const rowY = y + index * 50;
-      ctx.fillStyle = index % 2 === 0 ? '#fff' : '#eceef1';
-      ctx.fillRect(70, rowY, 1100, 47);
-
-      ctx.fillStyle = primary;
-      ctx.font = '900 20px Arial';
-      ctx.fillText(item.Ruolo || '', 92, rowY + 31);
+      ctx.font = '900 21px Arial';
+      if (first) ctx.fillText(String(index + 1), 88, rowY + 32);
+      if (second) ctx.fillText(String(split + index + 1), 645, rowY + 32);
 
       ctx.fillStyle = ink;
       ctx.font = '800 21px Arial';
-      ctx.fillText(fullName(item), 390, rowY + 31);
+      if (first) ctx.fillText(fullName(first), 135, rowY + 32);
+      if (second) ctx.fillText(fullName(second), 692, rowY + 32);
+
+      ctx.strokeStyle = line;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(70, rowY + rowHeight - 2);
+      ctx.lineTo(1170, rowY + rowHeight - 2);
+      ctx.stroke();
+    }
+
+    y += rows * rowHeight + 68;
+
+    ctx.fillStyle = primary;
+    ctx.font = '900 27px Arial';
+    ctx.fillText('STAFF', 70, y);
+
+    y += 38;
+    ctx.font = '900 18px Arial';
+    ctx.fillText('RUOLO', 88, y);
+    ctx.fillText('NOME', 400, y);
+
+    ctx.strokeStyle = primary;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(70, y + 14);
+    ctx.lineTo(1170, y + 14);
+    ctx.stroke();
+
+    y += 32;
+
+    const staff = data.staff.length
+      ? data.staff
+      : [{ Ruolo: 'Staff', Cognome: '—', Nome: '' }];
+
+    staff.forEach((item, index) => {
+      const rowY = y + index * 50;
+
+      ctx.fillStyle = primary;
+      ctx.font = '900 20px Arial';
+      ctx.fillText(item.Ruolo || '', 88, rowY + 31);
+
+      ctx.fillStyle = ink;
+      ctx.font = '800 21px Arial';
+      ctx.fillText(fullName(item), 400, rowY + 31);
+
+      ctx.strokeStyle = line;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(70, rowY + 48);
+      ctx.lineTo(1170, rowY + 48);
+      ctx.stroke();
     });
 
     return canvas;

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-1.9.1-bootstrap';
+const CACHE='teamcenter-1.9.2-convocazioni-layout';
 const ASSETS=[
   './',
   './index.html',

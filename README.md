@@ -1,3 +1,3 @@
-# TeamCenter 1.9.1
+# TeamCenter 1.9.2
 
-Correzione del bootstrap iniziale, caricamento profilo CSV Breda, logo ufficiale, colori e inizializzazione moduli.
+Nuovo layout bianco per Convocazioni.

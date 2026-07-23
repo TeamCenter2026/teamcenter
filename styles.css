@@ -470,3 +470,25 @@
   .callup-preview-sheet{min-width:680px}
   .callup-preview{overflow-x:auto}
 }
+
+/* TeamCenter 1.9.2 - Layout bianco Convocazioni */
+.callup-preview-sheet-white{background:#fff;color:#202124}
+.callup-preview-header-white{padding:4px 0 22px}
+.callup-preview-header-inner{display:flex;align-items:center;justify-content:center;gap:24px;min-height:120px}
+.callup-preview-logo-white{width:104px;height:104px;display:grid;place-items:center;flex:0 0 auto}
+.callup-preview-logo-white img{max-width:100%;max-height:100%;object-fit:contain}
+.callup-preview-title-block{display:grid;gap:4px;color:var(--granata);text-align:left}
+.callup-preview-title-block strong{font-size:2rem;line-height:1;font-weight:950;text-transform:uppercase}
+.callup-preview-title-block span{font-size:1.2rem;font-weight:950;letter-spacing:.03em}
+.callup-preview-header-line{height:2px;width:100%;background:var(--granata)}
+.callup-preview-match-white{margin-top:24px}
+.callup-preview-info-white>div,.callup-preview-address-white{border:1px solid #d9dce1;box-shadow:none}
+.callup-preview-table-head{display:grid;grid-template-columns:42px 1fr 42px 1fr;color:var(--granata);font-size:.78rem;font-weight:950;border-bottom:1px solid var(--granata);padding:0 0 8px}
+.callup-preview-table-head span:nth-child(1),.callup-preview-table-head span:nth-child(3){text-align:center}
+.callup-preview-players-white{border:0;border-radius:0}
+.callup-preview-players-white .callup-preview-num,.callup-preview-players-white .callup-preview-name{background:#fff;border-bottom:1px solid #d9dce1}
+.callup-preview-staff-head{display:grid;grid-template-columns:200px 1fr;color:var(--granata);font-size:.78rem;font-weight:950;border-bottom:1px solid var(--granata);padding:0 12px 8px}
+.callup-preview-staff-white{border:0;border-radius:0}
+.callup-preview-staff-white>div{background:#fff;border-bottom:1px solid #d9dce1}
+.callup-preview-staff-name{font-weight:800;color:#202124}
+@media(max-width:720px){.callup-preview-header-inner{justify-content:flex-start}}

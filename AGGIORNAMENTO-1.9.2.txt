@@ -1,0 +1,18 @@
+TEAMCENTER 1.9.2 — NUOVO LAYOUT CONVOCAZIONI
+
+- Foglio completamente bianco.
+- Logo ufficiale a sinistra del blocco titolo.
+- Logo + titolo centrati complessivamente nel foglio.
+- CSV BREDA e CONVOCAZIONE in granata.
+- Sottile linea granata sotto l'intestazione.
+- Eliminato il banner pieno granata.
+- Riquadri bianchi con bordo sottile.
+- Tabelle giocatori e staff con separatori puliti.
+- Stesso layout per anteprima, PDF, immagine e condivisione.
+- Nessuna modifica ai fogli Google o ai dati salvati.
+
+INSTALLAZIONE
+1. Carica tutti i file della cartella teamcenter-main su GitHub.
+2. Commit: TeamCenter 1.9.2 - Nuovo layout convocazioni
+3. Apri https://teamcenter2026.github.io/teamcenter/?v=192
+4. Premi CTRL + F5.
