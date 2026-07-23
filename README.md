@@ -1,3 +1,3 @@
-# TeamCenter 2.1
+# TeamCenter 2.1.1
 
-Archivio PDF Match, pulsante Home corretto e nome squadra PDF corretto.
+Correzione apertura PDF statistiche da smartphone con anteprima interna.

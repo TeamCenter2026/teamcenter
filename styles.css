@@ -712,3 +712,228 @@
     width:100%;
   }
 }
+
+
+/* TeamCenter 2.1.1 - Anteprima PDF compatibile con smartphone */
+.match20-report-preview{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  overflow:auto;
+  background:#eef0f3;
+  padding:12px;
+}
+
+.match20-report-preview.hidden{
+  display:none;
+}
+
+.match20-report-preview-toolbar{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  max-width:900px;
+  margin:0 auto 12px;
+  padding:12px;
+  border:1px solid #d9dde3;
+  border-radius:14px;
+  background:#fff;
+}
+
+.match20-report-preview-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.match20-report-preview-content{
+  max-width:900px;
+  margin:0 auto;
+  padding:20px;
+  background:#fff;
+  border:1px solid #d9dde3;
+  border-radius:14px;
+}
+
+.match20-report-preview-content .report{
+  width:100%;
+  margin:0;
+  padding:0;
+  color:#111;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+.match20-report-preview-content header{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+}
+
+.match20-report-preview-content header img{
+  width:95px;
+  height:95px;
+  object-fit:contain;
+}
+
+.match20-report-preview-content h1,
+.match20-report-preview-content h2,
+.match20-report-preview-content h3{
+  color:var(--granata);
+}
+
+.match20-report-preview-content h1{margin:0;font-size:24px}
+.match20-report-preview-content h2{margin:5px 0 0;font-size:17px}
+.match20-report-preview-content h3{margin:20px 0 8px;font-size:16px}
+
+.match20-report-preview-content .line{
+  height:2px;
+  margin:12px 0 16px;
+  background:var(--granata);
+}
+
+.match20-report-preview-content .meta{
+  display:grid;
+  gap:4px;
+  margin-bottom:16px;
+  text-align:center;
+}
+
+.match20-report-preview-content .scorebox{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border:1px solid #d9dde3;
+  border-radius:12px;
+  text-align:center;
+}
+
+.match20-report-preview-content .scorebox strong{
+  color:var(--granata);
+  font-size:30px;
+}
+
+.match20-report-preview-content table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.match20-report-preview-content th,
+.match20-report-preview-content td{
+  padding:7px;
+  border:1px solid #d9dde3;
+  text-align:left;
+}
+
+.match20-report-preview-content th{
+  color:var(--granata);
+  background:#f3f4f6;
+}
+
+body.match20-report-open{
+  overflow:hidden;
+}
+
+@media(max-width:720px){
+  .match20-report-preview{
+    padding:0;
+    background:#fff;
+  }
+
+  .match20-report-preview-toolbar{
+    border-radius:0;
+    margin:0;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .match20-report-preview-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .match20-report-preview-content{
+    border:0;
+    border-radius:0;
+    padding:14px 10px 30px;
+  }
+
+  .match20-report-preview-content header{
+    align-items:center;
+  }
+
+  .match20-report-preview-content header img{
+    width:72px;
+    height:72px;
+  }
+
+  .match20-report-preview-content h1{
+    font-size:17px;
+  }
+
+  .match20-report-preview-content h2{
+    font-size:13px;
+  }
+
+  .match20-report-preview-content .scorebox{
+    grid-template-columns:1fr auto 1fr;
+    gap:5px;
+    padding:10px 6px;
+    font-size:12px;
+  }
+
+  .match20-report-preview-content .scorebox strong{
+    font-size:24px;
+  }
+
+  .match20-report-preview-content table{
+    font-size:10px;
+  }
+
+  .match20-report-preview-content th,
+  .match20-report-preview-content td{
+    padding:5px 3px;
+  }
+}
+
+@media print{
+  body *{
+    visibility:hidden!important;
+  }
+
+  #match20ReportPreview,
+  #match20ReportPreviewContent,
+  #match20ReportPreviewContent *{
+    visibility:visible!important;
+  }
+
+  #match20ReportPreview{
+    position:absolute;
+    inset:0;
+    overflow:visible;
+    padding:0;
+    background:#fff;
+  }
+
+  .match20-report-preview-toolbar{
+    display:none!important;
+  }
+
+  #match20ReportPreviewContent{
+    max-width:none;
+    border:0;
+    padding:0;
+  }
+
+  @page{
+    size:A4;
+    margin:8mm;
+  }
+}

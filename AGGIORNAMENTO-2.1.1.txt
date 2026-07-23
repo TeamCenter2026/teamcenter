@@ -1,0 +1,10 @@
+TEAMCENTER 2.1.1 — PDF STATISTICHE SU SMARTPHONE
+
+CORREZIONE
+- Su smartphone il report non viene più aperto in una nuova finestra.
+- Il PDF viene mostrato in un'anteprima interna a schermo intero.
+- Il pulsante Stampa / Salva PDF apre la funzione di stampa del telefono.
+- Su iPhone è possibile scegliere Condividi e poi Salva su File.
+- Il pulsante Chiudi riporta alla Gestione Match, non alla Home.
+- Bloccato il comportamento che faceva ripartire l'app dalla Home.
+- Su computer resta disponibile l'apertura del report in una nuova finestra.

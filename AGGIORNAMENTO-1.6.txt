@@ -1,22 +1,44 @@
-TEAMCENTER 1.5 - MIGLIORIE PROFILO SOCIETA
+TEAMCENTER 1.6 — MODULO ROSA
 
-NOVITA
-- Logo profilo più grande
-- Badge: Sincronizzato con Google Sheets
-- Conferma visiva dopo il salvataggio
-- Nome descrittivo e codice HEX dei colori
-- Data e ora dell'ultimo aggiornamento
+FUNZIONI INCLUSE
+- Nuovo pulsante Rosa nella Home
+- Selezione squadra
+- Ricerca per nome o cognome
+- Conteggio giocatori e giocatori attivi
+- Inserimento nuovo giocatore
+- Modifica di nome, cognome, anno e stato
+- Nessun numero di maglia
+- ID giocatore generato automaticamente
 
-IMPORTANTE PER ULTIMO AGGIORNAMENTO
-Nel foglio MASTER aggiungi, se non esiste, una colonna con intestazione esatta:
-UltimoAggiornamento
+PRIMA DI AGGIORNARE GITHUB
 
-Non inserire manualmente alcun valore: Apps Script la compilerà al prossimo salvataggio.
+1. Apri il foglio GIOCATORI.
+2. La prima riga deve avere ESATTAMENTE queste colonne:
 
-PUBBLICAZIONE
-1. Carica tutti i file nella root del repository GitHub.
-2. Sostituisci quelli esistenti.
-3. Commit: TeamCenter 1.5 - Migliorie profilo società
-4. Attendi che GitHub Actions diventi verde.
-5. Apri https://teamcenter2026.github.io/teamcenter/?v=150
-6. Premi CTRL+F5.
+IDGiocatore | IDSquadra | Cognome | Nome | Anno | Attivo
+
+3. In Apps Script sostituisci tutto Codice.gs con il contenuto del file:
+   CODICE-GS-COMPLETO-1.6.txt
+
+4. Salva Apps Script.
+5. Distribuisci > Gestisci deployment > Matita > Nuova versione > Distribuisci.
+
+AGGIORNAMENTO GITHUB
+
+1. Carica tutti i file della cartella teamcenter-main.
+2. Commit:
+   TeamCenter 1.6 - Modulo Rosa
+3. Attendi Actions verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=160
+5. Premi CTRL + F5.
+
+TEST
+
+- Apri Rosa
+- Seleziona una squadra
+- Premi Nuovo giocatore
+- Inserisci Cognome, Nome, Anno e Stato
+- Salva
+- Modifica lo stesso giocatore
+- Prova la barra di ricerca

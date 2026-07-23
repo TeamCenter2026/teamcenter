@@ -696,7 +696,7 @@ window.TeamCenterMatch = (() => {
       state.finished = backup.finished;
       state.period = backup.period;
       state.timer = backup.timer;
-    }, 500);
+    }, isMobileDevice() ? 50 : 500);
   }
 
   function goHome() {
@@ -848,8 +848,40 @@ window.TeamCenterMatch = (() => {
     `;
   }
 
+
+  function isMobileDevice() {
+    return window.matchMedia('(max-width: 820px)').matches ||
+      /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  }
+
+  function openReportPreview() {
+    const preview = $('#match20ReportPreview');
+    const content = $('#match20ReportPreviewContent');
+    if (!preview || !content) return false;
+
+    content.innerHTML = printableReportHtml();
+    preview.classList.remove('hidden');
+    document.body.classList.add('match20-report-open');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    return true;
+  }
+
+  function closeReportPreview() {
+    $('#match20ReportPreview')?.classList.add('hidden');
+    document.body.classList.remove('match20-report-open');
+  }
+
+  function printReportPreview() {
+    window.print();
+  }
+
   function createPdfReport() {
     try {
+      if (isMobileDevice()) {
+        openReportPreview();
+        return;
+      }
+
       const reportWindow = window.open('', '_blank');
       if (!reportWindow) {
         throw new Error('Il browser ha bloccato la finestra del PDF.');
@@ -970,6 +1002,8 @@ window.TeamCenterMatch = (() => {
     $('#match20HomeBtn')?.addEventListener('click', goHome);
     $('#match20PdfBtn')?.addEventListener('click', createPdfReport);
     $('#match20RefreshArchiveBtn')?.addEventListener('click', loadReportArchive);
+    $('#match20ClosePreviewBtn')?.addEventListener('click', closeReportPreview);
+    $('#match20PrintPreviewBtn')?.addEventListener('click', printReportPreview);
 
     $('#match20TeamBreda')?.addEventListener('click', () => {
       state.actionTeam = 'breda';
@@ -1004,7 +1038,11 @@ window.TeamCenterMatch = (() => {
       if (deleteButton) deleteEvent(deleteButton.dataset.match20Delete);
 
       const reportButton = event.target.closest('[data-match20-report-index]');
-      if (reportButton) openArchivedReport(reportButton.dataset.match20ReportIndex);
+      if (reportButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        openArchivedReport(reportButton.dataset.match20ReportIndex);
+      }
     });
   }
 

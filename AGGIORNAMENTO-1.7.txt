@@ -1,24 +1,31 @@
-TEAMCENTER 1.6 — MODULO ROSA
+TEAMCENTER 1.7 — MODULO STAFF
 
 FUNZIONI INCLUSE
-- Nuovo pulsante Rosa nella Home
-- Selezione squadra
+- Nuovo pulsante Staff nella Home
+- Elenco completo dei componenti
 - Ricerca per nome o cognome
-- Conteggio giocatori e giocatori attivi
-- Inserimento nuovo giocatore
-- Modifica di nome, cognome, anno e stato
-- Nessun numero di maglia
-- ID giocatore generato automaticamente
+- Filtro per ruolo
+- Inserimento nuovo componente
+- Modifica di nome, cognome, ruolo e stato
+- Nessuna associazione con le squadre
+
+RUOLI
+- Allenatore
+- Viceallenatore
+- Preparatore atletico
+- Preparatore portieri
+- Dirigente
+- Direttore
 
 PRIMA DI AGGIORNARE GITHUB
 
-1. Apri il foglio GIOCATORI.
+1. Apri il foglio STAFF.
 2. La prima riga deve avere ESATTAMENTE queste colonne:
 
-IDGiocatore | IDSquadra | Cognome | Nome | Anno | Attivo
+IDStaff | Cognome | Nome | Ruolo | Attivo
 
 3. In Apps Script sostituisci tutto Codice.gs con il contenuto del file:
-   CODICE-GS-COMPLETO-1.6.txt
+   CODICE-GS-COMPLETO-1.7.txt
 
 4. Salva Apps Script.
 5. Distribuisci > Gestisci deployment > Matita > Nuova versione > Distribuisci.
@@ -27,18 +34,18 @@ AGGIORNAMENTO GITHUB
 
 1. Carica tutti i file della cartella teamcenter-main.
 2. Commit:
-   TeamCenter 1.6 - Modulo Rosa
+   TeamCenter 1.7 - Modulo Staff
 3. Attendi Actions verde.
 4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=160
+   https://teamcenter2026.github.io/teamcenter/?v=170
 5. Premi CTRL + F5.
 
 TEST
 
-- Apri Rosa
-- Seleziona una squadra
-- Premi Nuovo giocatore
-- Inserisci Cognome, Nome, Anno e Stato
+- Apri Staff
+- Premi Nuovo componente
+- Inserisci Cognome, Nome, Ruolo e Stato
 - Salva
-- Modifica lo stesso giocatore
-- Prova la barra di ricerca
+- Modifica lo stesso componente
+- Prova la ricerca
+- Prova il filtro per ruolo

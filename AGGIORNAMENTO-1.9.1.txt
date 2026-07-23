@@ -1,54 +1,64 @@
-TEAMCENTER 1.8 — MODULO ALLENAMENTI
+TEAMCENTER 1.9.1 — CORREZIONE AVVIO, PROFILO E LOGO
 
-FUNZIONI INCLUSE
-- Selezione squadra
-- Selezione Allenamento 1, Allenamento 2 o Allenamento 3
-- Caricamento automatico dei giocatori attivi della Rosa
-- Stato per ogni giocatore:
-  Presente
-  Assente
-  Giustificato
-  Infortunato
-- Comando rapido Imposta tutti presenti
-- Comando Azzera selezioni
-- Riepilogo automatico
-- Salvataggio su Google Sheets
-- Archivio degli ultimi allenamenti
+PROBLEMA RISOLTO
 
-FOGLIO GOOGLE ALLENAMENTI
+La versione 1.9 poteva interrompere JavaScript prima del bootstrap perché alcuni
+listener facevano riferimento a vecchi elementi HTML non più presenti.
 
-La prima riga deve contenere ESATTAMENTE:
+Conseguenze:
+- titolo TEAMCENTER invece di CSV Breda;
+- logo assente;
+- dati MASTER non applicati;
+- moduli Allenamenti e Convocazioni non inizializzati correttamente.
 
-IDAllenamento | IDSquadra | Squadra | Seduta | Presenze | UltimoAggiornamento
+MODIFICHE
+
+- Nuovo file bootstrap.js.
+- MASTER, logo e squadre vengono caricati prima di app.js.
+- Titolo Home impostato sul nome società.
+- Logo ufficiale applicato alla Home.
+- Colori applicati dal foglio MASTER.
+- Listener legacy resi sicuri.
+- Ripristino corretto della schermata Allenamenti.
+- Ripristino corretto della schermata Convocazioni.
+- Cache aggiornata alla versione 1.9.1.
+- Allenamenti e Convocazioni aggiunti agli asset del Service Worker.
+
+INSTALLAZIONE
+
+1. Carica su GitHub TUTTI i file della cartella teamcenter-main.
+2. Commit consigliato:
+   TeamCenter 1.9.1 - Fix bootstrap profilo e logo
+3. Attendi GitHub Actions verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=191
+5. Premi CTRL + F5.
+
+PULIZIA CACHE, SE NECESSARIA
+
+Chrome:
+- F12
+- Application
+- Service Workers
+- Unregister
+- Storage
+- Clear site data
+- Ricarica con ?v=191
 
 APPS SCRIPT
 
-1. Apri il file CODICE-GS-COMPLETO-1.8.txt.
-2. Copia tutto.
-3. Sostituisci completamente il contenuto di Codice.gs.
-4. Salva.
-5. Distribuisci > Gestisci deployment.
-6. Premi la matita.
-7. Seleziona Nuova versione.
-8. Distribuisci.
+La logica backend non cambia.
+È comunque incluso CODICE-GS-COMPLETO-1.9.1.txt.
 
-GITHUB
-
-1. Carica tutti i file contenuti nella cartella teamcenter-main.
-2. Usa il commit:
-   TeamCenter 1.8 - Modulo Allenamenti
-3. Attendi che GitHub Actions diventi verde.
-4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=180
-5. Premi CTRL + F5.
+Puoi sostituire Codice.gs e creare una nuova distribuzione, ma per la sola
+correzione della Home non è indispensabile se il deployment 1.9 risponde già.
 
 TEST
 
-1. Apri Allenamenti.
-2. Seleziona una squadra.
-3. Scegli Allenamento 1, 2 oppure 3.
-4. Premi Imposta tutti presenti.
-5. Modifica alcuni giocatori come Assente, Giustificato o Infortunato.
-6. Controlla il riepilogo.
-7. Salva.
-8. Verifica la nuova riga nel foglio ALLENAMENTI.
+1. Apri la Home.
+2. Controlla che compaia CSV BREDA.
+3. Controlla il logo ufficiale.
+4. Controlla i colori societari.
+5. Apri Rosa, Staff, Allenamenti e Convocazioni.
+6. Ricarica la pagina mentre sei dentro Allenamenti o Convocazioni.
+7. Verifica che il modulo venga inizializzato correttamente.
