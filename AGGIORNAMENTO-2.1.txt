@@ -1,0 +1,11 @@
+TEAMCENTER 2.1 — ARCHIVIO REPORT MATCH E CORREZIONI
+
+MODIFICHE
+- Aggiunto in Gestione Match l'Archivio report statistiche delle partite salvate.
+- Ogni report può essere richiamato con il pulsante Apri PDF.
+- L'archivio legge i Match già presenti nel foglio MATCH.
+- Corretto definitivamente il pulsante Home nella schermata Gestione Match.
+- Nel PDF il nome della squadra è ora CSV BREDA e non CSV BREDA | TEAM CENTER.
+- La dicitura CSV BREDA | TEAM CENTER resta soltanto nell'intestazione del report.
+- Dopo un nuovo salvataggio l'archivio viene aggiornato automaticamente.
+- Restano attivi: secondo tempo da 45:00, salvataggio solo a fine partita e PDF statistiche.

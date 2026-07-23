@@ -1,3 +1,3 @@
-# TeamCenter 2.0.5
+# TeamCenter 2.1
 
-Header Home con logo bianco più grande a sinistra e scritta CSV BREDA | TEAM CENTER.
+Archivio PDF Match, pulsante Home corretto e nome squadra PDF corretto.

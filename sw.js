@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.0.5-white-logo-header';
+const CACHE='teamcenter-2.1-match-report-archive-home-fix';
 const ASSETS=[
   './',
   './index.html',

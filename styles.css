@@ -666,3 +666,49 @@
     font-size:1rem;
   }
 }
+
+
+/* TeamCenter 2.1 - Archivio report Match */
+.match20-report-archive{
+  display:grid;
+  gap:10px;
+  margin-top:14px;
+}
+
+.match20-report-item{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px;
+  border:1px solid #d9dde3;
+  border-radius:16px;
+  background:#fff;
+}
+
+.match20-report-info{
+  display:grid;
+  gap:4px;
+  min-width:0;
+}
+
+.match20-report-info strong,
+.match20-report-info b{
+  color:var(--granata);
+}
+
+.match20-report-info span{
+  color:#667085;
+  font-size:.92rem;
+}
+
+@media(max-width:720px){
+  .match20-report-item{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .match20-report-item .btn{
+    width:100%;
+  }
+}

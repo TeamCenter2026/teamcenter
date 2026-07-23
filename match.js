@@ -3,6 +3,7 @@ window.TeamCenterMatch = (() => {
 
   const state = {
     convocazioni: [],
+    matchArchive: [],
     selected: null,
     players: [],
     staff: [],
@@ -224,6 +225,7 @@ window.TeamCenterMatch = (() => {
     }
 
     $('#match20SetupCard').classList.add('hidden');
+    $('#match20ReportArchiveCard')?.classList.add('hidden');
     $('#match20LiveArea').classList.remove('hidden');
     renderAll();
     persist();
@@ -564,6 +566,139 @@ window.TeamCenterMatch = (() => {
   }
 
 
+
+  function valueFrom(record, ...keys) {
+    for (const key of keys) {
+      if (record && record[key] !== undefined && record[key] !== null && String(record[key]) !== '') {
+        return record[key];
+      }
+    }
+    return '';
+  }
+
+  function normalizeArchiveMatch(record) {
+    return {
+      IDMatch: valueFrom(record, 'IDMatch', 'idMatch'),
+      IDConvocazione: valueFrom(record, 'IDConvocazione', 'idConvocazione'),
+      IDSquadra: valueFrom(record, 'IDSquadra', 'idSquadra'),
+      Squadra: valueFrom(record, 'Squadra', 'squadra'),
+      Campionato: valueFrom(record, 'Campionato', 'campionato'),
+      Giornata: valueFrom(record, 'Giornata', 'giornata'),
+      Data: valueFrom(record, 'Data', 'data'),
+      Avversario: valueFrom(record, 'Avversario', 'avversario'),
+      Sede: valueFrom(record, 'Sede', 'sede'),
+      RisultatoCasa: Number(valueFrom(record, 'RisultatoCasa', 'risultatoCasa')) || 0,
+      RisultatoTrasferta: Number(valueFrom(record, 'RisultatoTrasferta', 'risultatoTrasferta')) || 0,
+      Stato: valueFrom(record, 'Stato', 'stato'),
+      TempoPartita: valueFrom(record, 'TempoPartita', 'tempoPartita'),
+      Eventi: valueFrom(record, 'Eventi', 'eventi'),
+      Giocatori: valueFrom(record, 'Giocatori', 'giocatori'),
+      Staff: valueFrom(record, 'Staff', 'staff')
+    };
+  }
+
+  function renderReportArchive() {
+    const container = $('#match20ReportArchive');
+    if (!container) return;
+
+    if (!state.matchArchive.length) {
+      container.innerHTML = '<div class="callup-empty">Nessun Match salvato.</div>';
+      return;
+    }
+
+    container.innerHTML = state.matchArchive.map((raw, index) => {
+      const item = normalizeArchiveMatch(raw);
+      const club = getClubName();
+      const home = String(item.Sede || '').toUpperCase() === 'CASA';
+      const homeName = home ? club : item.Avversario;
+      const awayName = home ? item.Avversario : club;
+
+      return `
+        <article class="match20-report-item">
+          <div class="match20-report-info">
+            <strong>${escapeHtml(formatDate(item.Data))} · ${escapeHtml(item.Squadra || 'Squadra')}</strong>
+            <span>${escapeHtml(item.Campionato)} · ${escapeHtml(item.Giornata)}</span>
+            <b>${escapeHtml(homeName)} ${item.RisultatoCasa} - ${item.RisultatoTrasferta} ${escapeHtml(awayName)}</b>
+          </div>
+          <button class="btn btn-secondary" type="button" data-match20-report-index="${index}">
+            📄 Apri PDF
+          </button>
+        </article>
+      `;
+    }).join('');
+  }
+
+  async function loadReportArchive() {
+    const container = $('#match20ReportArchive');
+    if (container) container.innerHTML = '<div class="callup-empty">Caricamento report salvati…</div>';
+
+    try {
+      const items = await window.TeamCenterAPI.getMatch();
+      state.matchArchive = Array.isArray(items) ? items : [];
+      state.matchArchive.sort((a, b) => {
+        const dateA = String(valueFrom(a, 'Data', 'data') || '');
+        const dateB = String(valueFrom(b, 'Data', 'data') || '');
+        return dateB.localeCompare(dateA);
+      });
+      renderReportArchive();
+    } catch (error) {
+      console.error(error);
+      if (container) {
+        container.innerHTML = `<div class="callup-empty">Errore archivio: ${escapeHtml(error.message)}</div>`;
+      }
+    }
+  }
+
+  function openArchivedReport(index) {
+    const raw = state.matchArchive[Number(index)];
+    if (!raw) return;
+
+    const item = normalizeArchiveMatch(raw);
+    const backup = {
+      selected: state.selected,
+      score: { ...state.score },
+      events: [...state.events],
+      players: [...state.players],
+      staff: [...state.staff],
+      finished: state.finished,
+      period: state.period,
+      timer: { ...state.timer }
+    };
+
+    state.selected = {
+      IDConvocazione: item.IDConvocazione,
+      IDSquadra: item.IDSquadra,
+      Squadra: item.Squadra,
+      Campionato: item.Campionato,
+      Giornata: item.Giornata,
+      Data: item.Data,
+      Avversario: item.Avversario,
+      Sede: item.Sede
+    };
+    state.score = {
+      home: item.RisultatoCasa,
+      away: item.RisultatoTrasferta
+    };
+    state.events = parseJson(item.Eventi);
+    state.players = parseJson(item.Giocatori);
+    state.staff = parseJson(item.Staff);
+    state.finished = true;
+    state.period = 4;
+
+    createPdfReport();
+
+    window.setTimeout(() => {
+      state.selected = backup.selected;
+      state.score = backup.score;
+      state.events = backup.events;
+      state.players = backup.players;
+      state.staff = backup.staff;
+      state.finished = backup.finished;
+      state.period = backup.period;
+      state.timer = backup.timer;
+    }, 500);
+  }
+
   function goHome() {
     pauseTimer();
 
@@ -572,16 +707,18 @@ window.TeamCenterMatch = (() => {
 
     $('#match20LiveArea')?.classList.add('hidden');
     $('#match20SetupCard')?.classList.remove('hidden');
+    $('#match20ReportArchiveCard')?.classList.remove('hidden');
 
-    document.querySelectorAll('.screen').forEach(screen => {
-      screen.classList.toggle('active', screen.id === 'homeScreen');
-    });
+    showScreen('homeScreen');
+  }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function getBrandTitle() {
+    return (document.querySelector('#appTitle')?.textContent || 'CSV BREDA | TEAM CENTER').trim();
   }
 
   function getClubName() {
-    return (document.querySelector('#appTitle')?.textContent || 'CSV BREDA').trim();
+    const title = getBrandTitle();
+    return (title.split('|')[0] || 'CSV BREDA').trim();
   }
 
   function countEvents(type, team = null) {
@@ -622,6 +759,7 @@ window.TeamCenterMatch = (() => {
     if (!state.selected) throw new Error('Nessun Match selezionato.');
 
     const club = getClubName();
+    const brandTitle = getBrandTitle();
     const opponent = state.selected.Avversario || 'Avversario';
     const homeName = bredaIsHome() ? club : opponent;
     const awayName = bredaIsHome() ? opponent : club;
@@ -656,7 +794,7 @@ window.TeamCenterMatch = (() => {
         <header>
           ${logoSrc ? `<img src="${logoSrc}" alt="Logo ${escapeHtml(club)}">` : ''}
           <div>
-            <h1>${escapeHtml(club)}</h1>
+            <h1>${escapeHtml(brandTitle)}</h1>
             <h2>REPORT STATISTICHE PARTITA</h2>
           </div>
         </header>
@@ -811,6 +949,7 @@ window.TeamCenterMatch = (() => {
       const saved = await window.TeamCenterAPI.saveMatch(payload);
       saveMessage(`Match salvato: ${saved.IDMatch}`, 'success');
       $('#match20AfterSaveActions')?.classList.remove('hidden');
+      await loadReportArchive();
     } catch (error) {
       console.error(error);
       saveMessage(`Errore: ${error.message}`, 'error');
@@ -827,9 +966,10 @@ window.TeamCenterMatch = (() => {
     $('#match20StartBtn')?.addEventListener('click', startSelectedMatch);
     $('#match20RefreshBtn')?.addEventListener('click', loadCallups);
 
-    $('#match20BackHomeBtn')?.addEventListener('click', goHome);
+    $('#matchBackHomeBtn')?.addEventListener('click', goHome);
     $('#match20HomeBtn')?.addEventListener('click', goHome);
     $('#match20PdfBtn')?.addEventListener('click', createPdfReport);
+    $('#match20RefreshArchiveBtn')?.addEventListener('click', loadReportArchive);
 
     $('#match20TeamBreda')?.addEventListener('click', () => {
       state.actionTeam = 'breda';
@@ -862,6 +1002,9 @@ window.TeamCenterMatch = (() => {
 
       const deleteButton = event.target.closest('[data-match20-delete]');
       if (deleteButton) deleteEvent(deleteButton.dataset.match20Delete);
+
+      const reportButton = event.target.closest('[data-match20-report-index]');
+      if (reportButton) openArchivedReport(reportButton.dataset.match20ReportIndex);
     });
   }
 
@@ -869,7 +1012,7 @@ window.TeamCenterMatch = (() => {
     showScreen('matchCenterScreen');
     $('#match20SetupCard').classList.remove('hidden');
     $('#match20LiveArea').classList.add('hidden');
-    await loadCallups();
+    await Promise.all([loadCallups(), loadReportArchive()]);
   }
 
   bind();

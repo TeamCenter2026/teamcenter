@@ -1,11 +1,27 @@
-TEAMCENTER 2.0.2 — TIMER MATCH INGRANDITO
+TEAMCENTER 2.0.1 — CORREZIONE SALVATAGGIO MATCH
 
-MODIFICHE
-- Timer molto più grande e leggibile.
-- Stesso font visivo e peso del risultato.
-- Colore granata.
-- Timer inserito in una cornice bianca con bordo grigio.
-- Pannello timer con sfondo grigio molto chiaro.
-- Layout ottimizzato anche per smartphone.
+PROBLEMA RISOLTO
+Il salvataggio del Match inviava Eventi, Giocatori e Staff tramite una richiesta GET.
+Con molti dati l'indirizzo diventava troppo lungo e Google Apps Script poteva restituire
+una pagina HTML invece del JSON, causando l'errore:
+Unexpected token '<', "<!doctype "... is not valid JSON
 
-Non sono state modificate le funzioni di salvataggio, timer, convocazioni o Match.
+CORREZIONE
+- Il salvataggio Match ora usa POST.
+- Gli altri caricamenti continuano a usare GET.
+- Aggiunto doPost(e) nel codice Apps Script.
+- Migliorato il messaggio di errore quando la Web App restituisce HTML.
+- Nessuna modifica alla struttura dei moduli Rosa, Staff, Allenamenti e Convocazioni.
+
+INSTALLAZIONE
+1. Caricare tutti i file del pacchetto su GitHub sostituendo quelli esistenti.
+2. Copiare integralmente CODICE-GS-COMPLETO-2.0.1.txt in Apps Script.
+3. Distribuisci > Gestisci distribuzioni > Modifica.
+4. Selezionare Nuova versione e distribuire.
+5. Verificare che l'accesso sia consentito a chiunque disponga del link.
+6. Aprire l'app con ?v=201 e provare il salvataggio Match.
+
+STRUTTURA FOGLIO MATCH
+IDMatch | IDConvocazione | IDSquadra | Squadra | Campionato | Giornata | Data |
+Avversario | Sede | RisultatoCasa | RisultatoTrasferta | Stato | TempoPartita |
+Eventi | Giocatori | Staff | UltimoAggiornamento
