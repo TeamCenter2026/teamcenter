@@ -1,0 +1,11 @@
+TEAMCENTER 2.0.2 — TIMER MATCH INGRANDITO
+
+MODIFICHE
+- Timer molto più grande e leggibile.
+- Stesso font visivo e peso del risultato.
+- Colore granata.
+- Timer inserito in una cornice bianca con bordo grigio.
+- Pannello timer con sfondo grigio molto chiaro.
+- Layout ottimizzato anche per smartphone.
+
+Non sono state modificate le funzioni di salvataggio, timer, convocazioni o Match.

@@ -530,3 +530,57 @@
   .match20-timer-buttons .btn{width:100%}
   .match20-event{grid-template-columns:58px 30px 1fr 34px}
 }
+
+
+/* TeamCenter 2.0.2 - Timer Match ingrandito */
+.match20-timer-card{
+  background:#f3f4f6;
+  border:1px solid #d9dde3;
+  border-radius:20px;
+  padding:22px;
+}
+
+#match20Clock{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:132px;
+  margin:14px auto 8px;
+  padding:18px 22px;
+  border:2px solid #d9dde3;
+  border-radius:18px;
+  background:#ffffff;
+  color:var(--granata);
+  font-family:inherit;
+  font-size:clamp(3.4rem, 10vw, 6.4rem);
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-0.04em;
+  font-variant-numeric:tabular-nums;
+  box-sizing:border-box;
+}
+
+#match20Period{
+  color:var(--granata);
+  background:#ffffff;
+  border:1px solid #d9dde3;
+}
+
+#match20Recovery{
+  color:var(--granata);
+  font-weight:900;
+  font-size:1rem;
+}
+
+@media(max-width:720px){
+  .match20-timer-card{
+    padding:16px;
+  }
+
+  #match20Clock{
+    min-height:108px;
+    padding:14px 12px;
+    font-size:clamp(2.7rem, 14vw, 4.5rem);
+  }
+}
