@@ -1,3 +1,3 @@
-# TeamCenter 2.0.0
+# TeamCenter 2.0.1
 
-Gestione Match stabile collegata alle Convocazioni e al foglio MATCH.
+Gestione Match stabile con salvataggio POST su Google Apps Script.

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.0.0-match-stabile';
+const CACHE='teamcenter-2.0.1-match-post-fix';
 const ASSETS=[
   './',
   './index.html',
