@@ -1,0 +1,9 @@
+TEAMCENTER 2.0.5 — HEADER HOME
+
+MODIFICHE
+- Logo ufficiale più grande.
+- Logo posizionato a sinistra.
+- Logo visualizzato completamente bianco.
+- Scritta affiancata: CSV BREDA | TEAM CENTER.
+- Header ottimizzato anche per smartphone.
+- Nessuna modifica alle funzioni Match, PDF, timer o salvataggio.

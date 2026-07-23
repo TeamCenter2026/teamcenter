@@ -613,3 +613,56 @@
   cursor:not-allowed;
   filter:grayscale(.25);
 }
+
+
+/* TeamCenter 2.0.5 - Header Home con logo bianco */
+.compact-topbar{
+  padding:calc(12px + env(safe-area-inset-top)) 18px 12px;
+}
+
+.compact-brand{
+  width:100%;
+  justify-content:flex-start!important;
+  align-items:center;
+  gap:16px;
+}
+
+.home-club-logo{
+  width:104px;
+  height:104px;
+  flex:0 0 104px;
+  margin:0;
+}
+
+.home-club-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:brightness(0) invert(1);
+}
+
+.compact-brand h1{
+  margin:0;
+  color:#ffffff;
+  text-align:left;
+  font-size:clamp(1.08rem, 3vw, 1.45rem);
+  line-height:1.15;
+  font-weight:950;
+  letter-spacing:.01em;
+}
+
+@media(max-width:560px){
+  .compact-brand{
+    gap:12px;
+  }
+
+  .home-club-logo{
+    width:86px;
+    height:86px;
+    flex-basis:86px;
+  }
+
+  .compact-brand h1{
+    font-size:1rem;
+  }
+}

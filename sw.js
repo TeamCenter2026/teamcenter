@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.0.4-save-after-final-whistle';
+const CACHE='teamcenter-2.0.5-white-logo-header';
 const ASSETS=[
   './',
   './index.html',

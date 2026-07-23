@@ -60,7 +60,7 @@
     document.documentElement.style.setProperty('--granata-dark',shadeHex(primary,-28));
     document.documentElement.style.setProperty('--granata-soft',shadeHex(primary,83));
     document.documentElement.style.setProperty('--bg',bg);
-    const title=$('#appTitle');if(title)title.textContent=clubName().toUpperCase();
+    const title=$('#appTitle');if(title)title.textContent=`${clubName().toUpperCase()} | TEAM CENTER`;
     const homeLogo=$('#homeClubLogo');
     if(homeLogo){
       homeLogo.innerHTML=state.logoDataUrl
