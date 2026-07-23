@@ -584,3 +584,32 @@
     font-size:clamp(2.7rem, 14vw, 4.5rem);
   }
 }
+
+
+/* TeamCenter 2.0.3 - Azioni dopo il salvataggio Match */
+.match20-after-save{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:16px;
+  padding-top:16px;
+  border-top:1px solid #d9dde3;
+}
+
+.match20-after-save.hidden{
+  display:none;
+}
+
+@media(max-width:720px){
+  .match20-after-save .btn{
+    width:100%;
+  }
+}
+
+
+/* TeamCenter 2.0.4 - Salvataggio solo a fine partita */
+#match20SaveBtn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  filter:grayscale(.25);
+}

@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=2.0.2" />
+  <link rel="stylesheet" href="styles.css?v=2.0.4" />
 </head>
 <body>
 <div class="app-shell">
@@ -636,12 +636,17 @@
               <div class="eyebrow">Cronologia</div>
               <h2>Eventi partita</h2>
             </div>
-            <button id="match20SaveBtn" class="btn btn-primary" type="button">Salva Match</button>
+            <button id="match20SaveBtn" class="btn btn-primary" type="button" disabled>Salva Match</button>
           </div>
           <div id="match20Events" class="match20-events">
             <div class="callup-empty">Nessun evento registrato.</div>
           </div>
           <div id="match20SaveMessage" class="callup-message" role="status" aria-live="polite"></div>
+
+          <div id="match20AfterSaveActions" class="match20-after-save hidden">
+            <button id="match20PdfBtn" class="btn btn-primary" type="button">📄 Crea PDF statistiche</button>
+            <button id="match20HomeBtn" class="btn btn-secondary" type="button">← Torna alla Home</button>
+          </div>
         </div>
       </div>
     </section>
@@ -763,16 +768,16 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=2.0.2"></script>
-<script src="bootstrap.js?v=2.0.2"></script>
-<script src="storage.js?v=2.0.2"></script>
-<script src="profile.js?v=2.0.2"></script>
-<script src="callup.js?v=2.0.2"></script>
-<script src="match.js?v=2.0.2"></script>
-<script src="image.js?v=2.0.2"></script>
-<script src="pdf.js?v=2.0.2"></script>
-<script src="allenamenti.js?v=2.0.2"></script>
-<script src="convocazioni.js?v=2.0.2"></script>
-<script src="app.js?v=2.0.2"></script>
+<script src="api.js?v=2.0.4"></script>
+<script src="bootstrap.js?v=2.0.4"></script>
+<script src="storage.js?v=2.0.4"></script>
+<script src="profile.js?v=2.0.4"></script>
+<script src="callup.js?v=2.0.4"></script>
+<script src="match.js?v=2.0.4"></script>
+<script src="image.js?v=2.0.4"></script>
+<script src="pdf.js?v=2.0.4"></script>
+<script src="allenamenti.js?v=2.0.4"></script>
+<script src="convocazioni.js?v=2.0.4"></script>
+<script src="app.js?v=2.0.4"></script>
 </body>
 </html>

@@ -1,0 +1,16 @@
+TEAMCENTER 2.0.3 — MATCH PDF, HOME E SECONDO TEMPO
+
+MODIFICHE
+- Corretto il pulsante Torna alla Home nella Gestione Match.
+- Dopo il salvataggio compaiono:
+  1. Crea PDF statistiche
+  2. Torna alla Home
+- Il PDF contiene:
+  - dati della gara;
+  - risultato;
+  - statistiche di squadra;
+  - statistiche dei giocatori;
+  - cronologia degli eventi.
+- Il secondo tempo parte visivamente da 45:00:00.
+- Il recupero del secondo tempo parte dopo il 90° minuto complessivo.
+- Nessuna modifica alla struttura del foglio MATCH.

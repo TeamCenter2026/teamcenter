@@ -1,0 +1,8 @@
+TEAMCENTER 2.0.4 — SALVATAGGIO SOLO A FINE PARTITA
+
+MODIFICHE
+- Il pulsante Salva Match resta disattivato durante la partita.
+- Il pulsante si attiva solo dopo aver premuto Fine partita.
+- Se si tenta il salvataggio prima del termine, compare un messaggio di errore.
+- PDF statistiche e Torna alla Home continuano a comparire solo dopo il salvataggio.
+- Nessuna modifica al foglio MATCH o ad Apps Script.

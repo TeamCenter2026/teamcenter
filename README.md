@@ -1,3 +1,3 @@
-# TeamCenter 2.0.1
+# TeamCenter 2.0.4
 
-Gestione Match stabile con salvataggio POST su Google Apps Script.
+Il Match può essere salvato soltanto dopo la fine della partita.

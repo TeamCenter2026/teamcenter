@@ -215,6 +215,9 @@ window.TeamCenterMatch = (() => {
   }
 
   function startSelectedMatch() {
+    $('#match20AfterSaveActions')?.classList.add('hidden');
+    saveMessage('');
+    renderSaveAvailability();
     if (!state.selected) {
       message('Seleziona prima una convocazione.', 'error');
       return;
@@ -226,12 +229,24 @@ window.TeamCenterMatch = (() => {
     persist();
   }
 
+  function renderSaveAvailability() {
+    const button = $('#match20SaveBtn');
+    if (!button) return;
+
+    const canSave = state.finished === true && state.period === 4;
+    button.disabled = !canSave;
+    button.title = canSave
+      ? 'Salva il Match terminato'
+      : 'Il Match può essere salvato solo dopo Fine partita';
+  }
+
   function renderAll() {
     renderHeader();
     renderScore();
     renderTimer();
     renderActionTeam();
     renderEvents();
+    renderSaveAvailability();
   }
 
   function bredaIsHome() {
@@ -274,7 +289,10 @@ window.TeamCenterMatch = (() => {
 
   function renderTimer() {
     const elapsed = currentElapsed();
-    $('#match20Clock').textContent = clock(elapsed);
+    const displayElapsed = state.period === 3
+      ? (45 * 60 * 1000) + elapsed
+      : elapsed;
+    $('#match20Clock').textContent = clock(displayElapsed);
 
     const labels = {
       0: 'PARTITA NON INIZIATA',
@@ -545,8 +563,221 @@ window.TeamCenterMatch = (() => {
     renderScore();
   }
 
+
+  function goHome() {
+    pauseTimer();
+
+    const dialog = $('#match20EventDialog');
+    if (dialog?.open) dialog.close();
+
+    $('#match20LiveArea')?.classList.add('hidden');
+    $('#match20SetupCard')?.classList.remove('hidden');
+
+    document.querySelectorAll('.screen').forEach(screen => {
+      screen.classList.toggle('active', screen.id === 'homeScreen');
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function getClubName() {
+    return (document.querySelector('#appTitle')?.textContent || 'CSV BREDA').trim();
+  }
+
+  function countEvents(type, team = null) {
+    return state.events.filter(event =>
+      event.type === type &&
+      event.team !== 'system' &&
+      (team === null || event.team === team)
+    ).length;
+  }
+
+  function playerStatsRows() {
+    const map = new Map();
+
+    state.events.forEach(event => {
+      if (event.team !== 'breda' || !event.playerName) return;
+
+      if (!map.has(event.playerName)) {
+        map.set(event.playerName, {
+          name: event.playerName,
+          gol: 0,
+          assist: 0,
+          ammonizioni: 0,
+          espulsioni: 0
+        });
+      }
+
+      const row = map.get(event.playerName);
+      if (event.type === 'Gol') row.gol += 1;
+      if (event.type === 'Assist') row.assist += 1;
+      if (event.type === 'Ammonizione') row.ammonizioni += 1;
+      if (event.type === 'Espulsione') row.espulsioni += 1;
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  function printableReportHtml() {
+    if (!state.selected) throw new Error('Nessun Match selezionato.');
+
+    const club = getClubName();
+    const opponent = state.selected.Avversario || 'Avversario';
+    const homeName = bredaIsHome() ? club : opponent;
+    const awayName = bredaIsHome() ? opponent : club;
+    const playerRows = playerStatsRows();
+    const logoSrc = document.querySelector('#homeClubLogo img')?.src || '';
+
+    const teamStats = [
+      ['Gol', countEvents('Gol', 'breda'), countEvents('Gol', 'opponent')],
+      ['Assist', countEvents('Assist', 'breda'), countEvents('Assist', 'opponent')],
+      ['Ammonizioni', countEvents('Ammonizione', 'breda'), countEvents('Ammonizione', 'opponent')],
+      ['Espulsioni', countEvents('Espulsione', 'breda'), countEvents('Espulsione', 'opponent')],
+      ['Corner', countEvents('Corner', 'breda'), countEvents('Corner', 'opponent')],
+      ['Punizioni', countEvents('Punizione', 'breda'), countEvents('Punizione', 'opponent')],
+      ['Palle recuperate', countEvents('Palla recuperata', 'breda'), countEvents('Palla recuperata', 'opponent')],
+      ['Palle perse', countEvents('Palla persa', 'breda'), countEvents('Palla persa', 'opponent')]
+    ];
+
+    const chronology = [...state.events]
+      .filter(event => event.team !== 'system')
+      .reverse()
+      .map(event => `
+        <tr>
+          <td>${escapeHtml(event.time)}</td>
+          <td>${escapeHtml(event.type)}</td>
+          <td>${escapeHtml(event.playerName || '')}</td>
+          <td>${escapeHtml(event.team === 'breda' ? club : opponent)}</td>
+        </tr>
+      `).join('');
+
+    return `
+      <div class="report">
+        <header>
+          ${logoSrc ? `<img src="${logoSrc}" alt="Logo ${escapeHtml(club)}">` : ''}
+          <div>
+            <h1>${escapeHtml(club)}</h1>
+            <h2>REPORT STATISTICHE PARTITA</h2>
+          </div>
+        </header>
+
+        <div class="line"></div>
+
+        <section class="meta">
+          <strong>${escapeHtml(state.selected.Squadra)}</strong>
+          <span>${escapeHtml(state.selected.Campionato)} · ${escapeHtml(state.selected.Giornata)}</span>
+          <span>${escapeHtml(formatDate(state.selected.Data))} · ${escapeHtml(state.selected.Sede)}</span>
+        </section>
+
+        <section class="scorebox">
+          <div>${escapeHtml(homeName)}</div>
+          <strong>${state.score.home} - ${state.score.away}</strong>
+          <div>${escapeHtml(awayName)}</div>
+        </section>
+
+        <h3>STATISTICHE DI SQUADRA</h3>
+        <table>
+          <thead>
+            <tr><th>Voce</th><th>${escapeHtml(club)}</th><th>${escapeHtml(opponent)}</th></tr>
+          </thead>
+          <tbody>
+            ${teamStats.map(row => `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td></tr>`).join('')}
+          </tbody>
+        </table>
+
+        <h3>STATISTICHE GIOCATORI</h3>
+        <table>
+          <thead>
+            <tr><th>Giocatore</th><th>Gol</th><th>Assist</th><th>Gialli</th><th>Rossi</th></tr>
+          </thead>
+          <tbody>
+            ${playerRows.length
+              ? playerRows.map(row => `<tr><td>${escapeHtml(row.name)}</td><td>${row.gol}</td><td>${row.assist}</td><td>${row.ammonizioni}</td><td>${row.espulsioni}</td></tr>`).join('')
+              : '<tr><td colspan="5">Nessun evento individuale registrato.</td></tr>'}
+          </tbody>
+        </table>
+
+        <h3>CRONOLOGIA EVENTI</h3>
+        <table>
+          <thead>
+            <tr><th>Minuto</th><th>Evento</th><th>Giocatore</th><th>Squadra</th></tr>
+          </thead>
+          <tbody>
+            ${chronology || '<tr><td colspan="4">Nessun evento registrato.</td></tr>'}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function createPdfReport() {
+    try {
+      const reportWindow = window.open('', '_blank');
+      if (!reportWindow) {
+        throw new Error('Il browser ha bloccato la finestra del PDF.');
+      }
+
+      const primary = getComputedStyle(document.documentElement)
+        .getPropertyValue('--granata')
+        .trim() || '#741f35';
+
+      reportWindow.document.open();
+      reportWindow.document.write(`
+        <!doctype html>
+        <html lang="it">
+        <head>
+          <meta charset="utf-8">
+          <title>Report Match ${escapeHtml(state.selected?.Squadra || '')}</title>
+          <style>
+            *{box-sizing:border-box}
+            body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}
+            .report{width:190mm;margin:0 auto;padding:12mm}
+            header{display:flex;align-items:center;justify-content:center;gap:16px;text-align:left}
+            header img{width:25mm;height:25mm;object-fit:contain}
+            h1{margin:0;color:${primary};font-size:22px}
+            h2{margin:4px 0 0;color:${primary};font-size:16px}
+            .line{height:2px;background:${primary};margin:10px 0 14px}
+            .meta{display:grid;gap:4px;text-align:center;margin-bottom:16px}
+            .meta strong{color:${primary};font-size:18px}
+            .meta span{color:#555}
+            .scorebox{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;border:1px solid #d9d9d9;border-radius:12px;padding:14px;text-align:center;margin-bottom:18px}
+            .scorebox strong{font-size:30px;color:${primary}}
+            h3{margin:18px 0 8px;color:${primary};font-size:15px}
+            table{width:100%;border-collapse:collapse;font-size:11px}
+            th,td{border:1px solid #d9d9d9;padding:7px;text-align:left}
+            th{background:#f3f3f3;color:${primary}}
+            td:nth-child(n+2),th:nth-child(n+2){text-align:center}
+            @page{size:A4;margin:8mm}
+            @media print{
+              .report{width:auto;margin:0;padding:0}
+            }
+          </style>
+        </head>
+        <body>
+          ${printableReportHtml()}
+          <script>
+            window.addEventListener('load', function(){
+              setTimeout(function(){ window.print(); }, 250);
+            });
+          <\/script>
+        </body>
+        </html>
+      `);
+      reportWindow.document.close();
+    } catch (error) {
+      saveMessage(`Errore PDF: ${error.message}`, 'error');
+    }
+  }
+
   async function saveMatch() {
     if (!state.selected) return;
+
+    if (!state.finished || state.period !== 4) {
+      saveMessage('Il Match può essere salvato solo dopo aver premuto Fine partita.', 'error');
+      renderSaveAvailability();
+      return;
+    }
+
     const button = $('#match20SaveBtn');
     const old = button.textContent;
     button.disabled = true;
@@ -579,6 +810,7 @@ window.TeamCenterMatch = (() => {
 
       const saved = await window.TeamCenterAPI.saveMatch(payload);
       saveMessage(`Match salvato: ${saved.IDMatch}`, 'success');
+      $('#match20AfterSaveActions')?.classList.remove('hidden');
     } catch (error) {
       console.error(error);
       saveMessage(`Errore: ${error.message}`, 'error');
@@ -595,10 +827,9 @@ window.TeamCenterMatch = (() => {
     $('#match20StartBtn')?.addEventListener('click', startSelectedMatch);
     $('#match20RefreshBtn')?.addEventListener('click', loadCallups);
 
-    $('#match20BackHomeBtn')?.addEventListener('click', () => {
-      pauseTimer();
-      showScreen('homeScreen');
-    });
+    $('#match20BackHomeBtn')?.addEventListener('click', goHome);
+    $('#match20HomeBtn')?.addEventListener('click', goHome);
+    $('#match20PdfBtn')?.addEventListener('click', createPdfReport);
 
     $('#match20TeamBreda')?.addEventListener('click', () => {
       state.actionTeam = 'breda';
