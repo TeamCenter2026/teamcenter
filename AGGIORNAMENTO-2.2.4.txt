@@ -1,0 +1,6 @@
+TEAMCENTER 2.2.4
+
+- Il pulsante Match ora genera e scarica un vero file PDF, senza aprire la stampa.
+- La generazione usa lo stesso metodo della Convocazione: canvas, PDF e download diretto.
+- Nell’archivio Match il pulsante “Ricrea PDF” ricostruisce e salva il PDF della partita selezionata.
+- Testo pulsante aggiornato in “Salva PDF”.

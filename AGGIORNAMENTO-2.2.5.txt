@@ -1,0 +1,8 @@
+TEAMCENTER 2.2.5
+
+- Allenamenti: eliminata la scelta Allenamento 1/2/3.
+- Allenamenti: aggiunto il campo Data allenamento.
+- La data viene salvata nella colonna Seduta esistente, quindi non servono modifiche al foglio ALLENAMENTI.
+- Archivio Allenamenti: aggiunto il pulsante Ricrea PDF.
+- Archivio Convocazioni: aggiunto il pulsante Ricrea PDF.
+- I PDF vengono generati come file reali e scaricati sul dispositivo.

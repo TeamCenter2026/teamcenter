@@ -119,6 +119,15 @@ window.TeamCenterConvocazioni = (() => {
     $('#callupImageBtn')?.addEventListener('click', () => exportImage(false));
     $('#callupShareBtn')?.addEventListener('click', () => exportImage(true));
     $('#callupPdfBtn')?.addEventListener('click', exportPdf);
+
+    $('#callupHistory')?.addEventListener('click', event => {
+      const button = event.target.closest('[data-callup-pdf-index]');
+      if (!button) return;
+      const index = Number(button.dataset.callupPdfIndex);
+      const items = filteredHistory();
+      const item = items[index];
+      if (item) recreateHistoricalPdf(item, button);
+    });
   }
 
   function setToday() {
@@ -472,26 +481,122 @@ window.TeamCenterConvocazioni = (() => {
     }
   }
 
+  function filteredHistory() {
+    return (window.TeamCenterTeam?.filter(state.history) || [...state.history]).slice(-10).reverse();
+  }
+
   function renderHistory() {
     const box = $('#callupHistory');
     if (!box) return;
 
-    const items = (window.TeamCenterTeam?.filter(state.history) || [...state.history]).slice(-10).reverse();
+    const items = filteredHistory();
 
     if (!items.length) {
       box.innerHTML = '<div class="callup-empty">Nessuna convocazione salvata.</div>';
       return;
     }
 
-    box.innerHTML = items.map(item => `
+    box.innerHTML = items.map((item, index) => `
       <article class="callup-history-card">
-        <div>
+        <div class="callup-history-copy">
           <strong>${escapeHtml(item.Squadra || item.IDSquadra || 'Squadra')} – ${escapeHtml(item.Avversario || '')}</strong>
           <span>${escapeHtml(formatDate(item.Data))} · ${escapeHtml(item.OrarioPartita || '')}</span>
         </div>
-        <small>${escapeHtml(item.Giornata || '')}</small>
+        <div class="callup-history-actions">
+          <small>${escapeHtml(item.Giornata || '')}</small>
+          <button class="btn btn-secondary callup-history-pdf" type="button" data-callup-pdf-index="${index}">📄 Ricrea PDF</button>
+        </div>
       </article>
     `).join('');
+  }
+
+  function parseSavedList(raw) {
+    try {
+      return Array.isArray(raw) ? raw : JSON.parse(raw || '[]');
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function findTeamById(id) {
+    return state.teams.find(team => String(team.IDSquadra || '') === String(id || '')) || state.teams[0] || {};
+  }
+
+  async function recreateHistoricalPdf(item, button) {
+    const oldText = button?.textContent;
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'Creazione…';
+    }
+
+    try {
+      const idSquadra = item.IDSquadra || item.idSquadra || '';
+      const selectedTeam = findTeamById(idSquadra);
+      if ($('#callupTeamSelect')) {
+        $('#callupTeamSelect').value = String(idSquadra || selectedTeam.IDSquadra || '');
+      }
+
+      const savedPlayers = parseSavedList(item.Giocatori);
+      const savedStaff = parseSavedList(item.Staff);
+
+      state.players = savedPlayers.map(player => ({
+        IDGiocatore: player.IDGiocatore || player.id || '',
+        Cognome: player.Cognome || player.cognome || '',
+        Nome: player.Nome || player.nome || '',
+        Anno: player.Anno || player.anno || ''
+      }));
+      state.staff = savedStaff.map(member => ({
+        IDStaff: member.IDStaff || member.id || '',
+        Cognome: member.Cognome || member.cognome || '',
+        Nome: member.Nome || member.nome || '',
+        Ruolo: member.Ruolo || member.ruolo || ''
+      }));
+      state.selectedPlayers = new Set(state.players.map(player => String(player.IDGiocatore || '')));
+      state.selectedStaff = new Set(state.staff.map(member => String(member.IDStaff || '')));
+
+      $('#callupCompetitionInput').value = item.Campionato || '';
+      $('#callupRoundInput').value = item.Giornata || '';
+      $('#callupDateInput').value = normalizeDateForInput(item.Data);
+      $('#callupOpponentInput').value = item.Avversario || '';
+      $('#callupKickoffInput').value = item.OrarioPartita || '';
+      $('#callupMeetingInput').value = item.OrarioConvocazione || meetingTime(item.OrarioPartita || '');
+      $('#callupVenueSelect').value = String(item.Sede || 'CASA').toUpperCase().includes('TRASF') ? 'TRASFERTA' : 'CASA';
+      $('#callupAwayAddressInput').value = item.Indirizzo || '';
+
+      renderVenue();
+      renderPlayers();
+      renderStaff();
+      renderPreview();
+
+      const canvas = await buildCanvas();
+      const jpeg = canvas.toDataURL('image/jpeg', 0.93);
+      const pdf = createPdf(dataUrlBytes(jpeg), canvas.width, canvas.height);
+      const filename = `CSV-Breda_${safeFilePart(item.Squadra || item.IDSquadra)}_${safeFilePart(item.Avversario || 'convocazione')}_${safeFilePart(item.Data || '')}.pdf`;
+      await downloadBlob(pdf, filename);
+      setMessage('PDF convocazione ricreato.');
+    } catch (error) {
+      setMessage('Impossibile ricreare il PDF della convocazione.', true);
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = oldText;
+      }
+    }
+  }
+
+  function normalizeDateForInput(value) {
+    if (!value) return '';
+    const text = String(value).slice(0, 10);
+    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? '' : date.toISOString().slice(0, 10);
+  }
+
+  function safeFilePart(value) {
+    return String(value || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9_-]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'file';
   }
 
   function resetForm() {

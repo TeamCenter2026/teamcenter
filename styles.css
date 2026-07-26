@@ -954,3 +954,17 @@ body.match20-report-open{
 .team-selection-select:focus{border-color:var(--granata);box-shadow:0 0 0 3px rgba(116,31,53,.12)}
 .team-selection-select:disabled{opacity:.65}
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+/* TeamCenter 2.2.5 — pulsanti Ricrea PDF negli archivi */
+.training-history-card,
+.callup-history-card{align-items:center}
+.training-history-copy,
+.callup-history-copy{min-width:0;display:grid;gap:4px}
+.training-history-pdf,
+.callup-history-pdf{flex:0 0 auto;white-space:nowrap;padding:10px 14px;font-size:.84rem}
+.callup-history-actions{display:flex;align-items:center;gap:12px}
+@media (max-width:680px){
+  .training-history-card,.callup-history-card{align-items:stretch;flex-direction:column}
+  .training-history-pdf,.callup-history-pdf{width:100%}
+  .callup-history-actions{align-items:stretch;flex-direction:column;gap:8px}
+}

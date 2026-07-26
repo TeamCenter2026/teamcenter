@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=2.2.3" />
+  <link rel="stylesheet" href="styles.css?v=2.2.5" />
 </head>
 <body>
 <div class="app-shell">
@@ -314,7 +314,7 @@
         <div class="training-heading">
           <div>
             <h2>Registra le presenze</h2>
-            <p class="section-copy">Seleziona la squadra e una delle tre sedute settimanali.</p>
+            <p class="section-copy">Seleziona la squadra e registra le presenze per la data dell’allenamento.</p>
           </div>
           <span class="training-sync-badge">Google Sheets sincronizzato</span>
         </div>
@@ -325,12 +325,8 @@
             <select id="trainingTeamSelect" required></select>
           </div>
           <div class="field">
-            <label for="trainingSessionSelect">Seduta settimanale</label>
-            <select id="trainingSessionSelect" required>
-              <option value="Allenamento 1">Allenamento 1</option>
-              <option value="Allenamento 2">Allenamento 2</option>
-              <option value="Allenamento 3">Allenamento 3</option>
-            </select>
+            <label for="trainingDateInput">Data allenamento</label>
+            <input id="trainingDateInput" type="date" required />
           </div>
         </div>
 
@@ -673,7 +669,7 @@
           <div id="match20SaveMessage" class="callup-message" role="status" aria-live="polite"></div>
 
           <div id="match20AfterSaveActions" class="match20-after-save hidden">
-            <button id="match20PdfBtn" class="btn btn-primary" type="button">📄 Crea PDF statistiche</button>
+            <button id="match20PdfBtn" class="btn btn-primary" type="button">📄 Salva PDF</button>
             <button id="match20HomeBtn" class="btn btn-secondary" type="button">← Torna alla Home</button>
           </div>
         </div>
@@ -808,17 +804,17 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=2.2.3"></script>
-<script src="bootstrap.js?v=2.2.3"></script>
-<script src="team-context.js?v=2.2.3"></script>
-<script src="storage.js?v=2.2.3"></script>
-<script src="profile.js?v=2.2.3"></script>
-<script src="callup.js?v=2.2.3"></script>
-<script src="match.js?v=2.2.3"></script>
-<script src="image.js?v=2.2.3"></script>
-<script src="pdf.js?v=2.2.3"></script>
-<script src="allenamenti.js?v=2.2.3"></script>
-<script src="convocazioni.js?v=2.2.3"></script>
-<script src="app.js?v=2.2.3"></script>
+<script src="api.js?v=2.2.5"></script>
+<script src="bootstrap.js?v=2.2.5"></script>
+<script src="team-context.js?v=2.2.5"></script>
+<script src="storage.js?v=2.2.5"></script>
+<script src="profile.js?v=2.2.5"></script>
+<script src="callup.js?v=2.2.5"></script>
+<script src="match.js?v=2.2.5"></script>
+<script src="image.js?v=2.2.5"></script>
+<script src="pdf.js?v=2.2.5"></script>
+<script src="allenamenti.js?v=2.2.5"></script>
+<script src="convocazioni.js?v=2.2.5"></script>
+<script src="app.js?v=2.2.5"></script>
 </body>
 </html>

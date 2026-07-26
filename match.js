@@ -621,7 +621,7 @@ window.TeamCenterMatch = (() => {
             <b>${escapeHtml(homeName)} ${item.RisultatoCasa} - ${item.RisultatoTrasferta} ${escapeHtml(awayName)}</b>
           </div>
           <button class="btn btn-secondary" type="button" data-match20-report-index="${index}">
-            📄 Apri PDF
+            📄 Ricrea PDF
           </button>
         </article>
       `;
@@ -875,67 +875,192 @@ window.TeamCenterMatch = (() => {
     window.print();
   }
 
-  function createPdfReport() {
+  function matchPdfFileBase() {
+    const selected = state.selected || {};
+    const clean = value => String(value || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-zA-Z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase();
+    return [
+      'report-match',
+      clean(selected.Squadra || 'squadra'),
+      clean(selected.Avversario || 'avversario'),
+      clean(selected.Data || ''),
+      clean(selected.IDMatch || selected.IDConvocazione || '')
+    ].filter(Boolean).join('-');
+  }
+
+  async function matchDownloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  function matchDataUrlBytes(dataUrl) {
+    const binary = atob(dataUrl.split(',')[1]);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return bytes;
+  }
+
+  function matchCreatePdf(jpegBytes, imageWidth, imageHeight) {
+    const encoder = new TextEncoder();
+    const pageWidth = 595.28;
+    const pageHeight = 841.89;
+    const scale = Math.min((pageWidth - 20) / imageWidth, (pageHeight - 20) / imageHeight);
+    const width = imageWidth * scale;
+    const height = imageHeight * scale;
+    const x = (pageWidth - width) / 2;
+    const y = (pageHeight - height) / 2;
+    const objects = [];
+    const addText = text => objects.push(encoder.encode(text));
+    addText('<< /Type /Catalog /Pages 2 0 R >>');
+    addText('<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+    addText(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /XObject << /Im1 5 0 R >> >> /Contents 4 0 R >>`);
+    const content = `q ${width.toFixed(2)} 0 0 ${height.toFixed(2)} ${x.toFixed(2)} ${y.toFixed(2)} cm /Im1 Do Q`;
+    addText(`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+    const imageHeader = encoder.encode(`<< /Type /XObject /Subtype /Image /Width ${imageWidth} /Height ${imageHeight} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`);
+    const imageFooter = encoder.encode('\nendstream');
+    const imageObject = new Uint8Array(imageHeader.length + jpegBytes.length + imageFooter.length);
+    imageObject.set(imageHeader, 0);
+    imageObject.set(jpegBytes, imageHeader.length);
+    imageObject.set(imageFooter, imageHeader.length + jpegBytes.length);
+    objects.push(imageObject);
+    const chunks = [encoder.encode('%PDF-1.4\n')];
+    const offsets = [0];
+    let offset = chunks[0].length;
+    objects.forEach((object, index) => {
+      offsets.push(offset);
+      const prefix = encoder.encode(`${index + 1} 0 obj\n`);
+      const suffix = encoder.encode('\nendobj\n');
+      chunks.push(prefix, object, suffix);
+      offset += prefix.length + object.length + suffix.length;
+    });
+    const xrefOffset = offset;
+    let xref = `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+    for (let index = 1; index < offsets.length; index += 1) xref += `${String(offsets[index]).padStart(10, '0')} 00000 n \n`;
+    xref += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+    chunks.push(encoder.encode(xref));
+    return new Blob(chunks, { type: 'application/pdf' });
+  }
+
+  function matchLoadImage(src) {
+    return new Promise(resolve => {
+      if (!src) return resolve(null);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
+  function matchWrapText(ctx, text, maxWidth) {
+    const words = String(text || '').split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = '';
+    words.forEach(word => {
+      const test = line ? `${line} ${word}` : word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        lines.push(line);
+        line = word;
+      } else line = test;
+    });
+    if (line) lines.push(line);
+    return lines.length ? lines : [''];
+  }
+
+  async function buildMatchReportCanvas() {
+    if (!state.selected) throw new Error('Nessun Match selezionato.');
+    const width = 1240;
+    const club = getClubName();
+    const opponent = state.selected.Avversario || 'Avversario';
+    const homeName = bredaIsHome() ? club : opponent;
+    const awayName = bredaIsHome() ? opponent : club;
+    const playerRows = playerStatsRows();
+    const chronology = [...state.events].filter(event => event.team !== 'system').reverse();
+    const teamStats = [
+      ['Gol', countEvents('Gol', 'breda'), countEvents('Gol', 'opponent')],
+      ['Assist', countEvents('Assist', 'breda'), countEvents('Assist', 'opponent')],
+      ['Ammonizioni', countEvents('Ammonizione', 'breda'), countEvents('Ammonizione', 'opponent')],
+      ['Espulsioni', countEvents('Espulsione', 'breda'), countEvents('Espulsione', 'opponent')],
+      ['Corner', countEvents('Corner', 'breda'), countEvents('Corner', 'opponent')],
+      ['Punizioni', countEvents('Punizione', 'breda'), countEvents('Punizione', 'opponent')],
+      ['Palle recuperate', countEvents('Palla recuperata', 'breda'), countEvents('Palla recuperata', 'opponent')],
+      ['Palle perse', countEvents('Palla persa', 'breda'), countEvents('Palla persa', 'opponent')]
+    ];
+    const height = Math.max(1754, 930 + teamStats.length * 46 + Math.max(1, playerRows.length) * 46 + Math.max(1, chronology.length) * 52);
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    const granata = '#7b1d35';
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
+    const margin = 72;
+    let y = 70;
+    const logo = await matchLoadImage(document.querySelector('#homeClubLogo img')?.src || '');
+    if (logo) ctx.drawImage(logo, margin, y, 115, 115);
+    ctx.fillStyle = granata; ctx.font = 'bold 34px Arial'; ctx.textAlign = 'center';
+    ctx.fillText(getBrandTitle(), width / 2, y + 42);
+    ctx.font = 'bold 24px Arial'; ctx.fillText('REPORT STATISTICHE PARTITA', width / 2, y + 82);
+    y += 145;
+    ctx.fillRect(margin, y, width - margin * 2, 4); y += 42;
+    ctx.font = 'bold 28px Arial'; ctx.fillText(state.selected.Squadra || '', width / 2, y); y += 34;
+    ctx.fillStyle = '#444'; ctx.font = '22px Arial';
+    ctx.fillText(`${state.selected.Campionato || ''} · ${state.selected.Giornata || ''}`, width / 2, y); y += 30;
+    ctx.fillText(`${formatDate(state.selected.Data)} · ${state.selected.Sede || ''}`, width / 2, y); y += 42;
+    ctx.strokeStyle = '#d8d8d8'; ctx.lineWidth = 2; ctx.strokeRect(margin, y, width - margin * 2, 112);
+    ctx.fillStyle = '#111'; ctx.font = 'bold 25px Arial';
+    ctx.fillText(homeName, margin + 220, y + 65); ctx.fillText(awayName, width - margin - 220, y + 65);
+    ctx.fillStyle = granata; ctx.font = 'bold 46px Arial'; ctx.fillText(`${state.score.home} - ${state.score.away}`, width / 2, y + 72); y += 150;
+
+    const drawSection = (title, headers, rows, widths) => {
+      ctx.textAlign = 'left'; ctx.fillStyle = granata; ctx.font = 'bold 24px Arial'; ctx.fillText(title, margin, y); y += 22;
+      const rowH = 46; let x = margin;
+      ctx.fillStyle = '#f1f1f1'; ctx.fillRect(margin, y, width - margin * 2, rowH);
+      ctx.strokeStyle = '#d7d7d7'; ctx.font = 'bold 17px Arial'; ctx.fillStyle = granata;
+      headers.forEach((h, i) => { ctx.fillText(h, x + 12, y + 30); x += widths[i]; });
+      y += rowH;
+      (rows.length ? rows : [['Nessun dato registrato.']]).forEach(row => {
+        x = margin; ctx.fillStyle = '#111'; ctx.font = '17px Arial';
+        row.forEach((cell, i) => {
+          const lines = matchWrapText(ctx, cell, widths[i] - 24).slice(0, 2);
+          lines.forEach((line, li) => ctx.fillText(line, x + 12, y + 28 + li * 17));
+          x += widths[i];
+        });
+        ctx.strokeStyle = '#d7d7d7'; ctx.beginPath(); ctx.moveTo(margin, y + rowH); ctx.lineTo(width - margin, y + rowH); ctx.stroke();
+        y += rowH;
+      });
+      y += 38;
+    };
+
+    drawSection('STATISTICHE DI SQUADRA', ['Voce', club, opponent], teamStats, [480, 310, 306]);
+    drawSection('STATISTICHE GIOCATORI', ['Giocatore', 'Gol', 'Assist', 'Gialli', 'Rossi'], playerRows.map(r => [r.name, r.gol, r.assist, r.ammonizioni, r.espulsioni]), [520, 140, 140, 148, 148]);
+    drawSection('CRONOLOGIA EVENTI', ['Minuto', 'Evento', 'Giocatore', 'Squadra'], chronology.map(e => [e.time, e.type, e.playerName || '', e.team === 'breda' ? club : opponent]), [150, 300, 360, 286]);
+    return canvas;
+  }
+
+  async function createPdfReport() {
+    const button = $('#match20PdfBtn');
+    const oldText = button?.textContent;
     try {
-      if (isMobileDevice()) {
-        openReportPreview();
-        return;
-      }
-
-      const reportWindow = window.open('', '_blank');
-      if (!reportWindow) {
-        throw new Error('Il browser ha bloccato la finestra del PDF.');
-      }
-
-      const primary = getComputedStyle(document.documentElement)
-        .getPropertyValue('--granata')
-        .trim() || '#741f35';
-
-      reportWindow.document.open();
-      reportWindow.document.write(`
-        <!doctype html>
-        <html lang="it">
-        <head>
-          <meta charset="utf-8">
-          <title>Report Match ${escapeHtml(state.selected?.Squadra || '')}</title>
-          <style>
-            *{box-sizing:border-box}
-            body{margin:0;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif}
-            .report{width:190mm;margin:0 auto;padding:12mm}
-            header{display:flex;align-items:center;justify-content:center;gap:16px;text-align:left}
-            header img{width:25mm;height:25mm;object-fit:contain}
-            h1{margin:0;color:${primary};font-size:22px}
-            h2{margin:4px 0 0;color:${primary};font-size:16px}
-            .line{height:2px;background:${primary};margin:10px 0 14px}
-            .meta{display:grid;gap:4px;text-align:center;margin-bottom:16px}
-            .meta strong{color:${primary};font-size:18px}
-            .meta span{color:#555}
-            .scorebox{display:grid;grid-template-columns:1fr auto 1fr;gap:14px;align-items:center;border:1px solid #d9d9d9;border-radius:12px;padding:14px;text-align:center;margin-bottom:18px}
-            .scorebox strong{font-size:30px;color:${primary}}
-            h3{margin:18px 0 8px;color:${primary};font-size:15px}
-            table{width:100%;border-collapse:collapse;font-size:11px}
-            th,td{border:1px solid #d9d9d9;padding:7px;text-align:left}
-            th{background:#f3f3f3;color:${primary}}
-            td:nth-child(n+2),th:nth-child(n+2){text-align:center}
-            @page{size:A4;margin:8mm}
-            @media print{
-              .report{width:auto;margin:0;padding:0}
-            }
-          </style>
-        </head>
-        <body>
-          ${printableReportHtml()}
-          <script>
-            window.addEventListener('load', function(){
-              setTimeout(function(){ window.print(); }, 250);
-            });
-          <\/script>
-        </body>
-        </html>
-      `);
-      reportWindow.document.close();
+      if (button) { button.disabled = true; button.textContent = 'Creazione PDF…'; }
+      const canvas = await buildMatchReportCanvas();
+      const jpeg = canvas.toDataURL('image/jpeg', 0.93);
+      const pdf = matchCreatePdf(matchDataUrlBytes(jpeg), canvas.width, canvas.height);
+      await matchDownloadBlob(pdf, `${matchPdfFileBase()}.pdf`);
+      saveMessage('PDF creato e pronto per il salvataggio.', 'success');
     } catch (error) {
+      console.error(error);
       saveMessage(`Errore PDF: ${error.message}`, 'error');
+    } finally {
+      if (button) { button.disabled = false; button.textContent = oldText || '📄 Salva PDF'; }
     }
   }
 
