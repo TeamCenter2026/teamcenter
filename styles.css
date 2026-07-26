@@ -968,3 +968,37 @@ body.match20-report-open{
   .training-history-pdf,.callup-history-pdf{width:100%}
   .callup-history-actions{align-items:stretch;flex-direction:column;gap:8px}
 }
+
+/* TeamCenter 2.2.6 - menu area Allenamenti */
+.training-area-menu h2,
+.training-placeholder-card h2 {
+  margin-bottom: 0;
+}
+.training-area-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.training-area-button {
+  width: 100%;
+  min-height: 150px;
+}
+.training-management-tools {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.training-placeholder-card {
+  text-align: center;
+  padding-top: 44px;
+  padding-bottom: 44px;
+}
+@media (max-width: 640px) {
+  .training-area-actions {
+    grid-template-columns: 1fr;
+  }
+  .training-area-button {
+    min-height: 120px;
+  }
+}

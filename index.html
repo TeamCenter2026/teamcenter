@@ -305,10 +305,42 @@
 
 
     <section id="trainingScreen" class="screen">
-      <div class="page-tools">
-        <button class="back-link" type="button" data-go-home>← Home</button>
+      <div id="trainingMenuView">
+        <div class="page-tools">
+          <button class="back-link" type="button" data-go-home>← Home</button>
+        </div>
+
+        <div class="card training-card training-area-menu">
+          <div class="eyebrow">Allenamenti</div>
+          <h2>Scegli la sezione</h2>
+          <div class="training-area-actions">
+            <button id="openTrainingModulesBtn" class="minimal-module-button training-area-button" type="button">
+              <span class="minimal-module-icon">📚</span>
+              <span>Moduli allenamento</span>
+            </button>
+            <button id="openTrainingManagementBtn" class="minimal-module-button training-area-button" type="button">
+              <span class="minimal-module-icon">🏃</span>
+              <span>Gestione allenamento</span>
+            </button>
+          </div>
+        </div>
       </div>
 
+      <div id="trainingModulesView" class="hidden">
+        <div class="page-tools">
+          <button id="trainingModulesBackBtn" class="back-link" type="button">← Torna indietro</button>
+        </div>
+        <div class="card training-card training-placeholder-card">
+          <div class="eyebrow">Moduli allenamento</div>
+          <h2>Sezione in aggiornamento</h2>
+        </div>
+      </div>
+
+      <div id="trainingManagementView" class="hidden">
+        <div class="page-tools training-management-tools">
+          <button id="trainingManagementBackBtn" class="back-link" type="button">← Torna indietro</button>
+          <button class="back-link" type="button" data-go-home>Home</button>
+        </div>
       <div class="card training-card">
         <div class="eyebrow">Allenamenti</div>
         <div class="training-heading">
@@ -375,9 +407,8 @@
         <div id="trainingHistory" class="training-history">
           <div class="training-empty">Nessun allenamento salvato.</div>
         </div>
-      </div>
+      </div>      </div>
     </section>
-
 
     <section id="setupScreen" class="screen">
       <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button></div>
@@ -813,7 +844,7 @@
 <script src="match.js?v=2.2.5"></script>
 <script src="image.js?v=2.2.5"></script>
 <script src="pdf.js?v=2.2.5"></script>
-<script src="allenamenti.js?v=2.2.5"></script>
+<script src="allenamenti.js?v=2.2.6"></script>
 <script src="convocazioni.js?v=2.2.5"></script>
 <script src="app.js?v=2.2.5"></script>
 </body>

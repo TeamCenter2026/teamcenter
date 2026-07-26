@@ -1446,7 +1446,7 @@
     if(module==='profile'){apriProfiloAmministratore()}
     if(module==='roster'){apriRosa()}
     if(module==='staff'){apriStaff()}
-    if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.open()}
+    if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.showMenu()}
     if(module==='match'){window.TeamCenterMatch?.open()}
     if(module==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}
     if(e.target.closest('[data-go-home]'))showScreen('home');

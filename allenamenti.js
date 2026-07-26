@@ -38,7 +38,28 @@ window.TeamCenterAllenamenti = (() => {
     return String(player.Attivo || 'SI').trim().toUpperCase() !== 'NO';
   }
 
+  function setTrainingView(view) {
+    const menu = $('#trainingMenuView');
+    const modules = $('#trainingModulesView');
+    const management = $('#trainingManagementView');
+    menu?.classList.toggle('hidden', view !== 'menu');
+    modules?.classList.toggle('hidden', view !== 'modules');
+    management?.classList.toggle('hidden', view !== 'management');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showMenu() {
+    bindOnce();
+    setTrainingView('menu');
+  }
+
+  function showModules() {
+    bindOnce();
+    setTrainingView('modules');
+  }
+
   async function open() {
+    setTrainingView('management');
     setToday();
     bindOnce();
     await loadBaseData();
@@ -54,6 +75,11 @@ window.TeamCenterAllenamenti = (() => {
   function bindOnce() {
     if (state.initialized) return;
     state.initialized = true;
+
+    $('#openTrainingModulesBtn')?.addEventListener('click', showModules);
+    $('#openTrainingManagementBtn')?.addEventListener('click', open);
+    $('#trainingModulesBackBtn')?.addEventListener('click', showMenu);
+    $('#trainingManagementBackBtn')?.addEventListener('click', showMenu);
 
     $('#trainingTeamSelect')?.addEventListener('change', async () => {
       state.statuses.clear();

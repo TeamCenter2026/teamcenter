@@ -1,0 +1,8 @@
+TEAMCENTER 2.2.6 - MENU ALLENAMENTI
+
+- Entrando in Allenamenti compaiono due pulsanti:
+  1. Moduli allenamento
+  2. Gestione allenamento
+- Gestione allenamento mantiene tutte le funzioni esistenti e aggiunge Torna indietro.
+- Moduli allenamento mostra Torna indietro e il messaggio "Sezione in aggiornamento".
+- Nessuna modifica richiesta ai fogli Google Sheets.

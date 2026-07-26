@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.2.5-team-filter';
+const CACHE='teamcenter-2.2.6-training-menu';
 const ASSETS=[
   './',
   './index.html',
