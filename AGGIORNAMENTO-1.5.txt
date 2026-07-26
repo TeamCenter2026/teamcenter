@@ -1,22 +1,19 @@
-TEAMCENTER 1.5 - MIGLIORIE PROFILO SOCIETA
+TEAMCENTER 1.5.1
 
-NOVITA
-- Logo profilo più grande
-- Badge: Sincronizzato con Google Sheets
-- Conferma visiva dopo il salvataggio
-- Nome descrittivo e codice HEX dei colori
-- Data e ora dell'ultimo aggiornamento
+Modifiche:
+- Badge: Google Sheets sincronizzato
+- Rimosso il testo tecnico relativo a LogoFile
+- Profilo società protetto da password
+- Sessione amministratore valida 60 minuti
+- Pulsante Esci dall'area amministratori
+- Salvataggio MASTER consentito solo con sessione valida
 
-IMPORTANTE PER ULTIMO AGGIORNAMENTO
-Nel foglio MASTER aggiungi, se non esiste, una colonna con intestazione esatta:
-UltimoAggiornamento
-
-Non inserire manualmente alcun valore: Apps Script la compilerà al prossimo salvataggio.
-
-PUBBLICAZIONE
-1. Carica tutti i file nella root del repository GitHub.
-2. Sostituisci quelli esistenti.
-3. Commit: TeamCenter 1.5 - Migliorie profilo società
-4. Attendi che GitHub Actions diventi verde.
-5. Apri https://teamcenter2026.github.io/teamcenter/?v=150
-6. Premi CTRL+F5.
+ORDINE CORRETTO:
+1. Segui APPS-SCRIPT-1.5.1-AREA-AMMINISTRATORI.txt
+2. Ridistribuisci Apps Script
+3. Carica su GitHub tutti i file della cartella teamcenter-main
+4. Commit: TeamCenter 1.5.1 - Area amministratori
+5. Attendi Actions verde
+6. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=151
+7. Premi CTRL + F5

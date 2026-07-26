@@ -88,8 +88,11 @@ window.TeamCenterAllenamenti = (() => {
         window.TeamCenterAPI.getAllenamenti().catch(() => [])
       ]);
 
-      state.teams = Array.isArray(teams) ? teams : [];
-      state.history = Array.isArray(history) ? history : [];
+      const allTeams = Array.isArray(teams) ? teams : [];
+      window.TeamCenterTeam?.setTeams(allTeams);
+      const currentTeam = window.TeamCenterTeam?.current();
+      state.teams = currentTeam ? [currentTeam] : allTeams;
+      state.history = window.TeamCenterTeam?.filter(history) || [];
       renderTeams();
     } catch (error) {
       setMessage(error.message || 'Impossibile caricare i dati.', true);
@@ -100,14 +103,13 @@ window.TeamCenterAllenamenti = (() => {
     const select = $('#trainingTeamSelect');
     if (!select) return;
 
-    const current = select.value;
+    const current = window.TeamCenterTeam?.id || select.value;
     select.innerHTML = state.teams.map(team =>
       `<option value="${escapeHtml(team.IDSquadra || '')}">${escapeHtml(teamName(team))}</option>`
     ).join('');
 
-    if (current && state.teams.some(team => String(team.IDSquadra || '') === current)) {
-      select.value = current;
-    }
+    if (current && state.teams.some(team => String(team.IDSquadra || '') === current)) select.value = current;
+    select.disabled = state.teams.length <= 1;
   }
 
   async function loadPlayers() {
@@ -289,7 +291,7 @@ window.TeamCenterAllenamenti = (() => {
     const box = $('#trainingHistory');
     if (!box) return;
 
-    const items = [...state.history].slice(-10).reverse();
+    const items = (window.TeamCenterTeam?.filter(state.history) || [...state.history]).slice(-10).reverse();
 
     if (!items.length) {
       box.innerHTML = '<div class="training-empty">Nessun allenamento salvato.</div>';

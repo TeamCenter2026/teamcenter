@@ -124,7 +124,7 @@ window.TeamCenterMatch = (() => {
 
     try {
       const items = await window.TeamCenterAPI.getConvocazioni();
-      state.convocazioni = Array.isArray(items) ? items : [];
+      state.convocazioni = window.TeamCenterTeam?.filter(items) || [];
 
       state.convocazioni.sort((a, b) => {
         const dateA = `${a.Data || ''} ${a.OrarioPartita || ''}`;
@@ -634,7 +634,7 @@ window.TeamCenterMatch = (() => {
 
     try {
       const items = await window.TeamCenterAPI.getMatch();
-      state.matchArchive = Array.isArray(items) ? items : [];
+      state.matchArchive = window.TeamCenterTeam?.filter(items) || [];
       state.matchArchive.sort((a, b) => {
         const dateA = String(valueFrom(a, 'Data', 'data') || '');
         const dateB = String(valueFrom(b, 'Data', 'data') || '');

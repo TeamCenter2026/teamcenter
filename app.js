@@ -26,6 +26,17 @@
   let staffApi = [];
   let tickHandle = null;
 
+  function currentTeamId(){ return window.TeamCenterTeam?.id || ''; }
+  function currentTeam(){ return window.TeamCenterTeam?.current?.() || null; }
+  function showTeamSelection(){
+    const list=$('#teamSelectionList');
+    const teams=(squadreApi||[]).filter(item=>String(item.Attiva||'SI').trim().toUpperCase()!=='NO');
+    if(list){
+      list.innerHTML=teams.length?teams.map(item=>`<button class="team-selection-button" type="button" data-select-team="${escapeHtml(item.IDSquadra||'')}">⚽ ${escapeHtml(item.NomeSquadra||item.Squadra||item.IDSquadra||'Squadra')}</button>`).join(''):'<div class="empty">Nessun gruppo squadra disponibile.</div>';
+    }
+    showScreen('teamSelection');
+  }
+
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => Array.from(document.querySelectorAll(s));
 
@@ -283,19 +294,21 @@
   function aggiornaSelectSquadre(){
     const select=$('#teamSelect');
     if(!select||!Array.isArray(squadreApi)||!squadreApi.length)return;
-    const valoreCorrente=state.match.team;
-    select.innerHTML=squadreApi.map(squadra=>
+    const selected=currentTeam();
+    const visibleTeams=selected?[selected]:squadreApi;
+    const valoreCorrente=selected?.NomeSquadra||state.match.team;
+    select.innerHTML=visibleTeams.map(squadra=>
       `<option value="${escapeHtml(squadra.NomeSquadra)}" data-id-squadra="${escapeHtml(squadra.IDSquadra)}">${escapeHtml(squadra.NomeSquadra)}</option>`
     ).join('');
-    const esiste=squadreApi.some(s=>s.NomeSquadra===valoreCorrente);
-    state.match.team=esiste?valoreCorrente:squadreApi[0].NomeSquadra;
+    state.match.team=valoreCorrente||visibleTeams[0]?.NomeSquadra||'';
     select.value=state.match.team;
+    select.disabled=visibleTeams.length<=1;
     const trainingSelect=$('#trainingTeamSelect');
     if(trainingSelect){
-      trainingSelect.innerHTML=squadreApi.map(squadra=>`<option value="${escapeHtml(squadra.IDSquadra)}">${escapeHtml(squadra.NomeSquadra)}</option>`).join('');
-      const valid=squadreApi.some(s=>s.IDSquadra===state.training.teamId);
-      state.training.teamId=valid?state.training.teamId:squadreApi[0].IDSquadra;
+      trainingSelect.innerHTML=visibleTeams.map(squadra=>`<option value="${escapeHtml(squadra.IDSquadra)}">${escapeHtml(squadra.NomeSquadra)}</option>`).join('');
+      state.training.teamId=selected?.IDSquadra||visibleTeams[0]?.IDSquadra||'';
       trainingSelect.value=state.training.teamId;
+      trainingSelect.disabled=visibleTeams.length<=1;
     }
   }
 
@@ -330,6 +343,7 @@
 
     masterApi=master||{};
     squadreApi=Array.isArray(squadre)?squadre:[];
+    window.TeamCenterTeam?.setTeams(squadreApi);
 
     if(logo?.dataUrl){
       state.logoDataUrl=logo.dataUrl;
@@ -402,7 +416,8 @@
   function popolaSelettoreRosa(){
     const select=$('#rosterTeamSelect');
     if(!select)return;
-    const attive=(squadreApi||[]).filter(s=>String(s.Attiva||'SI').trim().toUpperCase()!=='NO');
+    const scelta=currentTeam();
+    const attive=(scelta?[scelta]:(squadreApi||[])).filter(s=>String(s.Attiva||'SI').trim().toUpperCase()!=='NO');
     select.innerHTML=attive.map(s=>{
       const id=String(s.IDSquadra||'').trim();
       return `<option value="${escapeHtml(id)}">${escapeHtml(nomeSquadraDaId(id))}</option>`;
@@ -411,6 +426,7 @@
       rosterTeamId=String(attive[0]?.IDSquadra||'').trim();
     }
     select.value=rosterTeamId;
+    select.disabled=attive.length<=1;
   }
 
   async function apriRosa(){
@@ -1381,6 +1397,20 @@
   $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
   document.addEventListener('click',e=>{
+    const teamButton=e.target.closest('[data-select-team]');
+    if(teamButton){
+      if(window.TeamCenterTeam?.select(teamButton.dataset.selectTeam)){
+        const selected=currentTeam();
+        rosterTeamId=selected?.IDSquadra||'';
+        state.training.teamId=selected?.IDSquadra||'';
+        state.match.team=selected?.NomeSquadra||state.match.team;
+        aggiornaSelectSquadre();
+        saveState();
+        showScreen('home');
+        toast(`Gruppo selezionato: ${selected?.NomeSquadra||'Squadra'}`);
+      }
+      return;
+    }
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
     if(module==='profile'){apriProfiloAmministratore()}
     if(module==='roster'){apriRosa()}
@@ -1457,7 +1487,9 @@
     applyProfile();
     renderLogo();
     fillSetup();fillCallupForm();renderAll();
-    if(state.screen==='report'){
+    if(!currentTeamId()){
+      showTeamSelection();
+    }else if(state.screen==='report'){
       renderReport();showScreen('report');
     }else if(state.screen==='live'){
       showScreen('live');

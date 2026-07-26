@@ -1,46 +1,60 @@
-TEAMCENTER 2.0.0 — GESTIONE MATCH STABILE
+TEAMCENTER 1.9 — MODULO CONVOCAZIONI
 
-FUNZIONI PRINCIPALI
-- La Gestione Match parte da una convocazione salvata.
-- Carica automaticamente squadra, campionato, giornata, data, avversario,
-  casa/trasferta, convocati e staff.
-- Per Gol, Assist, Ammonizione ed Espulsione di CSV Breda si sceglie il
-  giocatore per Nome e Cognome tra i soli convocati.
-- Timer con centesimi, primo tempo, recupero, intervallo, secondo tempo e
-  recupero.
-- Risultato modificabile in tempo reale.
-- Cronologia eventi con possibilità di eliminare un errore.
-- Salvataggio e aggiornamento del Match nel foglio Google MATCH.
-- Salvataggio locale della partita in corso per evitare perdite in caso di
-  ricaricamento della pagina.
+FUNZIONI INCLUSE
+- Selezione squadra
+- Campionato
+- Giornata
+- Data
+- Avversario
+- Orario partita
+- Orario convocazione automatico: 1 ora e 45 minuti prima
+- Casa o trasferta
+- Indirizzo del campo
+- Caricamento giocatori attivi dalla Rosa
+- Ricerca e selezione multipla giocatori
+- Selezione staff attivo raggruppato per ruolo
+- Anteprima convocazione
+- Salvataggio su Google Sheets
+- Archivio ultime convocazioni
+- Esportazione PDF
+- Esportazione foto
+- Condivisione foto
 
-FOGLIO MATCH
-La prima riga deve contenere ESATTAMENTE queste colonne:
+FOGLIO GOOGLE CONVOCAZIONI
 
-IDMatch | IDConvocazione | IDSquadra | Squadra | Campionato | Giornata |
-Data | Avversario | Sede | RisultatoCasa | RisultatoTrasferta | Stato |
-TempoPartita | Eventi | Giocatori | Staff | UltimoAggiornamento
+La prima riga deve contenere ESATTAMENTE:
 
-INSTALLAZIONE FRONTEND
-1. Carica tutti i file della cartella teamcenter-main su GitHub sostituendo
-   quelli esistenti.
-2. Commit consigliato:
-   TeamCenter 2.0.0 - Gestione Match stabile
+IDConvocazione | IDSquadra | Squadra | Campionato | Giornata | Data | Avversario | OrarioPartita | OrarioConvocazione | Sede | Indirizzo | Giocatori | Staff | UltimoAggiornamento
+
+APPS SCRIPT
+
+1. Apri CODICE-GS-COMPLETO-1.9.txt.
+2. Copia tutto.
+3. Sostituisci completamente Codice.gs.
+4. Salva.
+5. Distribuisci > Gestisci deployment.
+6. Premi la matita.
+7. Seleziona Nuova versione.
+8. Distribuisci.
+
+GITHUB
+
+1. Carica tutti i file della cartella teamcenter-main.
+2. Commit:
+   TeamCenter 1.9 - Modulo Convocazioni
 3. Attendi GitHub Actions verde.
 4. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=200
+   https://teamcenter2026.github.io/teamcenter/?v=190
 5. Premi CTRL + F5.
 
-INSTALLAZIONE APPS SCRIPT
-1. Apri Apps Script collegato al Google Sheet.
-2. Sostituisci tutto il contenuto di Code.gs con:
-   CODICE-GS-COMPLETO-2.0.0.txt
-3. Salva.
-4. Distribuisci > Gestisci deployment.
-5. Modifica il deployment Web App e crea una nuova versione.
-6. Mantieni lo stesso URL del deployment.
-7. Verifica che l'API ping mostri versione 2.0.0.
+TEST
 
-NOTA
-Il PDF report Match e le statistiche stagionali non fanno parte della 2.0.0.
-Saranno sviluppati dopo la verifica di questa versione stabile.
+1. Apri Convocazioni.
+2. Seleziona una squadra.
+3. Compila campionato, giornata, data, avversario e orario.
+4. Controlla il calcolo automatico della convocazione.
+5. Seleziona giocatori e staff.
+6. Crea l'anteprima.
+7. Salva.
+8. Controlla il foglio CONVOCAZIONI.
+9. Prova PDF, foto e condivisione.

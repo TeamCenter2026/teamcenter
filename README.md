@@ -1,3 +1,3 @@
-# TeamCenter 2.1.1
+# TeamCenter 2.2.0
 
 Correzione apertura PDF statistiche da smartphone con anteprima interna.

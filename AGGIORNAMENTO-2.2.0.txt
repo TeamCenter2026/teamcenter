@@ -1,0 +1,11 @@
+TEAMCENTER 2.2.0 — SELEZIONE GRUPPO SQUADRA
+
+- All'apertura dell'app viene richiesto il gruppo squadra.
+- La scelta vale per la sessione del dispositivo.
+- Home e moduli restano graficamente invariati.
+- Rosa mostra solo la squadra scelta.
+- Allenamenti mostra e salva solo la squadra scelta; lo storico è filtrato.
+- Convocazioni mostra e salva solo la squadra scelta; lo storico è filtrato.
+- Gestione Match richiama solo le convocazioni della squadra scelta.
+- Archivio report Match mostra solo i salvataggi della squadra scelta.
+- Non è stata introdotta alcuna differenza tra allenatore, supervisor o amministrazione.

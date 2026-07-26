@@ -937,3 +937,13 @@ body.match20-report-open{
     margin:8mm;
   }
 }
+
+/* TeamCenter 2.2.0 — selezione gruppo squadra */
+.team-selection-screen{min-height:calc(100vh - 92px);align-items:center;justify-content:center;padding:24px 16px}
+.team-selection-screen.active{display:flex}
+.team-selection-card{width:min(560px,100%);text-align:center}
+.team-selection-card h2{margin:6px 0 10px}
+.team-selection-list{display:grid;gap:12px;margin-top:24px}
+.team-selection-button{width:100%;min-height:58px;border:1px solid rgba(116,31,53,.18);border-radius:16px;background:#fff;color:var(--granata);font:inherit;font-weight:900;font-size:1.05rem;box-shadow:0 8px 24px rgba(20,20,20,.06);cursor:pointer}
+.team-selection-button:active{transform:scale(.99)}
+.selected-team-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:var(--granata-soft);color:var(--granata);font-weight:900;font-size:.84rem}

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.1.1-mobile-pdf-preview';
+const CACHE='teamcenter-2.2.0-team-filter';
 const ASSETS=[
   './',
   './index.html',

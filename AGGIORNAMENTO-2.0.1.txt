@@ -1,27 +1,46 @@
-TEAMCENTER 2.0.1 — CORREZIONE SALVATAGGIO MATCH
+TEAMCENTER 2.0.0 — GESTIONE MATCH STABILE
 
-PROBLEMA RISOLTO
-Il salvataggio del Match inviava Eventi, Giocatori e Staff tramite una richiesta GET.
-Con molti dati l'indirizzo diventava troppo lungo e Google Apps Script poteva restituire
-una pagina HTML invece del JSON, causando l'errore:
-Unexpected token '<', "<!doctype "... is not valid JSON
+FUNZIONI PRINCIPALI
+- La Gestione Match parte da una convocazione salvata.
+- Carica automaticamente squadra, campionato, giornata, data, avversario,
+  casa/trasferta, convocati e staff.
+- Per Gol, Assist, Ammonizione ed Espulsione di CSV Breda si sceglie il
+  giocatore per Nome e Cognome tra i soli convocati.
+- Timer con centesimi, primo tempo, recupero, intervallo, secondo tempo e
+  recupero.
+- Risultato modificabile in tempo reale.
+- Cronologia eventi con possibilità di eliminare un errore.
+- Salvataggio e aggiornamento del Match nel foglio Google MATCH.
+- Salvataggio locale della partita in corso per evitare perdite in caso di
+  ricaricamento della pagina.
 
-CORREZIONE
-- Il salvataggio Match ora usa POST.
-- Gli altri caricamenti continuano a usare GET.
-- Aggiunto doPost(e) nel codice Apps Script.
-- Migliorato il messaggio di errore quando la Web App restituisce HTML.
-- Nessuna modifica alla struttura dei moduli Rosa, Staff, Allenamenti e Convocazioni.
+FOGLIO MATCH
+La prima riga deve contenere ESATTAMENTE queste colonne:
 
-INSTALLAZIONE
-1. Caricare tutti i file del pacchetto su GitHub sostituendo quelli esistenti.
-2. Copiare integralmente CODICE-GS-COMPLETO-2.0.1.txt in Apps Script.
-3. Distribuisci > Gestisci distribuzioni > Modifica.
-4. Selezionare Nuova versione e distribuire.
-5. Verificare che l'accesso sia consentito a chiunque disponga del link.
-6. Aprire l'app con ?v=201 e provare il salvataggio Match.
+IDMatch | IDConvocazione | IDSquadra | Squadra | Campionato | Giornata |
+Data | Avversario | Sede | RisultatoCasa | RisultatoTrasferta | Stato |
+TempoPartita | Eventi | Giocatori | Staff | UltimoAggiornamento
 
-STRUTTURA FOGLIO MATCH
-IDMatch | IDConvocazione | IDSquadra | Squadra | Campionato | Giornata | Data |
-Avversario | Sede | RisultatoCasa | RisultatoTrasferta | Stato | TempoPartita |
-Eventi | Giocatori | Staff | UltimoAggiornamento
+INSTALLAZIONE FRONTEND
+1. Carica tutti i file della cartella teamcenter-main su GitHub sostituendo
+   quelli esistenti.
+2. Commit consigliato:
+   TeamCenter 2.0.0 - Gestione Match stabile
+3. Attendi GitHub Actions verde.
+4. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=200
+5. Premi CTRL + F5.
+
+INSTALLAZIONE APPS SCRIPT
+1. Apri Apps Script collegato al Google Sheet.
+2. Sostituisci tutto il contenuto di Code.gs con:
+   CODICE-GS-COMPLETO-2.0.0.txt
+3. Salva.
+4. Distribuisci > Gestisci deployment.
+5. Modifica il deployment Web App e crea una nuova versione.
+6. Mantieni lo stesso URL del deployment.
+7. Verifica che l'API ping mostri versione 2.0.0.
+
+NOTA
+Il PDF report Match e le statistiche stagionali non fanno parte della 2.0.0.
+Saranno sviluppati dopo la verifica di questa versione stabile.
