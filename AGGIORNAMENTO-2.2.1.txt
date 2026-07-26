@@ -1,0 +1,8 @@
+TEAMCENTER 2.2.1 — SELEZIONE GRUPPO OBBLIGATORIA
+
+- La schermata di selezione gruppo è la prima schermata visibile.
+- La Home non appare prima della selezione.
+- A ogni apertura o ricaricamento dell’app viene richiesto nuovamente il gruppo squadra.
+- Dopo la scelta, Rosa, Allenamenti, Convocazioni, Gestione Match e archivi lavorano nel contesto della squadra selezionata.
+- Staff/dirigenti resta condiviso secondo la struttura attuale.
+- Nessuna modifica necessaria ai fogli Google Sheets se IDSquadra è già presente nei fogli tecnici.

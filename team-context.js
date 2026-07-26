@@ -1,7 +1,8 @@
 window.TeamCenterTeam = (() => {
   const KEY = 'teamcenter-session-team';
   let teams = [];
-  let currentId = sessionStorage.getItem(KEY) || '';
+  let currentId = '';
+  sessionStorage.removeItem(KEY);
 
   const idOf = item => String(item?.IDSquadra || item?.idSquadra || '').trim();
   const nameOf = item => String(item?.NomeSquadra || item?.Squadra || item?.squadra || item?.Nome || idOf(item) || 'Squadra').trim();

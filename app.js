@@ -1487,9 +1487,12 @@
     applyProfile();
     renderLogo();
     fillSetup();fillCallupForm();renderAll();
-    if(!currentTeamId()){
-      showTeamSelection();
-    }else if(state.screen==='report'){
+    // A ogni nuova apertura/ricaricamento richiediamo sempre il gruppo squadra.
+    // La Home non viene mostrata finché l'utente non effettua la selezione.
+    showTeamSelection();
+    /* Le schermate precedentemente aperte non vengono ripristinate automaticamente:
+       il gruppo scelto determina tutto il contesto operativo della sessione. */
+    if(false && state.screen==='report'){
       renderReport();showScreen('report');
     }else if(state.screen==='live'){
       showScreen('live');

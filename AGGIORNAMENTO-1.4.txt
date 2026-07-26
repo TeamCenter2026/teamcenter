@@ -1,16 +1,9 @@
-TEAMCENTER 1.4.1 - FIX CACHE
+TEAMCENTER 1.4 - PROFILO SOCIETA
 
-1. Apri il repository GitHub TeamCenter.
-2. Carica TUTTI i file contenuti in questa cartella, direttamente nella root del repository.
-3. Sostituisci i file già esistenti.
-4. Commit suggerito:
-   TeamCenter 1.4.1 - Fix cache profilo società
-5. Attendi 1-2 minuti.
-6. Apri:
-   https://teamcenter2026.github.io/teamcenter/?v=141
-7. Premi CTRL+F5.
+1. Carica tutti i file di questa cartella nel repository GitHub sostituendo quelli esistenti.
+2. Commit: TeamCenter 1.4 - Profilo societa modificabile
+3. Attendi GitHub Pages e apri: https://teamcenter2026.github.io/teamcenter/?v=14
+4. Apri Profilo, modifica un campo e premi Salva profilo societa.
+5. Controlla che il foglio MASTER sia stato aggiornato.
 
-Se ancora appare la vecchia versione:
-- Chrome > F12 > Application > Service Workers > Unregister
-- Application > Storage > Clear site data
-- Ricarica la pagina.
+Richiede il deployment Apps Script con action=salvaMaster gia pubblicato.

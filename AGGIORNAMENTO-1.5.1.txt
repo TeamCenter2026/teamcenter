@@ -1,9 +1,19 @@
-TEAMCENTER 1.4 - PROFILO SOCIETA
+TEAMCENTER 1.5.1
 
-1. Carica tutti i file di questa cartella nel repository GitHub sostituendo quelli esistenti.
-2. Commit: TeamCenter 1.4 - Profilo societa modificabile
-3. Attendi GitHub Pages e apri: https://teamcenter2026.github.io/teamcenter/?v=14
-4. Apri Profilo, modifica un campo e premi Salva profilo societa.
-5. Controlla che il foglio MASTER sia stato aggiornato.
+Modifiche:
+- Badge: Google Sheets sincronizzato
+- Rimosso il testo tecnico relativo a LogoFile
+- Profilo società protetto da password
+- Sessione amministratore valida 60 minuti
+- Pulsante Esci dall'area amministratori
+- Salvataggio MASTER consentito solo con sessione valida
 
-Richiede il deployment Apps Script con action=salvaMaster gia pubblicato.
+ORDINE CORRETTO:
+1. Segui APPS-SCRIPT-1.5.1-AREA-AMMINISTRATORI.txt
+2. Ridistribuisci Apps Script
+3. Carica su GitHub tutti i file della cartella teamcenter-main
+4. Commit: TeamCenter 1.5.1 - Area amministratori
+5. Attendi Actions verde
+6. Apri:
+   https://teamcenter2026.github.io/teamcenter/?v=151
+7. Premi CTRL + F5
