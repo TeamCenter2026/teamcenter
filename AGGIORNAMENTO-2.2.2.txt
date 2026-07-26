@@ -1,0 +1,7 @@
+TEAMCENTER 2.2.2
+
+- Eliminata la descrizione dalla schermata iniziale.
+- Aggiunto selettore gruppo squadra con pulsante ENTRA.
+- Le squadre vengono lette dal foglio SQUADRE.
+- La Home non può aprirsi prima della selezione.
+- Corretto il ripristino automatico che poteva sovrapporsi alla schermata iniziale.

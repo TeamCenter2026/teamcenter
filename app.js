@@ -29,12 +29,41 @@
   function currentTeamId(){ return window.TeamCenterTeam?.id || ''; }
   function currentTeam(){ return window.TeamCenterTeam?.current?.() || null; }
   function showTeamSelection(){
-    const list=$('#teamSelectionList');
-    const teams=(squadreApi||[]).filter(item=>String(item.Attiva||'SI').trim().toUpperCase()!=='NO');
-    if(list){
-      list.innerHTML=teams.length?teams.map(item=>`<button class="team-selection-button" type="button" data-select-team="${escapeHtml(item.IDSquadra||'')}">⚽ ${escapeHtml(item.NomeSquadra||item.Squadra||item.IDSquadra||'Squadra')}</button>`).join(''):'<div class="empty">Nessun gruppo squadra disponibile.</div>';
+    const select=$('#teamSelectionSelect');
+    const enter=$('#teamSelectionEnterBtn');
+    const message=$('#teamSelectionMessage');
+    const teams=(squadreApi||[]).filter(item=>String(item?.Attiva??item?.attiva??'SI').trim().toUpperCase()!=='NO');
+
+    if(select){
+      select.innerHTML='<option value="">Seleziona una squadra</option>'+teams.map(item=>{
+        const id=window.TeamCenterTeam?.idOf(item)||String(item?.IDSquadra||item?.idSquadra||item?.ID_SQUADRA||'').trim();
+        const name=window.TeamCenterTeam?.nameOf(item)||String(item?.NomeSquadra||item?.nomeSquadra||item?.Squadra||item?.Nome||id||'Squadra').trim();
+        return `<option value="${escapeHtml(id)}">${escapeHtml(name)}</option>`;
+      }).join('');
+      select.disabled=!teams.length;
+      select.value='';
     }
+    if(enter)enter.disabled=true;
+    if(message)message.textContent=teams.length?'':'Nessun gruppo squadra disponibile. Controlla il foglio SQUADRE e aggiorna la pagina.';
     showScreen('teamSelection');
+  }
+
+  function enterSelectedTeam(){
+    const select=$('#teamSelectionSelect');
+    const id=String(select?.value||'').trim();
+    if(!id)return;
+    if(window.TeamCenterTeam?.select(id)){
+      const selected=currentTeam();
+      const selectedId=window.TeamCenterTeam?.idOf(selected)||id;
+      const selectedName=window.TeamCenterTeam?.nameOf(selected)||'Squadra';
+      rosterTeamId=selectedId;
+      state.training.teamId=selectedId;
+      state.match.team=selectedName;
+      aggiornaSelectSquadre();
+      saveState();
+      showScreen('home');
+      toast(`Gruppo selezionato: ${selectedName}`);
+    }
   }
 
   const $ = (s) => document.querySelector(s);
@@ -1396,21 +1425,13 @@
   $('#profilePrimaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profilePrimaryColorValue');if(out)out.value=value;const name=$('#profilePrimaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore primario')});
   $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
+  $('#teamSelectionSelect')?.addEventListener('change',event=>{
+    const enter=$('#teamSelectionEnterBtn');
+    if(enter)enter.disabled=!String(event.target.value||'').trim();
+  });
+  $('#teamSelectionEnterBtn')?.addEventListener('click',enterSelectedTeam);
+
   document.addEventListener('click',e=>{
-    const teamButton=e.target.closest('[data-select-team]');
-    if(teamButton){
-      if(window.TeamCenterTeam?.select(teamButton.dataset.selectTeam)){
-        const selected=currentTeam();
-        rosterTeamId=selected?.IDSquadra||'';
-        state.training.teamId=selected?.IDSquadra||'';
-        state.match.team=selected?.NomeSquadra||state.match.team;
-        aggiornaSelectSquadre();
-        saveState();
-        showScreen('home');
-        toast(`Gruppo selezionato: ${selected?.NomeSquadra||'Squadra'}`);
-      }
-      return;
-    }
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
     if(module==='profile'){apriProfiloAmministratore()}
     if(module==='roster'){apriRosa()}
@@ -1487,32 +1508,9 @@
     applyProfile();
     renderLogo();
     fillSetup();fillCallupForm();renderAll();
-    // A ogni nuova apertura/ricaricamento richiediamo sempre il gruppo squadra.
-    // La Home non viene mostrata finché l'utente non effettua la selezione.
+    // A ogni apertura o aggiornamento la scelta del gruppo è obbligatoria.
+    // Non ripristiniamo nessun'altra schermata prima della selezione.
     showTeamSelection();
-    /* Le schermate precedentemente aperte non vengono ripristinate automaticamente:
-       il gruppo scelto determina tutto il contesto operativo della sessione. */
-    if(false && state.screen==='report'){
-      renderReport();showScreen('report');
-    }else if(state.screen==='live'){
-      showScreen('live');
-    }else if(state.screen==='setup'){
-      showScreen('setup');
-    }else if(state.screen==='profile'){
-      fillProfile();showScreen('profile');
-    }else if(state.screen==='roster'){
-      await apriRosa();
-    }else if(state.screen==='staff'){
-      await apriStaff();
-    }else if(state.screen==='training'){
-      showScreen('training');
-      await window.TeamCenterAllenamenti?.open();
-    }else if(state.screen==='callups'){
-      showScreen('callups');
-      await window.TeamCenterConvocazioni?.open();
-    }else{
-      showScreen('home');
-    }
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

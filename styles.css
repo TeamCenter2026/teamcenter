@@ -947,3 +947,10 @@ body.match20-report-open{
 .team-selection-button{width:100%;min-height:58px;border:1px solid rgba(116,31,53,.18);border-radius:16px;background:#fff;color:var(--granata);font:inherit;font-weight:900;font-size:1.05rem;box-shadow:0 8px 24px rgba(20,20,20,.06);cursor:pointer}
 .team-selection-button:active{transform:scale(.99)}
 .selected-team-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:var(--granata-soft);color:var(--granata);font-weight:900;font-size:.84rem}
+
+/* TeamCenter 2.2.2 - selezione gruppo */
+.team-selection-controls{display:grid;gap:14px;margin-top:24px}
+.team-selection-select{width:100%;min-height:56px;border:1px solid rgba(116,31,53,.22);border-radius:14px;background:#fff;padding:0 16px;font:inherit;font-weight:800;color:#171717;outline:none}
+.team-selection-select:focus{border-color:var(--granata);box-shadow:0 0 0 3px rgba(116,31,53,.12)}
+.team-selection-select:disabled{opacity:.65}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
