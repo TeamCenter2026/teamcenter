@@ -4,8 +4,8 @@ window.TeamCenterTeam = (() => {
   let currentId = '';
   sessionStorage.removeItem(KEY);
 
-  const idOf = item => String(item?.IDSquadra || item?.idSquadra || '').trim();
-  const nameOf = item => String(item?.NomeSquadra || item?.Squadra || item?.squadra || item?.Nome || idOf(item) || 'Squadra').trim();
+  const idOf = item => String(item?.IDSquadra || item?.idSquadra || item?.ID_SQUADRA || item?.idsquadra || item?.IdSquadra || '').trim();
+  const nameOf = item => String(item?.NomeSquadra || item?.nomeSquadra || item?.NOME_SQUADRA || item?.Squadra || item?.squadra || item?.Nome || item?.nome || idOf(item) || 'Squadra').trim();
 
   function setTeams(items) {
     teams = (Array.isArray(items) ? items : []).filter(item => String(item?.Attiva || 'SI').trim().toUpperCase() !== 'NO');

@@ -25,6 +25,14 @@
   let rosterTeamId = '';
   let staffApi = [];
   let tickHandle = null;
+  const FALLBACK_TEAMS = [
+    { IDSquadra:'PRIMA', NomeSquadra:'Prima Squadra', Attiva:'SI' },
+    { IDSquadra:'U19', NomeSquadra:'Under 19', Attiva:'SI' },
+    { IDSquadra:'U17', NomeSquadra:'Under 17', Attiva:'SI' },
+    { IDSquadra:'U16', NomeSquadra:'Under 16', Attiva:'SI' },
+    { IDSquadra:'U15', NomeSquadra:'Under 15', Attiva:'SI' },
+    { IDSquadra:'U14', NomeSquadra:'Under 14', Attiva:'SI' }
+  ];
 
   function currentTeamId(){ return window.TeamCenterTeam?.id || ''; }
   function currentTeam(){ return window.TeamCenterTeam?.current?.() || null; }
@@ -32,7 +40,9 @@
     const select=$('#teamSelectionSelect');
     const enter=$('#teamSelectionEnterBtn');
     const message=$('#teamSelectionMessage');
-    const teams=(squadreApi||[]).filter(item=>String(item?.Attiva??item?.attiva??'SI').trim().toUpperCase()!=='NO');
+    const sourceTeams=(Array.isArray(squadreApi)&&squadreApi.length)?squadreApi:FALLBACK_TEAMS;
+    const teams=sourceTeams.filter(item=>String(item?.Attiva??item?.attiva??'SI').trim().toUpperCase()!=='NO' && Boolean(window.TeamCenterTeam?.idOf(item)||item?.IDSquadra||item?.ID_SQUADRA));
+    window.TeamCenterTeam?.setTeams(teams);
 
     if(select){
       select.innerHTML='<option value="">Seleziona una squadra</option>'+teams.map(item=>{
@@ -44,7 +54,7 @@
       select.value='';
     }
     if(enter)enter.disabled=true;
-    if(message)message.textContent=teams.length?'':'Nessun gruppo squadra disponibile. Controlla il foglio SQUADRE e aggiorna la pagina.';
+    if(message)message.textContent=teams.length?'':'Nessun gruppo squadra disponibile.';
     showScreen('teamSelection');
   }
 
@@ -371,7 +381,7 @@
     }
 
     masterApi=master||{};
-    squadreApi=Array.isArray(squadre)?squadre:[];
+    squadreApi=(Array.isArray(squadre)&&squadre.length)?squadre:FALLBACK_TEAMS;
     window.TeamCenterTeam?.setTeams(squadreApi);
 
     if(logo?.dataUrl){
@@ -1498,12 +1508,19 @@
     if(!state.match.date)state.match.date=today;
     if(!state.callup.date)state.callup.date=today;
     if(!state.training.date)state.training.date=today;
+    // Mostra subito un selettore funzionante, senza lasciare l'utente bloccato
+    // mentre Google Apps Script risponde.
+    squadreApi=FALLBACK_TEAMS;
+    window.TeamCenterTeam?.setTeams(squadreApi);
+    showTeamSelection();
     try{
       await sincronizzaConfigurazioneApi();
       console.info('TeamCenter collegato alle API', {master:masterApi,squadre:squadreApi});
+      showTeamSelection();
     }catch(error){
       console.error('Sincronizzazione API non riuscita:',error);
-      toast('API non raggiungibile: uso dati salvati');
+      toast('Uso elenco squadre locale: API momentaneamente non raggiungibile');
+      showTeamSelection();
     }
     applyProfile();
     renderLogo();

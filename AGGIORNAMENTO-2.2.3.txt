@@ -1,0 +1,8 @@
+TEAMCENTER 2.2.3
+
+- Corretto il blocco su “Caricamento squadre…”.
+- Il selettore viene popolato immediatamente.
+- Lettura dinamica dal foglio SQUADRE quando l’API risponde.
+- Elenco locale di emergenza se Google Apps Script è lento o non raggiungibile.
+- Timeout API di 12 secondi.
+- Supporto aggiuntivo alle intestazioni IDSquadra / ID_SQUADRA e NomeSquadra / NOME_SQUADRA.

@@ -25,6 +25,21 @@ window.TeamCenterAPI = (() => {
     return payload.dati;
   }
 
+  const REQUEST_TIMEOUT_MS = 12000;
+
+  async function fetchWithTimeout(url, options = {}) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      return await fetch(url, { ...options, signal: controller.signal });
+    } catch (error) {
+      if (error?.name === 'AbortError') throw new Error('API non raggiungibile entro 12 secondi');
+      throw error;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   async function request(action, params = {}) {
     const url = new URL(BASE_URL);
     url.searchParams.set('action', action);
@@ -35,7 +50,7 @@ window.TeamCenterAPI = (() => {
       }
     });
 
-    const response = await fetch(url.toString(), {
+    const response = await fetchWithTimeout(url.toString(), {
       method: 'GET',
       cache: 'no-store',
       redirect: 'follow'
@@ -58,7 +73,7 @@ window.TeamCenterAPI = (() => {
       }
     });
 
-    const response = await fetch(BASE_URL, {
+    const response = await fetchWithTimeout(BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
