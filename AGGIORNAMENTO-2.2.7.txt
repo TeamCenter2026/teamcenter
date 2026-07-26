@@ -1,0 +1,6 @@
+TEAMCENTER 2.2.7
+
+- Corretto il collegamento dei pulsanti nella sezione Allenamenti.
+- Moduli allenamento apre correttamente la schermata con Torna indietro e Sezione in aggiornamento.
+- Gestione allenamento apre correttamente la gestione esistente e mantiene il pulsante Torna indietro.
+- Nessuna modifica richiesta ai fogli Google Sheets.

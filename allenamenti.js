@@ -565,5 +565,5 @@ window.TeamCenterAllenamenti = (() => {
     box.classList.toggle('error', error);
   }
 
-  return Object.freeze({ open });
+  return Object.freeze({ open, showMenu, showModules });
 })();

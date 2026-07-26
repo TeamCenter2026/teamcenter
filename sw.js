@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.2.6-training-menu';
+const CACHE='teamcenter-2.2.7-training-menu-buttons-fix';
 const ASSETS=[
   './',
   './index.html',
