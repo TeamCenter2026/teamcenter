@@ -12,7 +12,7 @@ window.TeamCenterAPI = (() => {
       if (isHtml) {
         throw new Error(
           'La Web App Apps Script ha restituito una pagina HTML. ' +
-          'Verifica di aver pubblicato la nuova distribuzione 2.3.2 con accesso consentito a chiunque disponga del link.'
+          'Verifica di aver pubblicato la nuova distribuzione 2.3.3 con accesso consentito a chiunque disponga del link.'
         );
       }
       throw new Error('Risposta API non valida: ' + raw.slice(0, 180));

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.3.2-excel-frontend';
+const CACHE='teamcenter-2.3.3-fix-amministrazione';
 const ASSETS=[
   './',
   './index.html',

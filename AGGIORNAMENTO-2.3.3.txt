@@ -1,0 +1,9 @@
+TEAMCENTER 2.3.3
+
+Correzioni:
+- ripristinato pulsante Amministrazione in Home
+- ripristinato menu Amministrazione
+- ripristinata schermata Report Allenamenti
+- corretto Profilo società bianco
+- mantenuta esportazione Excel lato browser con SheetJS
+- aggiornata cache service worker
