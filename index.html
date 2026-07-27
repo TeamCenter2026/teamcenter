@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=2.3.0" />
+  <link rel="stylesheet" href="styles.css?v=2.2.5" />
 </head>
 <body>
 <div class="app-shell">
@@ -38,8 +38,8 @@
     <section id="homeScreen" class="screen minimal-home">
       <div class="minimal-home-grid">
         <button class="minimal-module-button" type="button" data-open-module="profile">
-          <span class="minimal-module-icon">🔐</span>
-          <span>Amministrazione</span>
+          <span class="minimal-module-icon">👤</span>
+          <span>Profilo</span>
         </button>
         <button class="minimal-module-button" type="button" data-open-module="roster">
           <span class="minimal-module-icon">👥</span>
@@ -70,7 +70,7 @@
       <div class="card admin-login-card">
         <div class="eyebrow">Area riservata</div>
         <h2>Accesso amministratori</h2>
-        <p class="section-copy">Inserisci la password amministratore per aprire l’area Amministrazione.</p>
+        <p class="section-copy">Inserisci la password amministratore per aprire il Profilo società.</p>
         <form id="adminLoginForm" class="admin-login-form">
           <div class="field">
             <label for="adminPasswordInput">Password</label>
@@ -82,57 +82,8 @@
       </div>
     </section>
 
-
-    <section id="adminMenuScreen" class="screen">
-      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button><button class="admin-logout-btn" id="adminMenuLogoutBtn" type="button">Esci</button></div>
-      <div class="card admin-menu-card">
-        <div class="eyebrow">Area riservata</div>
-        <h2>Amministrazione</h2>
-        <p class="section-copy">Gestisci il profilo della società e genera i report gestionali.</p>
-        <div class="admin-menu-grid">
-          <button class="minimal-module-button" type="button" data-admin-target="profile">
-            <span class="minimal-module-icon">🏟️</span>
-            <span>Profilo società</span>
-          </button>
-          <button class="minimal-module-button" type="button" data-admin-target="training-report">
-            <span class="minimal-module-icon">📊</span>
-            <span>Report allenamenti</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section id="trainingReportScreen" class="screen">
-      <div class="page-tools">
-        <button class="back-link" type="button" data-admin-target="menu">← Amministrazione</button>
-        <button class="admin-logout-btn" id="trainingReportLogoutBtn" type="button">Esci</button>
-      </div>
-      <div class="card training-report-card">
-        <div class="eyebrow">Report</div>
-        <h2>Report Allenamenti</h2>
-        <p class="section-copy">Seleziona squadra e periodo. TeamCenter genererà un file Excel con riepilogo, dettaglio presenze, statistiche giocatori e cronologia.</p>
-        <div class="grid grid-3 training-report-filters">
-          <div class="field">
-            <label for="trainingReportTeamSelect">Squadra</label>
-            <select id="trainingReportTeamSelect"></select>
-          </div>
-          <div class="field">
-            <label for="trainingReportFromInput">Dal</label>
-            <input id="trainingReportFromInput" type="date" />
-          </div>
-          <div class="field">
-            <label for="trainingReportToInput">Al</label>
-            <input id="trainingReportToInput" type="date" />
-          </div>
-        </div>
-        <button id="generateTrainingReportBtn" class="btn btn-primary btn-block" type="button">📥 Genera Excel</button>
-        <div id="trainingReportMessage" class="admin-login-message" role="status" aria-live="polite"></div>
-        <div id="trainingReportSummary" class="training-report-summary hidden"></div>
-      </div>
-    </section>
-
     <section id="profileScreen" class="screen">
-      <div class="page-tools"><button class="back-link" type="button" data-admin-target="menu">← Amministrazione</button><button class="admin-logout-btn" id="adminLogoutBtn" type="button">Esci</button></div>
+      <div class="page-tools"><button class="back-link" type="button" data-go-home>← Home</button><button class="admin-logout-btn" id="adminLogoutBtn" type="button">Esci</button></div>
 
       <div class="card profile-editor-card">
         <div class="eyebrow">Profilo società</div>
@@ -884,18 +835,19 @@
 
 <div class="toast" id="toast">Evento registrato</div>
 
-<script src="api.js?v=2.3.0"></script>
-<script src="bootstrap.js?v=2.3.0"></script>
-<script src="team-context.js?v=2.3.0"></script>
-<script src="storage.js?v=2.3.0"></script>
-<script src="profile.js?v=2.3.0"></script>
-<script src="callup.js?v=2.3.0"></script>
-<script src="match.js?v=2.3.0"></script>
-<script src="image.js?v=2.3.0"></script>
-<script src="pdf.js?v=2.3.0"></script>
-<script src="allenamenti.js?v=2.3.0"></script>
-<script src="convocazioni.js?v=2.3.0"></script>
-<script src="report.js?v=2.3.0"></script>
-<script src="app.js?v=2.3.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="api.js?v=2.3.2"></script>
+<script src="bootstrap.js?v=2.3.2"></script>
+<script src="team-context.js?v=2.3.2"></script>
+<script src="storage.js?v=2.3.2"></script>
+<script src="profile.js?v=2.3.2"></script>
+<script src="callup.js?v=2.3.2"></script>
+<script src="match.js?v=2.3.2"></script>
+<script src="image.js?v=2.3.2"></script>
+<script src="pdf.js?v=2.3.2"></script>
+<script src="allenamenti.js?v=2.3.2"></script>
+<script src="convocazioni.js?v=2.3.2"></script>
+<script src="app.js?v=2.3.2"></script>
+<script src="report.js?v=2.3.2"></script>
 </body>
 </html>

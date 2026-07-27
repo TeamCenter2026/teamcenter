@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.3.0-report-allenamenti';
+const CACHE='teamcenter-2.3.2-excel-frontend';
 const ASSETS=[
   './',
   './index.html',

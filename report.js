@@ -8,9 +8,7 @@
     window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
-  function adminToken() {
-    return sessionStorage.getItem('teamcenterAdminToken') || '';
-  }
+  function adminToken() { return sessionStorage.getItem('teamcenterAdminToken') || ''; }
 
   function setMessage(message, error = false) {
     const element = $('#trainingReportMessage');
@@ -19,13 +17,8 @@
     element.classList.toggle('is-error', Boolean(error));
   }
 
-  function teamId(team) {
-    return String(team?.IDSquadra || team?.idSquadra || '').trim();
-  }
-
-  function teamName(team) {
-    return String(team?.NomeSquadra || team?.Squadra || team?.Nome || teamId(team) || 'Squadra').trim();
-  }
+  function teamId(team) { return String(team?.IDSquadra || team?.idSquadra || '').trim(); }
+  function teamName(team) { return String(team?.NomeSquadra || team?.Squadra || team?.Nome || teamId(team) || 'Squadra').trim(); }
 
   async function verifyAdmin() {
     const token = adminToken();
@@ -35,13 +28,8 @@
   }
 
   async function openAdminMenu() {
-    try {
-      await verifyAdmin();
-      showScreen('adminMenu');
-    } catch (error) {
-      sessionStorage.removeItem('teamcenterAdminToken');
-      showScreen('adminLogin');
-    }
+    try { await verifyAdmin(); showScreen('adminMenu'); }
+    catch (_) { sessionStorage.removeItem('teamcenterAdminToken'); showScreen('adminLogin'); }
   }
 
   async function openTrainingReport() {
@@ -49,11 +37,10 @@
       await verifyAdmin();
       showScreen('trainingReport');
       setMessage('');
-      const summary = $('#trainingReportSummary');
-      summary?.classList.add('hidden');
+      $('#trainingReportSummary')?.classList.add('hidden');
       await loadTeams();
       setDefaultDates();
-    } catch (error) {
+    } catch (_) {
       sessionStorage.removeItem('teamcenterAdminToken');
       showScreen('adminLogin');
     }
@@ -89,19 +76,75 @@
     }[character]));
   }
 
-  function downloadBase64File(result) {
-    const binary = atob(result.base64 || '');
-    const bytes = new Uint8Array(binary.length);
-    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
-    const blob = new Blob([bytes], { type: result.mimeType || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = result.nomeFile || 'Report_Allenamenti.xlsx';
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  function requireXlsx() {
+    if (!window.XLSX?.utils?.book_new) {
+      throw new Error('Motore Excel non caricato. Aggiorna la pagina e riprova.');
+    }
+    return window.XLSX;
+  }
+
+  function addSheet(workbook, name, rows, widths = []) {
+    const XLSX = requireXlsx();
+    const worksheet = XLSX.utils.aoa_to_sheet(rows);
+    if (widths.length) worksheet['!cols'] = widths.map(width => ({ wch: width }));
+    XLSX.utils.book_append_sheet(workbook, worksheet, name);
+    return worksheet;
+  }
+
+  function createWorkbook(result) {
+    const XLSX = requireXlsx();
+    const workbook = XLSX.utils.book_new();
+    const r = result.riepilogo || {};
+
+    addSheet(workbook, 'Riepilogo', [
+      ['TEAMCENTER · REPORT ALLENAMENTI'],
+      [],
+      ['Società', r.societa || ''],
+      ['Stagione', r.stagione || ''],
+      ['Squadra', r.squadra || ''],
+      ['Periodo', `${r.dalItaliano || r.dal || ''} - ${r.alItaliano || r.al || ''}`],
+      [],
+      ['Indicatore', 'Valore'],
+      ['Allenamenti svolti', Number(r.allenamenti || 0)],
+      ['Media presenze', Number(r.mediaPresenzeNumero || 0)],
+      ['Giocatore più presente', r.giocatorePiuPresente || '—'],
+      ['Migliore percentuale presenza', Number(r.percentualeMiglioreNumero || 0)]
+    ], [34, 28]);
+    const wsR = workbook.Sheets['Riepilogo'];
+    if (wsR?.B12) wsR.B12.z = '0.00%';
+
+    const dettaglio = [['Data', 'ID Allenamento', 'ID Giocatore', 'Cognome', 'Nome', 'Anno', 'Stato']];
+    (result.dettaglio || []).forEach(item => dettaglio.push([
+      item.DataItaliana || item.Data || '', item.IDAllenamento || '', item.IDGiocatore || '',
+      item.Cognome || '', item.Nome || '', item.Anno || '', item.Stato || ''
+    ]));
+    addSheet(workbook, 'Dettaglio presenze', dettaglio, [13, 18, 18, 22, 22, 10, 16]);
+
+    const statistiche = [['ID Giocatore', 'Cognome', 'Nome', 'Anno', 'Sedute registrate', 'Presenze', 'Assenze', 'Giustificate', 'Infortuni', '% presenza']];
+    (result.statistiche || []).forEach(item => statistiche.push([
+      item.IDGiocatore || '', item.Cognome || '', item.Nome || '', item.Anno || '',
+      Number(item.SeduteRegistrate || 0), Number(item.Presenze || 0), Number(item.Assenze || 0),
+      Number(item.Giustificate || 0), Number(item.Infortuni || 0), Number(item.PercentualePresenza || 0)
+    ]));
+    const wsS = addSheet(workbook, 'Statistiche giocatori', statistiche, [18, 22, 22, 10, 18, 12, 12, 14, 12, 14]);
+    for (let row = 2; row <= statistiche.length; row += 1) {
+      if (wsS[`J${row}`]) wsS[`J${row}`].z = '0.00%';
+    }
+
+    const cronologia = [['Data', 'ID Allenamento', 'Presenti', 'Assenti', 'Giustificati', 'Infortunati', 'Totale giocatori']];
+    (result.cronologia || []).forEach(item => cronologia.push([
+      item.DataItaliana || item.Data || '', item.IDAllenamento || '', Number(item.Presenti || 0),
+      Number(item.Assenti || 0), Number(item.Giustificati || 0), Number(item.Infortunati || 0), Number(item.TotaleGiocatori || 0)
+    ]));
+    addSheet(workbook, 'Cronologia', cronologia, [13, 18, 12, 12, 14, 14, 16]);
+
+    return workbook;
+  }
+
+  function downloadWorkbook(result) {
+    const XLSX = requireXlsx();
+    const workbook = createWorkbook(result);
+    XLSX.writeFile(workbook, result.nomeFile || 'Report_Allenamenti.xlsx', { compression: true });
   }
 
   function renderSummary(summary) {
@@ -129,26 +172,20 @@
     if (dal > al) return setMessage('La data iniziale non può essere successiva a quella finale.', true);
 
     const oldText = button?.textContent;
-    if (button) {
-      button.disabled = true;
-      button.textContent = 'Generazione Excel in corso…';
-    }
+    if (button) { button.disabled = true; button.textContent = 'Generazione Excel in corso…'; }
     setMessage('Elaborazione degli allenamenti e creazione del file Excel…');
 
     try {
       const token = await verifyAdmin();
       const result = await window.TeamCenterAPI.generateTrainingReport({ idSquadra, dal, al }, token);
-      if (!result?.base64) throw new Error('Il file Excel non è stato ricevuto.');
-      downloadBase64File(result);
+      if (!result?.riepilogo || !Array.isArray(result?.statistiche)) throw new Error('Dati del report non validi.');
+      downloadWorkbook(result);
       renderSummary(result.riepilogo);
       setMessage(`File creato: ${result.nomeFile}`);
     } catch (error) {
       setMessage(error.message || 'Impossibile generare il report.', true);
     } finally {
-      if (button) {
-        button.disabled = false;
-        button.textContent = oldText || '📥 Genera Excel';
-      }
+      if (button) { button.disabled = false; button.textContent = oldText || '📥 Genera Excel'; }
     }
   }
 
@@ -160,6 +197,5 @@
   });
 
   $('#generateTrainingReportBtn')?.addEventListener('click', generate);
-
   window.TeamCenterReport = Object.freeze({ openAdminMenu, openTrainingReport });
 })();
