@@ -12,7 +12,7 @@ window.TeamCenterAPI = (() => {
       if (isHtml) {
         throw new Error(
           'La Web App Apps Script ha restituito una pagina HTML. ' +
-          'Verifica di aver pubblicato la nuova distribuzione 2.3.3 con accesso consentito a chiunque disponga del link.'
+          'Verifica di aver pubblicato la nuova distribuzione 2.3.4 con accesso consentito a chiunque disponga del link.'
         );
       }
       throw new Error('Risposta API non valida: ' + raw.slice(0, 180));
@@ -107,6 +107,8 @@ window.TeamCenterAPI = (() => {
     getAllenamenti: () => request('allenamenti'),
     saveAllenamento: data => request('salvaAllenamento', data),
     generateTrainingReport: (data, token) => request('reportAllenamenti', { ...data, token }, 60000),
+    generateCallupReport: (data, token) => request('reportConvocazioni', { ...data, token }, 60000),
+    generateMatchReport: (data, token) => request('reportMatch', { ...data, token }, 60000),
     getConvocazioni: () => request('convocazioni'),
     saveConvocazione: data => request('salvaConvocazione', data),
     getMatch: () => request('match'),

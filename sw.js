@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.3.3-fix-amministrazione';
+const CACHE='teamcenter-2.3.4-report-completi';
 const ASSETS=[
   './',
   './index.html',

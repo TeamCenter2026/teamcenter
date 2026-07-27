@@ -1,0 +1,10 @@
+TEAMCENTER 2.3.4 - REPORT COMPLETI
+
+Aggiunti in Amministrazione:
+- Report Convocazioni
+- Report Match
+
+Entrambi generano Excel direttamente nel browser tramite SheetJS, senza file temporanei su Drive.
+
+Backend: sostituire Codice.gs con Codice-TeamCenter-2.3.4.gs e pubblicare una nuova versione della distribuzione esistente.
+Frontend: caricare tutti i file su GitHub e svuotare/aggiornare la cache della webapp.

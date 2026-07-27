@@ -7,7 +7,7 @@
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
   <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=2.3.3" />
+  <link rel="stylesheet" href="styles.css?v=2.3.4" />
 </head>
 <body>
 <div class="app-shell">
@@ -98,6 +98,14 @@
             <span class="minimal-module-icon">📊</span>
             <span>Report allenamenti</span>
           </button>
+          <button class="minimal-module-button" type="button" data-admin-target="callup-report">
+            <span class="minimal-module-icon">📋</span>
+            <span>Report convocazioni</span>
+          </button>
+          <button class="minimal-module-button" type="button" data-admin-target="match-report">
+            <span class="minimal-module-icon">⚽</span>
+            <span>Report match</span>
+          </button>
         </div>
       </div>
     </section>
@@ -128,6 +136,46 @@
         <button id="generateTrainingReportBtn" class="btn btn-primary btn-block" type="button">📥 Genera Excel</button>
         <div id="trainingReportMessage" class="admin-login-message" role="status" aria-live="polite"></div>
         <div id="trainingReportSummary" class="training-report-summary hidden"></div>
+      </div>
+    </section>
+
+    <section id="callupReportScreen" class="screen">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-admin-target="menu">← Amministrazione</button>
+        <button class="admin-logout-btn" id="callupReportLogoutBtn" type="button">Esci</button>
+      </div>
+      <div class="card training-report-card">
+        <div class="eyebrow">Report</div>
+        <h2>Report Convocazioni</h2>
+        <p class="section-copy">Seleziona squadra e periodo. TeamCenter genererà un file Excel con riepilogo, dettaglio convocazioni, frequenza dei giocatori e presenza dello staff.</p>
+        <div class="grid grid-3 training-report-filters">
+          <div class="field"><label for="callupReportTeamSelect">Squadra</label><select id="callupReportTeamSelect"></select></div>
+          <div class="field"><label for="callupReportFromInput">Dal</label><input id="callupReportFromInput" type="date" /></div>
+          <div class="field"><label for="callupReportToInput">Al</label><input id="callupReportToInput" type="date" /></div>
+        </div>
+        <button id="generateCallupReportBtn" class="btn btn-primary btn-block" type="button">📥 Genera Excel</button>
+        <div id="callupReportMessage" class="admin-login-message" role="status" aria-live="polite"></div>
+        <div id="callupReportSummary" class="training-report-summary hidden"></div>
+      </div>
+    </section>
+
+    <section id="matchReportScreen" class="screen">
+      <div class="page-tools">
+        <button class="back-link" type="button" data-admin-target="menu">← Amministrazione</button>
+        <button class="admin-logout-btn" id="matchReportLogoutBtn" type="button">Esci</button>
+      </div>
+      <div class="card training-report-card">
+        <div class="eyebrow">Report</div>
+        <h2>Report Match</h2>
+        <p class="section-copy">Seleziona squadra e periodo. TeamCenter genererà un file Excel con risultati, eventi, statistiche di squadra e statistiche individuali.</p>
+        <div class="grid grid-3 training-report-filters">
+          <div class="field"><label for="matchReportTeamSelect">Squadra</label><select id="matchReportTeamSelect"></select></div>
+          <div class="field"><label for="matchReportFromInput">Dal</label><input id="matchReportFromInput" type="date" /></div>
+          <div class="field"><label for="matchReportToInput">Al</label><input id="matchReportToInput" type="date" /></div>
+        </div>
+        <button id="generateMatchReportBtn" class="btn btn-primary btn-block" type="button">📥 Genera Excel</button>
+        <div id="matchReportMessage" class="admin-login-message" role="status" aria-live="polite"></div>
+        <div id="matchReportSummary" class="training-report-summary hidden"></div>
       </div>
     </section>
 
@@ -885,18 +933,18 @@
 <div class="toast" id="toast">Evento registrato</div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="api.js?v=2.3.3"></script>
-<script src="bootstrap.js?v=2.3.3"></script>
-<script src="team-context.js?v=2.3.3"></script>
-<script src="storage.js?v=2.3.3"></script>
-<script src="profile.js?v=2.3.3"></script>
-<script src="callup.js?v=2.3.3"></script>
-<script src="match.js?v=2.3.3"></script>
-<script src="image.js?v=2.3.3"></script>
-<script src="pdf.js?v=2.3.3"></script>
-<script src="allenamenti.js?v=2.3.3"></script>
-<script src="convocazioni.js?v=2.3.3"></script>
-<script src="report.js?v=2.3.3"></script>
-<script src="app.js?v=2.3.3"></script>
+<script src="api.js?v=2.3.4"></script>
+<script src="bootstrap.js?v=2.3.4"></script>
+<script src="team-context.js?v=2.3.4"></script>
+<script src="storage.js?v=2.3.4"></script>
+<script src="profile.js?v=2.3.4"></script>
+<script src="callup.js?v=2.3.4"></script>
+<script src="match.js?v=2.3.4"></script>
+<script src="image.js?v=2.3.4"></script>
+<script src="pdf.js?v=2.3.4"></script>
+<script src="allenamenti.js?v=2.3.4"></script>
+<script src="convocazioni.js?v=2.3.4"></script>
+<script src="report.js?v=2.3.4"></script>
+<script src="app.js?v=2.3.4"></script>
 </body>
 </html>

@@ -1,201 +1,30 @@
 (() => {
   const $ = selector => document.querySelector(selector);
   const $$ = selector => Array.from(document.querySelectorAll(selector));
-
-  function showScreen(name) {
-    $$('.screen').forEach(screen => screen.classList.toggle('active', screen.id === `${name}Screen`));
-    $('#bottomNav')?.classList.add('hidden');
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }
-
-  function adminToken() { return sessionStorage.getItem('teamcenterAdminToken') || ''; }
-
-  function setMessage(message, error = false) {
-    const element = $('#trainingReportMessage');
-    if (!element) return;
-    element.textContent = message || '';
-    element.classList.toggle('is-error', Boolean(error));
-  }
-
-  function teamId(team) { return String(team?.IDSquadra || team?.idSquadra || '').trim(); }
-  function teamName(team) { return String(team?.NomeSquadra || team?.Squadra || team?.Nome || teamId(team) || 'Squadra').trim(); }
-
-  async function verifyAdmin() {
-    const token = adminToken();
-    if (!token) throw new Error('Sessione amministratore mancante. Accedi nuovamente.');
-    await window.TeamCenterAPI.verificaSessioneAdmin(token);
-    return token;
-  }
-
-  async function openAdminMenu() {
-    try { await verifyAdmin(); showScreen('adminMenu'); }
-    catch (_) { sessionStorage.removeItem('teamcenterAdminToken'); showScreen('adminLogin'); }
-  }
-
-  async function openTrainingReport() {
-    try {
-      await verifyAdmin();
-      showScreen('trainingReport');
-      setMessage('');
-      $('#trainingReportSummary')?.classList.add('hidden');
-      await loadTeams();
-      setDefaultDates();
-    } catch (_) {
-      sessionStorage.removeItem('teamcenterAdminToken');
-      showScreen('adminLogin');
-    }
-  }
-
-  async function loadTeams() {
-    const select = $('#trainingReportTeamSelect');
-    if (!select) return;
-    select.innerHTML = '<option value="">Caricamento squadre…</option>';
-    const teams = await window.TeamCenterAPI.getSquadre();
-    const list = Array.isArray(teams) ? teams : [];
-    select.innerHTML = '<option value="">Seleziona squadra</option>' + list.map(team =>
-      `<option value="${escapeHtml(teamId(team))}">${escapeHtml(teamName(team))}</option>`
-    ).join('');
-    const current = window.TeamCenterTeam?.id || '';
-    if (current && list.some(team => teamId(team) === current)) select.value = current;
-  }
-
-  function setDefaultDates() {
-    const to = $('#trainingReportToInput');
-    const from = $('#trainingReportFromInput');
-    const today = new Date();
-    if (to && !to.value) to.value = today.toISOString().slice(0, 10);
-    if (from && !from.value) {
-      const start = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-      from.value = start.toISOString().slice(0, 10);
-    }
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? '').replace(/[&<>'"]/g, character => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[character]));
-  }
-
-  function requireXlsx() {
-    if (!window.XLSX?.utils?.book_new) {
-      throw new Error('Motore Excel non caricato. Aggiorna la pagina e riprova.');
-    }
-    return window.XLSX;
-  }
-
-  function addSheet(workbook, name, rows, widths = []) {
-    const XLSX = requireXlsx();
-    const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    if (widths.length) worksheet['!cols'] = widths.map(width => ({ wch: width }));
-    XLSX.utils.book_append_sheet(workbook, worksheet, name);
-    return worksheet;
-  }
-
-  function createWorkbook(result) {
-    const XLSX = requireXlsx();
-    const workbook = XLSX.utils.book_new();
-    const r = result.riepilogo || {};
-
-    addSheet(workbook, 'Riepilogo', [
-      ['TEAMCENTER · REPORT ALLENAMENTI'],
-      [],
-      ['Società', r.societa || ''],
-      ['Stagione', r.stagione || ''],
-      ['Squadra', r.squadra || ''],
-      ['Periodo', `${r.dalItaliano || r.dal || ''} - ${r.alItaliano || r.al || ''}`],
-      [],
-      ['Indicatore', 'Valore'],
-      ['Allenamenti svolti', Number(r.allenamenti || 0)],
-      ['Media presenze', Number(r.mediaPresenzeNumero || 0)],
-      ['Giocatore più presente', r.giocatorePiuPresente || '—'],
-      ['Migliore percentuale presenza', Number(r.percentualeMiglioreNumero || 0)]
-    ], [34, 28]);
-    const wsR = workbook.Sheets['Riepilogo'];
-    if (wsR?.B12) wsR.B12.z = '0.00%';
-
-    const dettaglio = [['Data', 'ID Allenamento', 'ID Giocatore', 'Cognome', 'Nome', 'Anno', 'Stato']];
-    (result.dettaglio || []).forEach(item => dettaglio.push([
-      item.DataItaliana || item.Data || '', item.IDAllenamento || '', item.IDGiocatore || '',
-      item.Cognome || '', item.Nome || '', item.Anno || '', item.Stato || ''
-    ]));
-    addSheet(workbook, 'Dettaglio presenze', dettaglio, [13, 18, 18, 22, 22, 10, 16]);
-
-    const statistiche = [['ID Giocatore', 'Cognome', 'Nome', 'Anno', 'Sedute registrate', 'Presenze', 'Assenze', 'Giustificate', 'Infortuni', '% presenza']];
-    (result.statistiche || []).forEach(item => statistiche.push([
-      item.IDGiocatore || '', item.Cognome || '', item.Nome || '', item.Anno || '',
-      Number(item.SeduteRegistrate || 0), Number(item.Presenze || 0), Number(item.Assenze || 0),
-      Number(item.Giustificate || 0), Number(item.Infortuni || 0), Number(item.PercentualePresenza || 0)
-    ]));
-    const wsS = addSheet(workbook, 'Statistiche giocatori', statistiche, [18, 22, 22, 10, 18, 12, 12, 14, 12, 14]);
-    for (let row = 2; row <= statistiche.length; row += 1) {
-      if (wsS[`J${row}`]) wsS[`J${row}`].z = '0.00%';
-    }
-
-    const cronologia = [['Data', 'ID Allenamento', 'Presenti', 'Assenti', 'Giustificati', 'Infortunati', 'Totale giocatori']];
-    (result.cronologia || []).forEach(item => cronologia.push([
-      item.DataItaliana || item.Data || '', item.IDAllenamento || '', Number(item.Presenti || 0),
-      Number(item.Assenti || 0), Number(item.Giustificati || 0), Number(item.Infortunati || 0), Number(item.TotaleGiocatori || 0)
-    ]));
-    addSheet(workbook, 'Cronologia', cronologia, [13, 18, 12, 12, 14, 14, 16]);
-
-    return workbook;
-  }
-
-  function downloadWorkbook(result) {
-    const XLSX = requireXlsx();
-    const workbook = createWorkbook(result);
-    XLSX.writeFile(workbook, result.nomeFile || 'Report_Allenamenti.xlsx', { compression: true });
-  }
-
-  function renderSummary(summary) {
-    const box = $('#trainingReportSummary');
-    if (!box || !summary) return;
-    box.innerHTML = `
-      <div class="training-report-summary-title">Report generato</div>
-      <div class="training-report-kpis">
-        <div><span>Allenamenti</span><strong>${escapeHtml(summary.allenamenti)}</strong></div>
-        <div><span>Media presenze</span><strong>${escapeHtml(summary.mediaPresenze)}</strong></div>
-        <div><span>Giocatore più presente</span><strong>${escapeHtml(summary.giocatorePiuPresente || '—')}</strong></div>
-        <div><span>Presenza migliore</span><strong>${escapeHtml(summary.percentualeMigliore || '—')}</strong></div>
-      </div>`;
-    box.classList.remove('hidden');
-  }
-
-  async function generate() {
-    const button = $('#generateTrainingReportBtn');
-    const idSquadra = $('#trainingReportTeamSelect')?.value || '';
-    const dal = $('#trainingReportFromInput')?.value || '';
-    const al = $('#trainingReportToInput')?.value || '';
-
-    if (!idSquadra) return setMessage('Seleziona una squadra.', true);
-    if (!dal || !al) return setMessage('Indica la data iniziale e finale.', true);
-    if (dal > al) return setMessage('La data iniziale non può essere successiva a quella finale.', true);
-
-    const oldText = button?.textContent;
-    if (button) { button.disabled = true; button.textContent = 'Generazione Excel in corso…'; }
-    setMessage('Elaborazione degli allenamenti e creazione del file Excel…');
-
-    try {
-      const token = await verifyAdmin();
-      const result = await window.TeamCenterAPI.generateTrainingReport({ idSquadra, dal, al }, token);
-      if (!result?.riepilogo || !Array.isArray(result?.statistiche)) throw new Error('Dati del report non validi.');
-      downloadWorkbook(result);
-      renderSummary(result.riepilogo);
-      setMessage(`File creato: ${result.nomeFile}`);
-    } catch (error) {
-      setMessage(error.message || 'Impossibile generare il report.', true);
-    } finally {
-      if (button) { button.disabled = false; button.textContent = oldText || '📥 Genera Excel'; }
-    }
-  }
-
-  document.addEventListener('click', event => {
-    const target = event.target.closest('[data-admin-target]')?.dataset.adminTarget;
-    if (target === 'menu') openAdminMenu();
-    if (target === 'training-report') openTrainingReport();
-    if (target === 'profile') showScreen('profile');
-  });
-
-  $('#generateTrainingReportBtn')?.addEventListener('click', generate);
-  window.TeamCenterReport = Object.freeze({ openAdminMenu, openTrainingReport });
+  const configs = {
+    training: { screen:'trainingReport', team:'#trainingReportTeamSelect', from:'#trainingReportFromInput', to:'#trainingReportToInput', button:'#generateTrainingReportBtn', message:'#trainingReportMessage', summary:'#trainingReportSummary', api:'generateTrainingReport' },
+    callup: { screen:'callupReport', team:'#callupReportTeamSelect', from:'#callupReportFromInput', to:'#callupReportToInput', button:'#generateCallupReportBtn', message:'#callupReportMessage', summary:'#callupReportSummary', api:'generateCallupReport' },
+    match: { screen:'matchReport', team:'#matchReportTeamSelect', from:'#matchReportFromInput', to:'#matchReportToInput', button:'#generateMatchReportBtn', message:'#matchReportMessage', summary:'#matchReportSummary', api:'generateMatchReport' }
+  };
+  function showScreen(name){ $$('.screen').forEach(x=>x.classList.toggle('active',x.id===`${name}Screen`)); $('#bottomNav')?.classList.add('hidden'); window.scrollTo({top:0,behavior:'instant'}); }
+  function token(){return sessionStorage.getItem('teamcenterAdminToken')||'';}
+  function msg(kind,text,error=false){const e=$(configs[kind].message);if(!e)return;e.textContent=text||'';e.classList.toggle('is-error',!!error);}
+  function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+  function teamId(t){return String(t?.IDSquadra||t?.idSquadra||'').trim();}
+  function teamName(t){return String(t?.NomeSquadra||t?.Squadra||t?.Nome||teamId(t)||'Squadra').trim();}
+  async function verify(){const t=token();if(!t)throw new Error('Sessione amministratore mancante. Accedi nuovamente.');await TeamCenterAPI.verificaSessioneAdmin(t);return t;}
+  async function openAdminMenu(){try{await verify();showScreen('adminMenu');}catch(_){sessionStorage.removeItem('teamcenterAdminToken');showScreen('adminLogin');}}
+  function defaults(kind){const c=configs[kind],to=$(c.to),from=$(c.from),d=new Date();if(to&&!to.value)to.value=d.toISOString().slice(0,10);if(from&&!from.value){const x=new Date(d.getFullYear(),d.getMonth()-1,d.getDate());from.value=x.toISOString().slice(0,10);}}
+  async function loadTeams(kind){const c=configs[kind],sel=$(c.team);sel.innerHTML='<option value="">Caricamento squadre…</option>';const list=await TeamCenterAPI.getSquadre();sel.innerHTML='<option value="">Seleziona squadra</option>'+list.map(t=>`<option value="${esc(teamId(t))}">${esc(teamName(t))}</option>`).join('');const current=window.TeamCenterTeam?.id||'';if(current&&list.some(t=>teamId(t)===current))sel.value=current;}
+  async function open(kind){try{await verify();showScreen(configs[kind].screen);msg(kind,'');$(configs[kind].summary)?.classList.add('hidden');await loadTeams(kind);defaults(kind);}catch(_){sessionStorage.removeItem('teamcenterAdminToken');showScreen('adminLogin');}}
+  function xlsx(){if(!window.XLSX?.utils?.book_new)throw new Error('Motore Excel non caricato. Aggiorna la pagina e riprova.');return window.XLSX;}
+  function sheet(wb,name,rows,widths=[]){const X=xlsx(),ws=X.utils.aoa_to_sheet(rows);if(widths.length)ws['!cols']=widths.map(w=>({wch:w}));X.utils.book_append_sheet(wb,ws,name);return ws;}
+  function workbookTraining(r){const X=xlsx(),wb=X.utils.book_new(),q=r.riepilogo||{};sheet(wb,'Riepilogo',[['TEAMCENTER · REPORT ALLENAMENTI'],[],['Società',q.societa||''],['Stagione',q.stagione||''],['Squadra',q.squadra||''],['Periodo',`${q.dalItaliano||''} - ${q.alItaliano||''}`],[],['Indicatore','Valore'],['Allenamenti svolti',+q.allenamenti||0],['Media presenze',+q.mediaPresenzeNumero||0],['Giocatore più presente',q.giocatorePiuPresente||'—'],['Migliore percentuale presenza',+q.percentualeMiglioreNumero||0]],[34,28]);if(wb.Sheets.Riepilogo?.B12)wb.Sheets.Riepilogo.B12.z='0.00%';let rows=[['Data','ID Allenamento','ID Giocatore','Cognome','Nome','Anno','Stato']];(r.dettaglio||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDAllenamento||'',i.IDGiocatore||'',i.Cognome||'',i.Nome||'',i.Anno||'',i.Stato||'']));sheet(wb,'Dettaglio presenze',rows,[13,18,18,22,22,10,16]);rows=[['ID Giocatore','Cognome','Nome','Anno','Sedute registrate','Presenze','Assenze','Giustificate','Infortuni','% presenza']];(r.statistiche||[]).forEach(i=>rows.push([i.IDGiocatore||'',i.Cognome||'',i.Nome||'',i.Anno||'',+i.SeduteRegistrate||0,+i.Presenze||0,+i.Assenze||0,+i.Giustificate||0,+i.Infortuni||0,+i.PercentualePresenza||0]));const ws=sheet(wb,'Statistiche giocatori',rows,[18,22,22,10,18,12,12,14,12,14]);for(let n=2;n<=rows.length;n++)if(ws[`J${n}`])ws[`J${n}`].z='0.00%';rows=[['Data','ID Allenamento','Presenti','Assenti','Giustificati','Infortunati','Totale giocatori']];(r.cronologia||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDAllenamento||'',+i.Presenti||0,+i.Assenti||0,+i.Giustificati||0,+i.Infortunati||0,+i.TotaleGiocatori||0]));sheet(wb,'Cronologia',rows,[13,18,12,12,14,14,16]);return wb;}
+  function workbookCallup(r){const X=xlsx(),wb=X.utils.book_new(),q=r.riepilogo||{};sheet(wb,'Riepilogo',[['TEAMCENTER · REPORT CONVOCAZIONI'],[],['Società',q.societa||''],['Stagione',q.stagione||''],['Squadra',q.squadra||''],['Periodo',`${q.dalItaliano||''} - ${q.alItaliano||''}`],[],['Indicatore','Valore'],['Convocazioni',+q.convocazioni||0],['Media convocati',+q.mediaConvocatiNumero||0],['Giocatore più convocato',q.giocatorePiuConvocato||'—'],['Percentuale massima convocazione',+q.percentualeMiglioreNumero||0]],[35,30]);if(wb.Sheets.Riepilogo?.B12)wb.Sheets.Riepilogo.B12.z='0.00%';let rows=[['Data','ID Convocazione','Campionato','Giornata','Avversario','Sede','Orario partita','Orario convocazione','Indirizzo','N. giocatori','N. staff']];(r.convocazioni||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDConvocazione||'',i.Campionato||'',i.Giornata||'',i.Avversario||'',i.Sede||'',i.OrarioPartita||'',i.OrarioConvocazione||'',i.Indirizzo||'',+i.NumeroGiocatori||0,+i.NumeroStaff||0]));sheet(wb,'Convocazioni',rows,[13,18,20,12,24,12,16,20,34,14,12]);rows=[['Data','ID Convocazione','ID Giocatore','Cognome','Nome','Anno']];(r.dettaglioGiocatori||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDConvocazione||'',i.IDGiocatore||'',i.Cognome||'',i.Nome||'',i.Anno||'']));sheet(wb,'Dettaglio giocatori',rows,[13,18,18,22,22,10]);rows=[['ID Giocatore','Cognome','Nome','Anno','Convocazioni','Totale gare','% convocazione']];(r.statisticheGiocatori||[]).forEach(i=>rows.push([i.IDGiocatore||'',i.Cognome||'',i.Nome||'',i.Anno||'',+i.Convocazioni||0,+i.TotaleGare||0,+i.PercentualeConvocazione||0]));const ws=sheet(wb,'Statistiche giocatori',rows,[18,22,22,10,16,14,16]);for(let n=2;n<=rows.length;n++)if(ws[`G${n}`])ws[`G${n}`].z='0.00%';rows=[['ID Staff','Cognome','Nome','Ruolo','Presenze in convocazione']];(r.statisticheStaff||[]).forEach(i=>rows.push([i.IDStaff||'',i.Cognome||'',i.Nome||'',i.Ruolo||'',+i.Presenze||0]));sheet(wb,'Statistiche staff',rows,[18,22,22,24,24]);return wb;}
+  function workbookMatch(r){const X=xlsx(),wb=X.utils.book_new(),q=r.riepilogo||{};sheet(wb,'Riepilogo',[['TEAMCENTER · REPORT MATCH'],[],['Società',q.societa||''],['Stagione',q.stagione||''],['Squadra',q.squadra||''],['Periodo',`${q.dalItaliano||''} - ${q.alItaliano||''}`],[],['Indicatore','Valore'],['Partite',+q.partite||0],['Vittorie',+q.vittorie||0],['Pareggi',+q.pareggi||0],['Sconfitte',+q.sconfitte||0],['Gol fatti',+q.golFatti||0],['Gol subiti',+q.golSubiti||0],['Media punti',+q.mediaPunti||0]],[32,28]);let rows=[['Data','ID Match','Campionato','Giornata','Avversario','Sede','Risultato Breda','Risultato avversario','Esito','Stato']];(r.partite||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDMatch||'',i.Campionato||'',i.Giornata||'',i.Avversario||'',i.Sede||'',+i.GolBreda||0,+i.GolAvversario||0,i.Esito||'',i.Stato||'']));sheet(wb,'Partite',rows,[13,18,20,12,24,12,18,20,12,14]);rows=[['Data','ID Match','Minuto','Evento','Squadra','Giocatore','Assist','Nota']];(r.eventi||[]).forEach(i=>rows.push([i.DataItaliana||i.Data||'',i.IDMatch||'',i.Minuto||'',i.Tipo||'',i.SquadraEvento||'',i.Giocatore||'',i.Assist||'',i.Nota||'']));sheet(wb,'Eventi',rows,[13,18,12,22,18,26,26,34]);rows=[['Voce','CSV Breda','Avversari']];(r.statisticheSquadra||[]).forEach(i=>rows.push([i.Voce||'',+i.Breda||0,+i.Avversari||0]));sheet(wb,'Statistiche squadra',rows,[28,16,16]);rows=[['Giocatore','Gol','Assist','Ammonizioni','Espulsioni']];(r.statisticheGiocatori||[]).forEach(i=>rows.push([i.Giocatore||'',+i.Gol||0,+i.Assist||0,+i.Ammonizioni||0,+i.Espulsioni||0]));sheet(wb,'Statistiche giocatori',rows,[30,12,12,16,14]);return wb;}
+  function summary(kind,q){const box=$(configs[kind].summary);if(!box)return;let items=[];if(kind==='training')items=[['Allenamenti',q.allenamenti],['Media presenze',q.mediaPresenze],['Giocatore più presente',q.giocatorePiuPresente||'—'],['Presenza migliore',q.percentualeMigliore||'—']];if(kind==='callup')items=[['Convocazioni',q.convocazioni],['Media convocati',q.mediaConvocati],['Più convocato',q.giocatorePiuConvocato||'—'],['Percentuale migliore',q.percentualeMigliore||'—']];if(kind==='match')items=[['Partite',q.partite],['Vittorie',q.vittorie],['Gol fatti',q.golFatti],['Gol subiti',q.golSubiti]];box.innerHTML=`<div class="training-report-summary-title">Report generato</div><div class="training-report-kpis">${items.map(i=>`<div><span>${esc(i[0])}</span><strong>${esc(i[1])}</strong></div>`).join('')}</div>`;box.classList.remove('hidden');}
+  async function generate(kind){const c=configs[kind],btn=$(c.button),idSquadra=$(c.team)?.value||'',dal=$(c.from)?.value||'',al=$(c.to)?.value||'';if(!idSquadra)return msg(kind,'Seleziona una squadra.',true);if(!dal||!al)return msg(kind,'Indica la data iniziale e finale.',true);if(dal>al)return msg(kind,'La data iniziale non può essere successiva a quella finale.',true);const old=btn?.textContent;if(btn){btn.disabled=true;btn.textContent='Generazione Excel in corso…';}msg(kind,'Elaborazione dei dati e creazione del file Excel…');try{const t=await verify(),result=await TeamCenterAPI[c.api]({idSquadra,dal,al},t);const wb=kind==='training'?workbookTraining(result):kind==='callup'?workbookCallup(result):workbookMatch(result);xlsx().writeFile(wb,result.nomeFile||`Report_${kind}.xlsx`,{compression:true});summary(kind,result.riepilogo||{});msg(kind,`File creato: ${result.nomeFile}`);}catch(e){msg(kind,e.message||'Impossibile generare il report.',true);}finally{if(btn){btn.disabled=false;btn.textContent=old||'📥 Genera Excel';}}}
+  document.addEventListener('click',e=>{const target=e.target.closest('[data-admin-target]')?.dataset.adminTarget;if(target==='menu')openAdminMenu();if(target==='training-report')open('training');if(target==='callup-report')open('callup');if(target==='match-report')open('match');if(target==='profile')showScreen('profile');});
+  $('#generateTrainingReportBtn')?.addEventListener('click',()=>generate('training'));$('#generateCallupReportBtn')?.addEventListener('click',()=>generate('callup'));$('#generateMatchReportBtn')?.addEventListener('click',()=>generate('match'));
+  window.TeamCenterReport=Object.freeze({openAdminMenu,openTrainingReport:()=>open('training'),openCallupReport:()=>open('callup'),openMatchReport:()=>open('match')});
 })();
