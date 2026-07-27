@@ -1002,3 +1002,16 @@ body.match20-report-open{
     min-height: 120px;
   }
 }
+
+/* TeamCenter 2.3.0 - Area Amministrazione e Report Allenamenti */
+.admin-menu-card,.training-report-card{max-width:920px;margin:0 auto}
+.admin-menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:22px}
+.training-report-filters{margin:22px 0 18px}
+.training-report-summary{margin-top:20px;border:1px solid rgba(116,31,53,.16);border-radius:18px;padding:18px;background:var(--granata-soft,#f4e9ed)}
+.training-report-summary-title{font-weight:900;color:var(--granata);margin-bottom:14px}
+.training-report-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.training-report-kpis>div{background:#fff;border-radius:14px;padding:14px;box-shadow:0 6px 18px rgba(30,35,45,.06)}
+.training-report-kpis span{display:block;color:var(--muted);font-size:.78rem;margin-bottom:6px}
+.training-report-kpis strong{display:block;font-size:1.05rem;color:var(--text)}
+.admin-login-message.is-error{color:#a52020}
+@media(max-width:720px){.admin-menu-grid,.training-report-kpis{grid-template-columns:1fr}.training-report-filters{grid-template-columns:1fr}}

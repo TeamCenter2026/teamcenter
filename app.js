@@ -182,8 +182,7 @@
     if(token){
       try{
         await window.TeamCenterAPI.verificaSessioneAdmin(token);
-        fillProfile();
-        showScreen('profile');
+        showScreen('adminMenu');
         return;
       }catch(error){
         clearAdminToken();
@@ -216,8 +215,7 @@
       if(!sessione?.token)throw new Error('Token di sessione non ricevuto.');
       sessionStorage.setItem('teamcenterAdminToken',sessione.token);
       if(input)input.value='';
-      fillProfile();
-      showScreen('profile');
+      showScreen('adminMenu');
       toast('Accesso amministratore effettuato');
     }catch(error){
       clearAdminToken();
@@ -1409,6 +1407,8 @@
   $('#profileForm')?.addEventListener('submit',salvaProfiloSocieta);
   $('#adminLoginForm')?.addEventListener('submit',loginAmministratore);
   $('#adminLogoutBtn')?.addEventListener('click',logoutAmministratore);
+  $('#adminMenuLogoutBtn')?.addEventListener('click',logoutAmministratore);
+  $('#trainingReportLogoutBtn')?.addEventListener('click',logoutAmministratore);
   $('#rosterTeamSelect')?.addEventListener('change',async event=>{rosterTeamId=event.target.value;chiudiModuloGiocatore();await caricaRosa();});
   $('#rosterSearchInput')?.addEventListener('input',renderRosa);
   $('#openPlayerFormBtn')?.addEventListener('click',()=>apriModuloGiocatore());

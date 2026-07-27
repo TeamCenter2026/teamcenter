@@ -12,7 +12,7 @@ window.TeamCenterAPI = (() => {
       if (isHtml) {
         throw new Error(
           'La Web App Apps Script ha restituito una pagina HTML. ' +
-          'Verifica di aver pubblicato la nuova distribuzione 2.0.1 con accesso consentito a chiunque disponga del link.'
+          'Verifica di aver pubblicato la nuova distribuzione 2.3.0 con accesso consentito a chiunque disponga del link.'
         );
       }
       throw new Error('Risposta API non valida: ' + raw.slice(0, 180));
@@ -27,9 +27,9 @@ window.TeamCenterAPI = (() => {
 
   const REQUEST_TIMEOUT_MS = 12000;
 
-  async function fetchWithTimeout(url, options = {}) {
+  async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
       return await fetch(url, { ...options, signal: controller.signal });
     } catch (error) {
@@ -40,7 +40,7 @@ window.TeamCenterAPI = (() => {
     }
   }
 
-  async function request(action, params = {}) {
+  async function request(action, params = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
     const url = new URL(BASE_URL);
     url.searchParams.set('action', action);
 
@@ -54,7 +54,7 @@ window.TeamCenterAPI = (() => {
       method: 'GET',
       cache: 'no-store',
       redirect: 'follow'
-    });
+    }, timeoutMs);
 
     if (!response.ok) {
       throw new Error(`API non raggiungibile (${response.status})`);
@@ -106,6 +106,7 @@ window.TeamCenterAPI = (() => {
     saveStaff: data => request('salvaStaff', data),
     getAllenamenti: () => request('allenamenti'),
     saveAllenamento: data => request('salvaAllenamento', data),
+    generateTrainingReport: (data, token) => request('reportAllenamenti', { ...data, token }, 60000),
     getConvocazioni: () => request('convocazioni'),
     saveConvocazione: data => request('salvaConvocazione', data),
     getMatch: () => request('match'),

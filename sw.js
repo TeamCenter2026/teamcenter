@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.2.7-training-menu-buttons-fix';
+const CACHE='teamcenter-2.3.0-report-allenamenti';
 const ASSETS=[
   './',
   './index.html',
@@ -14,6 +14,7 @@ const ASSETS=[
   './pdf.js',
   './allenamenti.js',
   './convocazioni.js',
+  './report.js',
   './manifest.webmanifest'
 ];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});

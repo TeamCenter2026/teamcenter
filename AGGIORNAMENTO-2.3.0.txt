@@ -1,0 +1,27 @@
+TEAMCENTER 2.3.0 - REPORT ALLENAMENTI
+
+NOVITÀ FRONTEND
+- Nuova area Amministrazione protetta dalla sessione amministratore.
+- Accesso a Profilo società e Report Allenamenti.
+- Filtri del report: squadra, data iniziale, data finale.
+- Generazione e download diretto del file Excel.
+- Riepilogo a video dopo la creazione del file.
+
+CONTENUTO DEL FILE EXCEL
+1. Riepilogo
+2. Dettaglio presenze
+3. Statistiche giocatori
+4. Cronologia allenamenti
+
+BACKEND
+- Nuova azione API: reportAllenamenti.
+- Lettura dinamica dei JSON presenti nel foglio ALLENAMENTI.
+- Nessuna modifica alla struttura del database.
+- Creazione temporanea del foglio di lavoro, esportazione XLSX e spostamento automatico nel cestino.
+- Versione API aggiornata a 2.3.0.
+
+INSTALLAZIONE
+1. Sostituire il codice Apps Script con Codice-TeamCenter-2.3.0.gs.
+2. Aggiornare la distribuzione Apps Script esistente creando una nuova versione.
+3. Caricare su GitHub tutti i file frontend della cartella, incluso report.js.
+4. Attendere l'aggiornamento di GitHub Pages e ricaricare l'app.
