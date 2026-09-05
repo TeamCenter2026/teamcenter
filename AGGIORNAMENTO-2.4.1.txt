@@ -1,0 +1,10 @@
+TEAMCENTER 2.4.1
+
+Modifica:
+- Prima del caricamento dei dati societari, l'intestazione mostra solo "TEAM CENTER".
+- Non viene più mostrato il fallback "CSV BREDA" / "CSV".
+- Dopo il caricamento dei dati, l'intestazione torna a mostrare:
+  "CSV BREDA | TEAM CENTER"
+  con il logo ufficiale della società.
+
+Nessuna modifica al backend Apps Script.

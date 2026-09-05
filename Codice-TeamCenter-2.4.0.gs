@@ -762,23 +762,6 @@ function chiavePasswordSquadra_(idSquadra) {
   return "TEAM_PASSWORD_" + normalizzaChiaveSquadra_(idSquadra);
 }
 
-function passwordDefaultSquadra_(idSquadra) {
-  const password = {
-    "PRIMA": "Primasquadra99$",
-    "U19": "Under19$",
-    "U17": "Under17$",
-    "U16": "Under16$",
-    "U15": "Under15$",
-    "U14": "Under14$",
-    "SC-ESORDIENTI": "Esordienti1415!",
-    "SC-PULCINI": "Pulcini1617!",
-    "SC-PRIMI-CALCI": "Primicalci1819!",
-    "SC-PICCOLI-AMICI": "Piccoliamici2021"
-  };
-
-  return password[String(idSquadra || "").trim().toUpperCase()] || "";
-}
-
 function loginSquadraTeamCenter_(parametri) {
   const idSquadra = String(parametri.idSquadra || "").trim().toUpperCase();
   const passwordInserita = String(parametri.password || "");
@@ -787,10 +770,9 @@ function loginSquadraTeamCenter_(parametri) {
   verificaSquadraEsistente_(idSquadra);
 
   const chiave = chiavePasswordSquadra_(idSquadra);
-  const passwordDaProprieta = PropertiesService
+  const passwordCorretta = PropertiesService
     .getScriptProperties()
     .getProperty(chiave);
-  const passwordCorretta = passwordDaProprieta || passwordDefaultSquadra_(idSquadra);
 
   if (!passwordCorretta) {
     throw new Error(`Password del gruppo non configurata. Imposta la proprietà script ${chiave}.`);

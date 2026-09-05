@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.4.0-accessi-gruppi';
+const CACHE='teamcenter-2.4.1-loading-team-center';
 const ASSETS=[
   './',
   './index.html',

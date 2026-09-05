@@ -35,7 +35,7 @@ window.TeamCenterBootstrap = (() => {
     document.documentElement.style.setProperty('--bg', background);
 
     const title = document.getElementById('appTitle');
-    if (title) title.textContent = clubName.toUpperCase();
+    if (title) title.textContent = `${clubName.toUpperCase()} | TEAM CENTER`;
 
     const logoBox = document.getElementById('homeClubLogo');
     if (logoBox) {
@@ -58,7 +58,14 @@ window.TeamCenterBootstrap = (() => {
   }
 
   async function start() {
-    apply();
+    // Stato iniziale neutro: prima del caricamento dati deve comparire solo TEAM CENTER.
+    const initialTitle = document.getElementById('appTitle');
+    if (initialTitle) initialTitle.textContent = 'TEAM CENTER';
+
+    const initialLogo = document.getElementById('homeClubLogo');
+    if (initialLogo) initialLogo.replaceChildren();
+
+    document.title = 'Team Center';
 
     if (!window.TeamCenterAPI) {
       snapshot.error = new Error('TeamCenterAPI non disponibile');
