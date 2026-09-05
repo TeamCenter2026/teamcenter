@@ -31,49 +31,110 @@
     { IDSquadra:'U17', NomeSquadra:'Under 17', Attiva:'SI' },
     { IDSquadra:'U16', NomeSquadra:'Under 16', Attiva:'SI' },
     { IDSquadra:'U15', NomeSquadra:'Under 15', Attiva:'SI' },
-    { IDSquadra:'U14', NomeSquadra:'Under 14', Attiva:'SI' }
+    { IDSquadra:'U14', NomeSquadra:'Under 14', Attiva:'SI' },
+    { IDSquadra:'SC-ESORDIENTI', NomeSquadra:'ESORDIENTI 2014-2015', Attiva:'SI' },
+    { IDSquadra:'SC-PULCINI', NomeSquadra:'PULCINI 2016-2017', Attiva:'SI' },
+    { IDSquadra:'SC-PRIMI-CALCI', NomeSquadra:'PRIMI CALCI 2018-2019', Attiva:'SI' },
+    { IDSquadra:'SC-PICCOLI-AMICI', NomeSquadra:'PICCOLI AMICI 2020-2021', Attiva:'SI' }
   ];
 
   function currentTeamId(){ return window.TeamCenterTeam?.id || ''; }
   function currentTeam(){ return window.TeamCenterTeam?.current?.() || null; }
+  function isScuolaCalcioTeam(item){
+    const id=String(window.TeamCenterTeam?.idOf(item)||item?.IDSquadra||'').toUpperCase();
+    const name=String(window.TeamCenterTeam?.nameOf(item)||item?.NomeSquadra||'').toUpperCase();
+    return id.startsWith('SC-') || /ESORDIENTI|PULCINI|PRIMI CALCI|PICCOLI AMICI/.test(name);
+  }
+
+  function showMainHome(){
+    sessionStorage.removeItem('teamcenterTeamToken');
+    window.TeamCenterTeam?.clear?.();
+    const password=$('#teamPasswordInput');
+    if(password)password.value='';
+    showScreen('mainHome');
+  }
+
   function showTeamSelection(){
     const select=$('#teamSelectionSelect');
     const enter=$('#teamSelectionEnterBtn');
+    const password=$('#teamPasswordInput');
     const message=$('#teamSelectionMessage');
     const sourceTeams=(Array.isArray(squadreApi)&&squadreApi.length)?squadreApi:FALLBACK_TEAMS;
     const teams=sourceTeams.filter(item=>String(item?.Attiva??item?.attiva??'SI').trim().toUpperCase()!=='NO' && Boolean(window.TeamCenterTeam?.idOf(item)||item?.IDSquadra||item?.ID_SQUADRA));
     window.TeamCenterTeam?.setTeams(teams);
 
     if(select){
-      select.innerHTML='<option value="">Seleziona una squadra</option>'+teams.map(item=>{
+      const agonistica=teams.filter(item=>!isScuolaCalcioTeam(item));
+      const scuolaCalcio=teams.filter(isScuolaCalcioTeam);
+      const optionsFor=items=>items.map(item=>{
         const id=window.TeamCenterTeam?.idOf(item)||String(item?.IDSquadra||item?.idSquadra||item?.ID_SQUADRA||'').trim();
         const name=window.TeamCenterTeam?.nameOf(item)||String(item?.NomeSquadra||item?.nomeSquadra||item?.Squadra||item?.Nome||id||'Squadra').trim();
         return `<option value="${escapeHtml(id)}">${escapeHtml(name)}</option>`;
       }).join('');
+      select.innerHTML='<option value="">Seleziona una squadra</option>'
+        +(agonistica.length?`<optgroup label="AGONISTICA">${optionsFor(agonistica)}</optgroup>`:'')
+        +(scuolaCalcio.length?`<optgroup label="SCUOLA CALCIO">${optionsFor(scuolaCalcio)}</optgroup>`:'');
       select.disabled=!teams.length;
       select.value='';
     }
+    if(password){password.value='';password.disabled=true;}
     if(enter)enter.disabled=true;
     if(message)message.textContent=teams.length?'':'Nessun gruppo squadra disponibile.';
     showScreen('teamSelection');
   }
 
-  function enterSelectedTeam(){
+  async function enterSelectedTeam(){
     const select=$('#teamSelectionSelect');
+    const passwordInput=$('#teamPasswordInput');
+    const enter=$('#teamSelectionEnterBtn');
+    const message=$('#teamSelectionMessage');
     const id=String(select?.value||'').trim();
+    const password=String(passwordInput?.value||'');
     if(!id)return;
-    if(window.TeamCenterTeam?.select(id)){
-      const selected=currentTeam();
-      const selectedId=window.TeamCenterTeam?.idOf(selected)||id;
-      const selectedName=window.TeamCenterTeam?.nameOf(selected)||'Squadra';
-      rosterTeamId=selectedId;
-      state.training.teamId=selectedId;
-      state.match.team=selectedName;
-      aggiornaSelectSquadre();
-      saveState();
-      showScreen('home');
-      toast(`Gruppo selezionato: ${selectedName}`);
+    if(!password){
+      if(message)message.textContent='Inserisci la password del gruppo squadra.';
+      passwordInput?.focus();
+      return;
     }
+    const oldText=enter?.textContent||'ENTRA';
+    if(enter){enter.disabled=true;enter.textContent='ACCESSO…';}
+    if(message)message.textContent='';
+    try{
+      const sessione=await window.TeamCenterAPI.loginSquadra(id,password);
+      sessionStorage.setItem('teamcenterTeamToken',sessione.token);
+      if(window.TeamCenterTeam?.select(id)){
+        const selected=currentTeam();
+        const selectedId=window.TeamCenterTeam?.idOf(selected)||id;
+        const selectedName=window.TeamCenterTeam?.nameOf(selected)||'Squadra';
+        rosterTeamId=selectedId;
+        state.training.teamId=selectedId;
+        state.match.team=selectedName;
+        aggiornaSelectSquadre();
+        saveState();
+        showScreen('home');
+        toast(`Gruppo selezionato: ${selectedName}`);
+      }
+    }catch(error){
+      if(message)message.textContent=error.message||'Password non corretta.';
+      passwordInput?.focus();
+      passwordInput?.select();
+    }finally{
+      if(enter){enter.textContent=oldText;enter.disabled=!(select?.value&&passwordInput?.value);}
+    }
+  }
+
+  async function openAdministrationFromMain(){
+    const token=sessionStorage.getItem('teamcenterAdminToken')||'';
+    if(token){
+      try{
+        await window.TeamCenterAPI.verificaSessioneAdmin(token);
+        showScreen('adminMenu');
+        return;
+      }catch(error){
+        sessionStorage.removeItem('teamcenterAdminToken');
+      }
+    }
+    apriProfiloAmministratore();
   }
 
   const $ = (s) => document.querySelector(s);
@@ -233,7 +294,7 @@
     }catch(error){
       console.warn('Logout API non completato:',error);
     }
-    showScreen('home');
+    showScreen('mainHome');
     toast('Sessione amministratore chiusa');
   }
 
@@ -804,6 +865,8 @@
     state.screen=name;
     $$('.screen').forEach(s=>s.classList.toggle('active',s.id===`${name}Screen`));
     $('#bottomNav').classList.toggle('hidden',name!=='live');
+    const mainHomeBtn=$('#globalMainHomeBtn');
+    if(mainHomeBtn)mainHomeBtn.classList.toggle('hidden',name==='mainHome');
     saveState();
     window.scrollTo({top:0,behavior:'instant'});
   }
@@ -1436,9 +1499,22 @@
   $('#profileSecondaryColorInput')?.addEventListener('input',e=>{const value=e.target.value.toUpperCase();const out=$('#profileSecondaryColorValue');if(out)out.value=value;const name=$('#profileSecondaryColorName');if(name)name.textContent=colorDisplayName(value,'Colore secondario')});
 
   $('#teamSelectionSelect')?.addEventListener('change',event=>{
+    const selected=String(event.target.value||'').trim();
     const enter=$('#teamSelectionEnterBtn');
-    if(enter)enter.disabled=!String(event.target.value||'').trim();
+    const password=$('#teamPasswordInput');
+    if(password){password.disabled=!selected;password.value='';if(selected)password.focus();}
+    if(enter)enter.disabled=true;
+    const message=$('#teamSelectionMessage');if(message)message.textContent='';
   });
+  $('#teamPasswordInput')?.addEventListener('input',event=>{
+    const selected=String($('#teamSelectionSelect')?.value||'').trim();
+    const enter=$('#teamSelectionEnterBtn');
+    if(enter)enter.disabled=!(selected&&String(event.target.value||''));
+  });
+  $('#teamPasswordInput')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&!$('#teamSelectionEnterBtn')?.disabled)enterSelectedTeam();});
+  $('#mainTeamBtn')?.addEventListener('click',showTeamSelection);
+  $('#mainAdminBtn')?.addEventListener('click',openAdministrationFromMain);
+  $('#globalMainHomeBtn')?.addEventListener('click',showMainHome);
   $('#teamSelectionEnterBtn')?.addEventListener('click',enterSelectedTeam);
 
   document.addEventListener('click',e=>{
@@ -1449,7 +1525,7 @@
     if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.showMenu()}
     if(module==='match'){window.TeamCenterMatch?.open()}
     if(module==='callups'){showScreen('callups');window.TeamCenterConvocazioni?.open()}
-    if(e.target.closest('[data-go-home]'))showScreen('home');
+    if(e.target.closest('[data-go-home]'))showScreen(currentTeamId()?'home':'mainHome');
     const num=e.target.closest('[data-toggle-callup-player]')?.dataset.toggleCallupPlayer;
     if(num){const p=state.callup.players.find(x=>x.number===Number(num));if(p){p.selected=!p.selected;saveState();renderCallupPlayers()}}
   });
@@ -1508,26 +1584,21 @@
     if(!state.match.date)state.match.date=today;
     if(!state.callup.date)state.callup.date=today;
     if(!state.training.date)state.training.date=today;
-    // Mostra subito un selettore funzionante, senza lasciare l'utente bloccato
-    // mentre Google Apps Script risponde.
+    // Home principale immediata: Amministrazione oppure accesso a un gruppo squadra.
     squadreApi=FALLBACK_TEAMS;
     window.TeamCenterTeam?.setTeams(squadreApi);
-    showTeamSelection();
+    showScreen('mainHome');
     try{
       await sincronizzaConfigurazioneApi();
       console.info('TeamCenter collegato alle API', {master:masterApi,squadre:squadreApi});
-      showTeamSelection();
     }catch(error){
       console.error('Sincronizzazione API non riuscita:',error);
       toast('Uso elenco squadre locale: API momentaneamente non raggiungibile');
-      showTeamSelection();
     }
     applyProfile();
     renderLogo();
     fillSetup();fillCallupForm();renderAll();
-    // A ogni apertura o aggiornamento la scelta del gruppo è obbligatoria.
-    // Non ripristiniamo nessun'altra schermata prima della selezione.
-    showTeamSelection();
+    showScreen('mainHome');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
     if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
   }

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.3.4-report-completi';
+const CACHE='teamcenter-2.4.0-accessi-gruppi';
 const ASSETS=[
   './',
   './index.html',

@@ -29,6 +29,12 @@ window.TeamCenterTeam = (() => {
     return teams.find(item => idOf(item) === currentId) || null;
   }
 
+  function clear() {
+    currentId = '';
+    sessionStorage.removeItem(KEY);
+    window.dispatchEvent(new CustomEvent('teamcenter:teamchange', { detail: null }));
+  }
+
   function matches(record) {
     if (!currentId) return false;
     return idOf(record) === currentId;
@@ -38,5 +44,5 @@ window.TeamCenterTeam = (() => {
     return (Array.isArray(items) ? items : []).filter(matches);
   }
 
-  return Object.freeze({ setTeams, select, current, matches, filter, get id(){ return currentId; }, get name(){ return nameOf(current()); }, idOf, nameOf });
+  return Object.freeze({ setTeams, select, clear, current, matches, filter, get id(){ return currentId; }, get name(){ return nameOf(current()); }, idOf, nameOf });
 })();

@@ -1,0 +1,28 @@
+TEAMCENTER 2.4.0 - ACCESSI PER GRUPPO SQUADRA
+
+- Nuova Home principale con due accessi: Amministrazione e Gruppo squadra.
+- Accesso ai gruppi squadra protetto da password specifica tramite Script Properties.
+- Macro gruppo SCUOLA CALCIO con:
+  * ESORDIENTI 2014-2015
+  * PULCINI 2016-2017
+  * PRIMI CALCI 2018-2019
+  * PICCOLI AMICI 2020-2021
+- I quattro sottogruppi vengono aggiunti automaticamente al foglio SQUADRE se mancanti.
+- Pulsante Home principale sempre disponibile in alto nelle schermate interne.
+- Convocazioni: orario convocazione predefinito a 1h15 prima della partita e liberamente modificabile.
+- Titolo iniziale di default: TEAM CENTER; dopo il caricamento del profilo resta attiva la logica Nome Società | TEAM CENTER.
+- Report esistenti invariati.
+
+PASSWORD SQUADRE
+Configurare nelle Proprietà dello script le chiavi TEAM_PASSWORD_<ID_SQUADRA>.
+Per i nuovi gruppi Scuola Calcio:
+TEAM_PASSWORD_SC_ESORDIENTI
+TEAM_PASSWORD_SC_PULCINI
+TEAM_PASSWORD_SC_PRIMI_CALCI
+TEAM_PASSWORD_SC_PICCOLI_AMICI
+
+PASSWORD DI DEFAULT GRUPPI
+- Prima Squadra: configurata nel backend
+- Under 19 / 17 / 16 / 15 / 14: configurate nel backend
+- Scuola Calcio: Esordienti, Pulcini, Primi Calci, Piccoli Amici configurate nel backend
+Le Script Properties, se presenti, hanno priorità e possono sostituire le password di default senza modificare il codice.

@@ -6,29 +6,51 @@
   <meta name="theme-color" content="#741f35" />
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
   <link rel="manifest" href="manifest.webmanifest" />
-  <title>CSV Breda TeamCenter</title>
-  <link rel="stylesheet" href="styles.css?v=2.3.4" />
+  <title>Team Center</title>
+  <link rel="stylesheet" href="styles.css?v=2.4.0" />
 </head>
 <body>
 <div class="app-shell">
   <header class="topbar compact-topbar">
     <div class="brand compact-brand">
-      <div id="homeClubLogo" class="home-club-logo" aria-label="Logo ufficiale CSV Breda"></div>
-      <h1 id="appTitle">CSV BREDA | TEAM CENTER</h1>
+      <div id="homeClubLogo" class="home-club-logo" aria-label="Logo società"></div>
+      <h1 id="appTitle">TEAM CENTER</h1>
     </div>
+    <button id="globalMainHomeBtn" class="global-main-home-btn hidden" type="button" aria-label="Torna alla home principale" title="Home principale">⌂</button>
   </header>
 
   <main>
 
-    <section id="teamSelectionScreen" class="screen active team-selection-screen">
+    <section id="mainHomeScreen" class="screen active main-entry-screen">
+      <div class="card main-entry-card">
+        <div class="eyebrow">TEAM CENTER</div>
+        <h2>Accesso</h2>
+        <div class="main-entry-grid">
+          <button id="mainAdminBtn" class="minimal-module-button main-entry-button" type="button">
+            <span class="minimal-module-icon">🔐</span>
+            <span>Amministrazione</span>
+          </button>
+          <button id="mainTeamBtn" class="minimal-module-button main-entry-button" type="button">
+            <span class="minimal-module-icon">⚽</span>
+            <span>Gruppo squadra</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="teamSelectionScreen" class="screen team-selection-screen">
       <div class="card team-selection-card">
-        <div class="eyebrow">CSV Breda TeamCenter</div>
+        <div class="eyebrow">TEAM CENTER</div>
         <h2>Seleziona il gruppo squadra</h2>
         <div class="team-selection-controls">
           <label class="sr-only" for="teamSelectionSelect">Gruppo squadra</label>
           <select id="teamSelectionSelect" class="team-selection-select" aria-label="Seleziona il gruppo squadra">
             <option value="">Caricamento squadre…</option>
           </select>
+          <div class="field">
+            <label for="teamPasswordInput">Password gruppo</label>
+            <input id="teamPasswordInput" type="password" autocomplete="current-password" placeholder="Inserisci la password" disabled />
+          </div>
           <button id="teamSelectionEnterBtn" class="btn btn-primary btn-block" type="button" disabled>ENTRA</button>
         </div>
         <div id="teamSelectionMessage" class="admin-login-message" role="status" aria-live="polite"></div>
@@ -37,10 +59,6 @@
 
     <section id="homeScreen" class="screen minimal-home">
       <div class="minimal-home-grid">
-        <button class="minimal-module-button" type="button" data-open-module="profile">
-          <span class="minimal-module-icon">🔐</span>
-          <span>Amministrazione</span>
-        </button>
         <button class="minimal-module-button" type="button" data-open-module="roster">
           <span class="minimal-module-icon">👥</span>
           <span>Rosa</span>
@@ -588,7 +606,7 @@
           </div>
           <div class="field">
             <label for="callupMeetingInput">Orario convocazione</label>
-            <input id="callupMeetingInput" type="time" readonly />
+            <input id="callupMeetingInput" type="time" required />
             <div class="small-help">Calcolato automaticamente 1 ora e 45 minuti prima.</div>
           </div>
           <div class="field">
@@ -933,18 +951,18 @@
 <div class="toast" id="toast">Evento registrato</div>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="api.js?v=2.3.4"></script>
-<script src="bootstrap.js?v=2.3.4"></script>
-<script src="team-context.js?v=2.3.4"></script>
-<script src="storage.js?v=2.3.4"></script>
-<script src="profile.js?v=2.3.4"></script>
-<script src="callup.js?v=2.3.4"></script>
-<script src="match.js?v=2.3.4"></script>
-<script src="image.js?v=2.3.4"></script>
-<script src="pdf.js?v=2.3.4"></script>
-<script src="allenamenti.js?v=2.3.4"></script>
-<script src="convocazioni.js?v=2.3.4"></script>
-<script src="report.js?v=2.3.4"></script>
-<script src="app.js?v=2.3.4"></script>
+<script src="api.js?v=2.4.0"></script>
+<script src="bootstrap.js?v=2.4.0"></script>
+<script src="team-context.js?v=2.4.0"></script>
+<script src="storage.js?v=2.4.0"></script>
+<script src="profile.js?v=2.4.0"></script>
+<script src="callup.js?v=2.4.0"></script>
+<script src="match.js?v=2.4.0"></script>
+<script src="image.js?v=2.4.0"></script>
+<script src="pdf.js?v=2.4.0"></script>
+<script src="allenamenti.js?v=2.4.0"></script>
+<script src="convocazioni.js?v=2.4.0"></script>
+<script src="report.js?v=2.4.0"></script>
+<script src="app.js?v=2.4.0"></script>
 </body>
 </html>

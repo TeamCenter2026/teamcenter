@@ -1015,3 +1015,23 @@ body.match20-report-open{
 .training-report-kpis strong{display:block;font-size:1.05rem;color:var(--text)}
 .admin-login-message.is-error{color:#a52020}
 @media(max-width:720px){.admin-menu-grid,.training-report-kpis{grid-template-columns:1fr}.training-report-filters{grid-template-columns:1fr}}
+
+/* TeamCenter 2.4.0 - home principale e accessi gruppo */
+.compact-topbar{position:relative}
+.global-main-home-btn{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border:1px solid rgba(255,255,255,.35);border-radius:10px;
+  background:rgba(255,255,255,.14);color:#fff;font-size:22px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:20;
+}
+.global-main-home-btn.hidden{display:none}
+.main-entry-screen{min-height:62vh;align-items:center;justify-content:center}
+.main-entry-card{max-width:760px;margin:28px auto;text-align:center}
+.main-entry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:24px}
+.main-entry-button{min-height:150px}
+.team-selection-controls .field{text-align:left}
+@media(max-width:640px){
+  .main-entry-grid{grid-template-columns:1fr}
+  .main-entry-button{min-height:118px}
+  .global-main-home-btn{right:10px;width:34px;height:34px}
+}

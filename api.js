@@ -12,7 +12,7 @@ window.TeamCenterAPI = (() => {
       if (isHtml) {
         throw new Error(
           'La Web App Apps Script ha restituito una pagina HTML. ' +
-          'Verifica di aver pubblicato la nuova distribuzione 2.3.4 con accesso consentito a chiunque disponga del link.'
+          'Verifica di aver pubblicato la nuova distribuzione 2.4.0 con accesso consentito a chiunque disponga del link.'
         );
       }
       throw new Error('Risposta API non valida: ' + raw.slice(0, 180));
@@ -95,6 +95,9 @@ window.TeamCenterAPI = (() => {
     ping: () => request('ping'),
     getMaster: () => request('master'),
     loginAdmin: password => request('loginAdmin', { password }),
+    loginSquadra: (idSquadra, password) => request('loginSquadra', { idSquadra, password }),
+    verificaSessioneSquadra: token => request('verificaSessioneSquadra', { token }),
+    logoutSquadra: token => request('logoutSquadra', { token }),
     verificaSessioneAdmin: token => request('verificaSessioneAdmin', { token }),
     logoutAdmin: token => request('logoutAdmin', { token }),
     saveMaster: (data, token) => request('salvaMaster', { ...data, token }),

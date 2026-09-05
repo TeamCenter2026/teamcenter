@@ -53,7 +53,7 @@ window.TeamCenterConvocazioni = (() => {
   function meetingTime(kickoff) {
     if (!kickoff) return '';
     const [hours, minutes] = kickoff.split(':').map(Number);
-    let total = hours * 60 + minutes - 105;
+    let total = hours * 60 + minutes - 75;
     while (total < 0) total += 1440;
     return `${String(Math.floor(total / 60)).padStart(2, '0')}:${String(total % 60).padStart(2, '0')}`;
   }
