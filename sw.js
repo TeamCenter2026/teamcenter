@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.5.0-gruppi-timer';
+const CACHE='teamcenter-2.5.2-fix-timer-live';
 const ASSETS=[
   './',
   './index.html',

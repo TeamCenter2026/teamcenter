@@ -400,7 +400,17 @@ window.TeamCenterMatch = (() => {
       }
       if (state.period === 2) html = '<button class="btn btn-primary" type="button" data-match20-timer="start-second">Avvia 2° tempo</button>';
       if (state.period === 4 && state.matchFormat.periods === 3) html = '<button class="btn btn-primary" type="button" data-match20-timer="start-third">Avvia 3° tempo</button>';
-      buttons.innerHTML = html;
+
+      // Non ricreare i pulsanti ad ogni tick del cronometro.
+      // Mentre il timer gira renderTimer() viene richiamata molte volte al secondo:
+      // sostituire continuamente innerHTML può rimuovere il pulsante tra pointerdown e click,
+      // rendendo inaffidabili Pausa e Fine tempo. I controlli vengono aggiornati solo
+      // quando cambia realmente lo stato (periodo / running / formato).
+      const signature = [state.period, running ? 1 : 0, state.matchFormat.periods, state.matchFormat.minutes].join('|');
+      if (buttons.dataset.timerSignature !== signature) {
+        buttons.innerHTML = html;
+        buttons.dataset.timerSignature = signature;
+      }
     }
 
     if (state.timer.running && !state.tick) state.tick = setInterval(renderTimer, 40);

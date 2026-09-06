@@ -1,0 +1,10 @@
+TEAMCENTER 2.5.2 - FIX TIMER LIVE
+
+Correzione frontend:
+- Pausa funziona durante il tempo in corso.
+- Fine tempo / Fine partita funziona senza uscire dalla schermata.
+- I pulsanti del timer non vengono più ricreati ad ogni tick.
+- Il recupero continua oltre la durata regolamentare.
+- Il tempo successivo riparte sempre dal minuto regolamentare previsto (es. 20:00, 40:00, 45:00), non dal minuto reale di fine del tempo precedente.
+
+Backend Apps Script invariato rispetto alla 2.5.1.
