@@ -32,10 +32,13 @@
     { IDSquadra:'U16', NomeSquadra:'Under 16', Attiva:'SI' },
     { IDSquadra:'U15', NomeSquadra:'Under 15', Attiva:'SI' },
     { IDSquadra:'U14', NomeSquadra:'Under 14', Attiva:'SI' },
-    { IDSquadra:'SC-ESORDIENTI', NomeSquadra:'ESORDIENTI 2014-2015', Attiva:'SI' },
-    { IDSquadra:'SC-PULCINI', NomeSquadra:'PULCINI 2016-2017', Attiva:'SI' },
-    { IDSquadra:'SC-PRIMI-CALCI', NomeSquadra:'PRIMI CALCI 2018-2019', Attiva:'SI' },
-    { IDSquadra:'SC-PICCOLI-AMICI', NomeSquadra:'PICCOLI AMICI 2020-2021', Attiva:'SI' }
+    { IDSquadra:'SC-ESORDIENTI-2014', NomeSquadra:'ESORDIENTI 2014', Attiva:'SI' },
+    { IDSquadra:'SC-ESORDIENTI-2015', NomeSquadra:'ESORDIENTI 2015', Attiva:'SI' },
+    { IDSquadra:'SC-PULCINI-2016', NomeSquadra:'PULCINI 2016', Attiva:'SI' },
+    { IDSquadra:'SC-PULCINI-2017', NomeSquadra:'PULCINI 2017', Attiva:'SI' },
+    { IDSquadra:'SC-PRIMI-CALCI-2018', NomeSquadra:'PRIMI CALCI 2018', Attiva:'SI' },
+    { IDSquadra:'SC-PRIMI-CALCI-2019', NomeSquadra:'PRIMI CALCI 2019', Attiva:'SI' },
+    { IDSquadra:'SC-PICCOLI-AMICI-2020-2021', NomeSquadra:'PICCOLI AMICI 2020-2021', Attiva:'SI' }
   ];
 
   function currentTeamId(){ return window.TeamCenterTeam?.id || ''; }
@@ -1022,7 +1025,7 @@
   function calculateMeetingTime(kickoff){
     if(!kickoff)return {time:'',dayOffset:0};
     const [h,m]=kickoff.split(':').map(Number); if(!Number.isFinite(h)||!Number.isFinite(m))return {time:'',dayOffset:0};
-    let total=h*60+m-105,dayOffset=0;
+    let total=h*60+m-75,dayOffset=0;
     while(total<0){total+=1440;dayOffset--}
     while(total>=1440){total-=1440;dayOffset++}
     return {time:`${String(Math.floor(total/60)).padStart(2,'0')}:${String(total%60).padStart(2,'0')}`,dayOffset};
@@ -1049,7 +1052,7 @@
     $('#callupOpponent').value=state.callup.opponent;
     $('#callupKickoff').value=state.callup.kickoff;
     $('#callupMeeting').value=state.callup.meeting;
-    $('#callupMeetingHelp').textContent=`Automatico: 1 ora e 45 minuti prima${state.callup.meetingDayOffset<0?' (giorno precedente)':''}.`;
+    $('#callupMeetingHelp').textContent=`Automatico: 1 ora e 15 minuti prima${state.callup.meetingDayOffset<0?' (giorno precedente)':''}.`;
     $$('input[name="callupVenue"]').forEach(r=>r.checked=r.value===state.callup.venue);
     $('#callupAddress').value=state.callup.address;
     $('#callupCoach').value=state.callup.coach||'';
@@ -1074,7 +1077,7 @@
     state.callup.manager2=$('#callupManager2').value.trim();
     state.callup.sportingDirector=$('#callupSportingDirector').value.trim();
     $('#callupMeeting').value=state.callup.meeting;
-    $('#callupMeetingHelp').textContent=`Automatico: 1 ora e 45 minuti prima${state.callup.meetingDayOffset<0?' (giorno precedente)':''}.`;
+    $('#callupMeetingHelp').textContent=`Automatico: 1 ora e 15 minuti prima${state.callup.meetingDayOffset<0?' (giorno precedente)':''}.`;
     $('#callupAddressField').classList.toggle('hidden',state.callup.venue!=='away');
     saveState();
   }

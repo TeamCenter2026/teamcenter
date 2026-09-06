@@ -1,0 +1,13 @@
+TEAMCENTER 2.5.1
+
+Password gruppi Scuola Calcio rese indipendenti.
+Ogni sottogruppo usa esclusivamente la propria Script Property:
+- TEAM_PASSWORD_SC_ESORDIENTI_2014
+- TEAM_PASSWORD_SC_ESORDIENTI_2015
+- TEAM_PASSWORD_SC_PULCINI_2016
+- TEAM_PASSWORD_SC_PULCINI_2017
+- TEAM_PASSWORD_SC_PRIMI_CALCI_2018
+- TEAM_PASSWORD_SC_PRIMI_CALCI_2019
+- TEAM_PASSWORD_SC_PICCOLI_AMICI_2020_2021
+
+Non viene piu usato il fallback delle vecchie password condivise.

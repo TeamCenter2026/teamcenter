@@ -1,0 +1,8 @@
+TEAMCENTER 2.5.0
+
+- Scuola Calcio separata in: Esordienti 2014, Esordienti 2015, Pulcini 2016, Pulcini 2017, Primi Calci 2018, Primi Calci 2019, Piccoli Amici 2020-2021.
+- I vecchi gruppi accorpati Scuola Calcio vengono disattivati automaticamente nel foglio SQUADRE.
+- Le password esistenti dei vecchi macro-gruppi restano valide come fallback per i nuovi sottogruppi.
+- Timer Match agonistica automatico: U14/U15 2x35, U16 2x40, U17/U19/Prima Squadra 2x45.
+- Timer Scuola Calcio scelto dal mister prima del match: 3x10, 3x15, 3x20 oppure 2x35.
+- Gestione completa del terzo tempo, recupero e minuto evento coerenti con il formato scelto.

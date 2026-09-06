@@ -10,13 +10,15 @@ window.TeamCenterMatch = (() => {
     actionTeam: 'breda',
     score: { home: 0, away: 0 },
     period: 0,
+    matchFormat: { periods: 2, minutes: 45, source: 'auto' },
     timer: {
       running: false,
       startedAt: null,
       elapsedMs: 0,
       half: 1,
       firstHalfMs: 0,
-      secondHalfMs: 0
+      secondHalfMs: 0,
+      thirdHalfMs: 0
     },
     events: [],
     finished: false,
@@ -86,6 +88,7 @@ window.TeamCenterMatch = (() => {
         actionTeam: state.actionTeam,
         score: state.score,
         period: state.period,
+        matchFormat: state.matchFormat,
         timer: state.timer,
         events: state.events,
         finished: state.finished
@@ -101,13 +104,15 @@ window.TeamCenterMatch = (() => {
     state.actionTeam = 'breda';
     state.score = { home: 0, away: 0 };
     state.period = 0;
+    state.matchFormat = { periods: 2, minutes: 45, source: 'auto' };
     state.timer = {
       running: false,
       startedAt: null,
       elapsedMs: 0,
       half: 1,
       firstHalfMs: 0,
-      secondHalfMs: 0
+      secondHalfMs: 0,
+      thirdHalfMs: 0
     };
     state.events = [];
     state.finished = false;
@@ -175,6 +180,7 @@ window.TeamCenterMatch = (() => {
       away: Math.max(0, Number(saved.score?.away) || 0)
     };
     state.period = Number(saved.period) || 0;
+    if (saved.matchFormat) state.matchFormat = { ...state.matchFormat, ...saved.matchFormat };
     state.timer = {
       ...state.timer,
       ...(saved.timer || {}),
@@ -184,6 +190,60 @@ window.TeamCenterMatch = (() => {
     state.events = Array.isArray(saved.events) ? saved.events : [];
     state.finished = Boolean(saved.finished);
     renderAll();
+  }
+
+  function isSchoolTeam(item = state.selected) {
+    const id = String(item?.IDSquadra || window.TeamCenterTeam?.id || '').trim().toUpperCase();
+    const name = String(item?.Squadra || item?.NomeSquadra || '').trim().toUpperCase();
+    return id.startsWith('SC-') || /ESORDIENTI|PULCINI|PRIMI CALCI|PICCOLI AMICI/.test(name);
+  }
+
+  function automaticAgonisticFormat(item = state.selected) {
+    const id = String(item?.IDSquadra || window.TeamCenterTeam?.id || '').trim().toUpperCase();
+    const name = String(item?.Squadra || item?.NomeSquadra || '').trim().toUpperCase();
+    if (id === 'U14' || id === 'U15' || /UNDER 14|UNDER 15/.test(name)) return { periods: 2, minutes: 35, source: 'auto' };
+    if (id === 'U16' || /UNDER 16/.test(name)) return { periods: 2, minutes: 40, source: 'auto' };
+    return { periods: 2, minutes: 45, source: 'auto' };
+  }
+
+  function selectedSchoolFormat() {
+    const value = $('#match20FormatSelect')?.value || '';
+    const map = {
+      '3x10': { periods: 3, minutes: 10, source: 'manual' },
+      '3x15': { periods: 3, minutes: 15, source: 'manual' },
+      '3x20': { periods: 3, minutes: 20, source: 'manual' },
+      '2x35': { periods: 2, minutes: 35, source: 'manual' }
+    };
+    return map[value] || null;
+  }
+
+  function configureFormatForSelected() {
+    const field = $('#match20FormatField');
+    const select = $('#match20FormatSelect');
+    if (isSchoolTeam()) {
+      field?.classList.remove('hidden');
+      const chosen = selectedSchoolFormat();
+      if (chosen) state.matchFormat = chosen;
+    } else {
+      field?.classList.add('hidden');
+      if (select) select.value = '';
+      state.matchFormat = automaticAgonisticFormat();
+    }
+  }
+
+  function periodDurationMs() {
+    return Math.max(1, Number(state.matchFormat?.minutes) || 45) * 60 * 1000;
+  }
+
+  function playingPeriods() {
+    return state.matchFormat?.periods === 3 ? [1, 3, 5] : [1, 3];
+  }
+
+  function currentPeriodNumber() {
+    if (state.period === 1) return 1;
+    if (state.period === 3) return 2;
+    if (state.period === 5) return 3;
+    return 0;
   }
 
   function selectCallup(id, reset = true) {
@@ -200,6 +260,7 @@ window.TeamCenterMatch = (() => {
 
     state.players = parseJson(state.selected.Giocatori);
     state.staff = parseJson(state.selected.Staff);
+    configureFormatForSelected();
     $('#match20StartBtn').disabled = false;
 
     const data = state.selected;
@@ -223,6 +284,16 @@ window.TeamCenterMatch = (() => {
       message('Seleziona prima una convocazione.', 'error');
       return;
     }
+    if (isSchoolTeam()) {
+      const chosen = selectedSchoolFormat();
+      if (!chosen) {
+        message('Scegli prima la durata dei tempi per la Scuola Calcio.', 'error');
+        return;
+      }
+      state.matchFormat = chosen;
+    } else {
+      state.matchFormat = automaticAgonisticFormat();
+    }
 
     $('#match20SetupCard').classList.add('hidden');
     $('#match20ReportArchiveCard')?.classList.add('hidden');
@@ -235,7 +306,7 @@ window.TeamCenterMatch = (() => {
     const button = $('#match20SaveBtn');
     if (!button) return;
 
-    const canSave = state.finished === true && state.period === 4;
+    const canSave = state.finished === true;
     button.disabled = !canSave;
     button.title = canSave
       ? 'Salva il Match terminato'
@@ -291,9 +362,9 @@ window.TeamCenterMatch = (() => {
 
   function renderTimer() {
     const elapsed = currentElapsed();
-    const displayElapsed = state.period === 3
-      ? (45 * 60 * 1000) + elapsed
-      : elapsed;
+    const duration = periodDurationMs();
+    const periodNo = currentPeriodNumber();
+    const displayElapsed = periodNo > 0 ? ((periodNo - 1) * duration) + elapsed : 0;
     $('#match20Clock').textContent = clock(displayElapsed);
 
     const labels = {
@@ -301,19 +372,38 @@ window.TeamCenterMatch = (() => {
       1: 'PRIMO TEMPO',
       2: 'INTERVALLO',
       3: 'SECONDO TEMPO',
-      4: 'PARTITA TERMINATA'
+      4: state.matchFormat.periods === 3 ? 'INTERVALLO' : 'PARTITA TERMINATA',
+      5: 'TERZO TEMPO',
+      6: 'PARTITA TERMINATA'
     };
     $('#match20Period').textContent = labels[state.period] || labels[0];
 
-    const extra = elapsed - 45 * 60 * 1000;
+    const extra = elapsed - duration;
     $('#match20Recovery').textContent =
-      (state.period === 1 || state.period === 3) && extra >= 0
+      playingPeriods().includes(state.period) && extra >= 0
         ? `RECUPERO +${clock(extra)}`
         : '';
 
-    if (state.timer.running && !state.tick) {
-      state.tick = setInterval(renderTimer, 40);
+    const buttons = $('#match20TimerButtons');
+    if (buttons) {
+      const running = state.timer.running;
+      let html = '';
+      if (state.period === 0) html = '<button class="btn btn-primary" type="button" data-match20-timer="start-first">Avvia 1° tempo</button>';
+      if (playingPeriods().includes(state.period)) {
+        const current = currentPeriodNumber();
+        html += running
+          ? '<button class="btn btn-secondary" type="button" data-match20-timer="pause">Pausa</button>'
+          : '<button class="btn btn-secondary" type="button" data-match20-timer="resume">Riprendi</button>';
+        const endCmd = current === 1 ? 'end-first' : current === 2 ? 'end-second' : 'end-match';
+        const label = (current === state.matchFormat.periods) ? 'Fine partita' : `Fine ${current}° tempo`;
+        html += `<button class="btn ${current === state.matchFormat.periods ? 'btn-danger' : 'btn-secondary'}" type="button" data-match20-timer="${endCmd}">${label}</button>`;
+      }
+      if (state.period === 2) html = '<button class="btn btn-primary" type="button" data-match20-timer="start-second">Avvia 2° tempo</button>';
+      if (state.period === 4 && state.matchFormat.periods === 3) html = '<button class="btn btn-primary" type="button" data-match20-timer="start-third">Avvia 3° tempo</button>';
+      buttons.innerHTML = html;
     }
+
+    if (state.timer.running && !state.tick) state.tick = setInterval(renderTimer, 40);
     if (!state.timer.running && state.tick) {
       clearInterval(state.tick);
       state.tick = null;
@@ -329,37 +419,49 @@ window.TeamCenterMatch = (() => {
     renderTimer();
   }
 
-  function startHalf(half) {
+  function startPeriod(number) {
     if (!state.selected) return;
-    if (half === 2 && state.period !== 2 && state.period !== 3) {
-      message('Concludi prima il primo tempo.', 'error');
-      return;
-    }
-    state.timer.half = half;
+    const expected = number === 1 ? 0 : number === 2 ? 2 : 4;
+    if (state.period !== expected) return;
+    state.timer.half = number;
     state.timer.elapsedMs = 0;
     state.timer.startedAt = Date.now();
     state.timer.running = true;
-    state.period = half === 1 ? 1 : 3;
+    state.period = number === 1 ? 1 : number === 2 ? 3 : 5;
     state.finished = false;
     persist();
     renderAll();
   }
 
   function resumeTimer() {
-    if (![1, 3].includes(state.period) || state.timer.running) return;
+    if (!playingPeriods().includes(state.period) || state.timer.running) return;
     state.timer.startedAt = Date.now();
     state.timer.running = true;
     persist();
     renderTimer();
   }
 
+  function finishMatch() {
+    pauseTimer();
+    const current = currentPeriodNumber();
+    if (current === 1) state.timer.firstHalfMs = state.timer.elapsedMs;
+    if (current === 2) state.timer.secondHalfMs = state.timer.elapsedMs;
+    if (current === 3) state.timer.thirdHalfMs = state.timer.elapsedMs;
+    addSystemEvent('Fine partita');
+    state.period = state.matchFormat.periods === 3 ? 6 : 4;
+    state.finished = true;
+    persist();
+    renderAll();
+  }
+
   function timerCommand(command) {
-    if (command === 'start-first') startHalf(1);
+    if (command === 'start-first') startPeriod(1);
+    if (command === 'start-second') startPeriod(2);
+    if (command === 'start-third') startPeriod(3);
     if (command === 'pause') pauseTimer();
     if (command === 'resume') resumeTimer();
 
-    if (command === 'end-first') {
-      if (state.period !== 1) return;
+    if (command === 'end-first' && state.period === 1) {
       pauseTimer();
       state.timer.firstHalfMs = state.timer.elapsedMs;
       state.period = 2;
@@ -368,33 +470,39 @@ window.TeamCenterMatch = (() => {
       renderAll();
     }
 
-    if (command === 'start-second') startHalf(2);
-
-    if (command === 'end-match') {
-      if (state.period !== 3) return;
+    if (command === 'end-second' && state.period === 3) {
       pauseTimer();
       state.timer.secondHalfMs = state.timer.elapsedMs;
-      state.period = 4;
-      state.finished = true;
-      addSystemEvent('Fine partita');
-      persist();
-      renderAll();
+      if (state.matchFormat.periods === 3) {
+        state.period = 4;
+        addSystemEvent('Fine secondo tempo');
+        persist();
+        renderAll();
+      } else {
+        finishMatch();
+      }
+    }
+
+    if (command === 'end-match') {
+      const finalPlayingPeriod = state.matchFormat.periods === 3 ? 5 : 3;
+      if (state.period === finalPlayingPeriod) finishMatch();
     }
   }
 
   function eventMinute() {
     const elapsed = currentElapsed();
+    const durationMin = Math.max(1, Number(state.matchFormat?.minutes) || 45);
     const totalSeconds = Math.floor(elapsed / 1000);
     const minute = Math.floor(totalSeconds / 60);
     const second = totalSeconds % 60;
+    const periodNo = currentPeriodNumber() || 1;
+    const baseMinutes = (periodNo - 1) * durationMin;
 
-    if (state.period === 3) {
-      if (minute >= 45) return `90'+${minute - 45}:${String(second).padStart(2, '0')}`;
-      return `${45 + minute}:${String(second).padStart(2, '0')}`;
+    if (minute >= durationMin) {
+      const nominal = periodNo * durationMin;
+      return `${nominal}'+${minute - durationMin}:${String(second).padStart(2, '0')}`;
     }
-
-    if (minute >= 45) return `45'+${minute - 45}:${String(second).padStart(2, '0')}`;
-    return `${minute}:${String(second).padStart(2, '0')}`;
+    return `${baseMinutes + minute}:${String(second).padStart(2, '0')}`;
   }
 
   function addSystemEvent(type) {
@@ -412,7 +520,7 @@ window.TeamCenterMatch = (() => {
   }
 
   function canRecord() {
-    if (![1, 3].includes(state.period)) {
+    if (!playingPeriods().includes(state.period)) {
       message('Avvia un tempo di gioco prima di registrare un evento.', 'error');
       return false;
     }
@@ -1067,7 +1175,7 @@ window.TeamCenterMatch = (() => {
   async function saveMatch() {
     if (!state.selected) return;
 
-    if (!state.finished || state.period !== 4) {
+    if (!state.finished) {
       saveMessage('Il Match può essere salvato solo dopo aver premuto Fine partita.', 'error');
       renderSaveAvailability();
       return;
@@ -1094,8 +1202,12 @@ window.TeamCenterMatch = (() => {
         stato: state.finished ? 'TERMINATA' : 'IN CORSO',
         tempoPartita: JSON.stringify({
           periodo: state.period,
+          formato: `${state.matchFormat.periods}x${state.matchFormat.minutes}`,
+          numeroTempi: state.matchFormat.periods,
+          minutiPerTempo: state.matchFormat.minutes,
           primoTempoMs: state.timer.firstHalfMs,
           secondoTempoMs: state.timer.secondHalfMs,
+          terzoTempoMs: state.timer.thirdHalfMs || 0,
           correnteMs: currentElapsed()
         }),
         eventi: JSON.stringify(state.events),
@@ -1119,6 +1231,11 @@ window.TeamCenterMatch = (() => {
   function bind() {
     $('#match20CallupSelect')?.addEventListener('change', event => {
       selectCallup(event.target.value, true);
+    });
+    $('#match20FormatSelect')?.addEventListener('change', () => {
+      const chosen = selectedSchoolFormat();
+      if (chosen) state.matchFormat = chosen;
+      message('');
     });
     $('#match20StartBtn')?.addEventListener('click', startSelectedMatch);
     $('#match20RefreshBtn')?.addEventListener('click', loadCallups);
@@ -1183,6 +1300,6 @@ window.TeamCenterMatch = (() => {
   return Object.freeze({
     open,
     clock,
-    isStoppage: ms => ms >= 45 * 60 * 1000
+    isStoppage: ms => ms >= periodDurationMs()
   });
 })();
