@@ -308,7 +308,7 @@ window.TeamCenterConvocazioni = (() => {
   }
 
   function buildData() {
-    updateMeeting();
+    // L'orario scelto dal mister non va ricalcolato durante salvataggio o PDF.
     const venue = $('#callupVenueSelect').value;
 
     return {

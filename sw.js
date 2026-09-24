@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.5.2-fix-timer-live';
+const CACHE='teamcenter-2.5.3-fix-orario-convocazione';
 const ASSETS=[
   './',
   './index.html',

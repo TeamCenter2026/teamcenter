@@ -1068,16 +1068,17 @@
     state.callup.date=$('#callupDate').value;
     state.callup.opponent=$('#callupOpponent').value.trim();
     state.callup.kickoff=$('#callupKickoff').value;
+    // Il valore inserito manualmente ha precedenza sul suggerimento automatico.
+    state.callup.meeting=$('#callupMeeting').value;
     const calc=calculateMeetingTime(state.callup.kickoff);
-    state.callup.meeting=calc.time; state.callup.meetingDayOffset=calc.dayOffset;
+    state.callup.meetingDayOffset=state.callup.meeting===calc.time?calc.dayOffset:0;
     state.callup.venue=$('input[name="callupVenue"]:checked')?.value||'home';
     state.callup.address=$('#callupAddress').value.trim();
     state.callup.coach=$('#callupCoach').value.trim();
     state.callup.manager1=$('#callupManager1').value.trim();
     state.callup.manager2=$('#callupManager2').value.trim();
     state.callup.sportingDirector=$('#callupSportingDirector').value.trim();
-    $('#callupMeeting').value=state.callup.meeting;
-    $('#callupMeetingHelp').textContent=`Automatico: 1 ora e 15 minuti prima${state.callup.meetingDayOffset<0?' (giorno precedente)':''}.`;
+    $('#callupMeetingHelp').textContent='Orario proposto: 1 ora e 15 minuti prima. Puoi modificarlo.';
     $('#callupAddressField').classList.toggle('hidden',state.callup.venue!=='away');
     saveState();
   }
@@ -1537,7 +1538,18 @@
     if(num){const p=state.callup.players.find(x=>x.number===Number(num));if(p){p.name=e.target.value;p.selected=Boolean(e.target.value.trim());saveState();e.target.closest('.callup-player')?.classList.toggle('selected',p.selected);$('#callupSelectedCount').textContent=`${state.callup.players.filter(x=>x.name.trim()).length} / 20`}return}
     syncCallupForm();
   });
-  $('#callupsScreen')?.addEventListener('change',e=>{if(e.target.name==='callupVenue'||['callupKickoff','callupDate'].includes(e.target.id))syncCallupForm()});
+  $('#callupsScreen')?.addEventListener('change',e=>{
+    if(e.target.id==='callupKickoff'){
+      const previous=state.callup.kickoff;
+      const oldDefault=calculateMeetingTime(previous).time;
+      const current=$('#callupMeeting').value;
+      if(!current||current===oldDefault){
+        const calc=calculateMeetingTime(e.target.value);
+        $('#callupMeeting').value=calc.time;
+      }
+    }
+    if(e.target.name==='callupVenue'||['callupKickoff','callupDate','callupMeeting'].includes(e.target.id))syncCallupForm();
+  });
   $('#createCallupPreviewBtn')?.addEventListener('click',()=>{if(validateCallup()){renderCallupHtmlPreview();$('#callupOutputCard').scrollIntoView({behavior:'smooth',block:'start'})}});
   $('#resetCallupBtn')?.addEventListener('click',()=>{if(confirm('Svuotare tutti i dati della convocazione?')){const date=new Date().toISOString().slice(0,10);state.callup=emptyState().callup;state.callup.date=date;saveState();fillCallupForm();$('#callupOutputCard').classList.add('hidden');toast('Convocazione svuotata')}});
   $('#downloadCallupImageBtn')?.addEventListener('click',downloadCallupImage);

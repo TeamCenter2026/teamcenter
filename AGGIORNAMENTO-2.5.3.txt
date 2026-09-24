@@ -1,0 +1,1 @@
+Correzione orario convocazione: il PDF e il salvataggio rispettano l’orario modificato manualmente. Il calcolo -75 minuti è solo un suggerimento iniziale. Nessuna modifica Apps Script.
