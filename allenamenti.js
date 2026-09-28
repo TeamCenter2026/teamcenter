@@ -55,7 +55,24 @@ window.TeamCenterAllenamenti = (() => {
 
   function showModules() {
     bindOnce();
+    showModuleLevel('categories');
     setTrainingView('modules');
+  }
+
+  let moduleDetailParent = 'categories';
+  const moduleTitles = { tecnico:'Tecnico', tattico:'Tattico', forza:'Forza', velocita:'Velocità', resistenza:'Resistenza' };
+  function showModuleLevel(level, area) {
+    $('#trainingModuleCategories')?.classList.toggle('hidden', level !== 'categories');
+    $('#trainingModulePhysical')?.classList.toggle('hidden', level !== 'physical');
+    $('#trainingModuleDetail')?.classList.toggle('hidden', level !== 'detail');
+    if (level === 'detail') {
+      moduleDetailParent = ['forza','velocita','resistenza'].includes(area) ? 'physical' : 'categories';
+      const title = $('#trainingModuleDetailTitle');
+      const breadcrumb = $('#trainingModuleBreadcrumb');
+      if(title) title.textContent = moduleTitles[area] || '';
+      if(breadcrumb) breadcrumb.textContent = moduleDetailParent === 'physical' ? 'Moduli allenamento / Fisico' : 'Moduli allenamento';
+    }
+    window.scrollTo({ top:0, behavior:'smooth' });
   }
 
   async function open() {
@@ -79,6 +96,13 @@ window.TeamCenterAllenamenti = (() => {
     $('#openTrainingModulesBtn')?.addEventListener('click', showModules);
     $('#openTrainingManagementBtn')?.addEventListener('click', open);
     $('#trainingModulesBackBtn')?.addEventListener('click', showMenu);
+    $('#trainingPhysicalBackBtn')?.addEventListener('click', () => showModuleLevel('categories'));
+    $('#trainingModuleDetailBackBtn')?.addEventListener('click', () => showModuleLevel(moduleDetailParent));
+    $('#trainingModulesView')?.addEventListener('click', event => {
+      const area = event.target.closest('[data-module-area]')?.dataset.moduleArea;
+      if(!area) return;
+      showModuleLevel(area === 'fisico' ? 'physical' : 'detail', area);
+    });
     $('#trainingManagementBackBtn')?.addEventListener('click', showMenu);
 
     $('#trainingTeamSelect')?.addEventListener('change', async () => {

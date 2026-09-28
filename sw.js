@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.5.7-completo';
+const CACHE='teamcenter-2.5.8-moduli';
 const ASSETS=[
   './',
   './index.html',
