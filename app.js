@@ -252,7 +252,7 @@
         showScreen(adminLoginDestination);
         return;
       }catch(error){
-        clearAdminToken();
+        sessionStorage.removeItem(adminLoginDestination==='profile'?'teamcenterDeveloperToken':'teamcenterAdminToken');
       }
     }
     const input=$('#adminPasswordInput');
@@ -283,7 +283,7 @@
       sessionStorage.setItem(adminLoginDestination==='profile'?'teamcenterDeveloperToken':'teamcenterAdminToken',sessione.token);
       if(input)input.value='';
       showScreen(adminLoginDestination);
-      toast('Accesso amministratore effettuato');
+      toast(adminLoginDestination==='profile'?'Accesso Sviluppatore effettuato':'Accesso amministratore effettuato');
     }catch(error){
       sessionStorage.removeItem(adminLoginDestination==='profile'?'teamcenterDeveloperToken':'teamcenterAdminToken');
       if(message)message.textContent=error.message||'Password non corretta.';
