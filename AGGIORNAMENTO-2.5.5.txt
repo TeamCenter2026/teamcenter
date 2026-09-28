@@ -1,0 +1,1 @@
+Impostare DEVELOPER_PASSWORD nelle Proprietà dello script. Sostituire Apps Script con Codice-TeamCenter-2.5.5.gs e aggiornare la distribuzione ESISTENTE. Aggiornare GitHub con frontend. ADMIN_PASSWORD invariata. La modifica del profilo richiede la sessione Sviluppatore.

@@ -1,0 +1,1 @@
+PDF: ordine casa/trasferta anche da archivio. Allenamenti: tutte le assenze rosse. Sviluppatore nella home principale, protetto da ADMIN_PASSWORD esistente. Solo frontend.

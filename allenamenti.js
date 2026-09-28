@@ -224,8 +224,8 @@ window.TeamCenterAllenamenti = (() => {
     const value = String(status || '').toLowerCase();
     if (value === 'presente') return 'is-present';
     if (value === 'assente') return 'is-absent';
-    if (value === 'giustificato') return 'is-justified';
-    if (value === 'infortunato') return 'is-injured';
+    if (value === 'giustificato') return 'is-absent';
+    if (value === 'infortunato') return 'is-absent';
     return 'is-unset';
   }
 

@@ -1035,3 +1035,8 @@ body.match20-report-open{
   .main-entry-button{min-height:118px}
   .global-main-home-btn{right:10px;width:34px;height:34px}
 }
+
+.main-entry-screen{position:relative;min-height:calc(100vh - 190px);padding-bottom:64px}
+.developer-entry-btn{position:absolute;right:16px;bottom:16px;border:0;background:transparent;color:#777;font-size:12px;font-weight:600;cursor:pointer;padding:10px 12px;text-decoration:underline;text-underline-offset:3px}
+.developer-entry-btn:hover,.developer-entry-btn:focus-visible{color:var(--granata,#741f35)}
+.training-status-select.is-justified,.training-status-select.is-injured{background:#fdecec;border-color:#ec9a9a;color:#a32222}

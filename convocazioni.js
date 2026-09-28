@@ -50,6 +50,13 @@ window.TeamCenterConvocazioni = (() => {
     ].filter(Boolean).join(' · ');
   }
 
+  function matchHeading(data) {
+    const club=String(state.master.NomeSocieta||data.squadra||'').trim();
+    const opponent=String(data.avversario||'').trim();
+    return String(data.sede||'').toUpperCase().includes('TRASF')
+      ? `${opponent} – ${club}` : `${club} – ${opponent}`;
+  }
+
   function meetingTime(kickoff) {
     if (!kickoff) return '';
     const [hours, minutes] = kickoff.split(':').map(Number);
@@ -407,7 +414,7 @@ window.TeamCenterConvocazioni = (() => {
         <div class="callup-preview-match callup-preview-match-white">
           <strong>${escapeHtml(data.squadra)}</strong>
           <span>${escapeHtml(data.campionato)} · ${escapeHtml(data.giornata)}</span>
-          <h3>${escapeHtml(state.master.NomeSocieta || '')} – ${escapeHtml(data.avversario)}</h3>
+          <h3>${escapeHtml(matchHeading(data))}</h3>
         </div>
 
         <div class="callup-preview-info callup-preview-info-white">
@@ -710,7 +717,7 @@ window.TeamCenterConvocazioni = (() => {
     y += 68;
     ctx.fillStyle = primary;
     ctx.font = '900 42px Arial';
-    ctx.fillText(`${state.master.NomeSocieta || ''} - ${data.avversario}`, 70, y);
+    ctx.fillText(matchHeading(data), 70, y);
 
     y += 82;
     const info = [

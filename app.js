@@ -126,7 +126,10 @@
     }
   }
 
+  let adminLoginDestination = 'adminMenu';
   async function openAdministrationFromMain(){
+    adminLoginDestination = 'adminMenu';
+    const title=$('#adminLoginTitle');if(title)title.textContent='Accesso amministratori';
     const token=sessionStorage.getItem('teamcenterAdminToken')||'';
     if(token){
       try{
@@ -242,11 +245,11 @@
   }
 
   async function apriProfiloAmministratore(){
-    const token=getAdminToken();
+    const token=adminLoginDestination==='profile' ? sessionStorage.getItem('teamcenterDeveloperToken') : getAdminToken();
     if(token){
       try{
-        await window.TeamCenterAPI.verificaSessioneAdmin(token);
-        showScreen('adminMenu');
+        await (adminLoginDestination==='profile' ? window.TeamCenterAPI.verificaSessioneDeveloper(token) : window.TeamCenterAPI.verificaSessioneAdmin(token));
+        showScreen(adminLoginDestination);
         return;
       }catch(error){
         clearAdminToken();
@@ -275,14 +278,14 @@
     if(button){button.disabled=true;button.textContent='Accesso in corso…';}
     if(message)message.textContent='';
     try{
-      const sessione=await window.TeamCenterAPI.loginAdmin(password);
+      const sessione=await (adminLoginDestination==='profile' ? window.TeamCenterAPI.loginDeveloper(password) : window.TeamCenterAPI.loginAdmin(password));
       if(!sessione?.token)throw new Error('Token di sessione non ricevuto.');
-      sessionStorage.setItem('teamcenterAdminToken',sessione.token);
+      sessionStorage.setItem(adminLoginDestination==='profile'?'teamcenterDeveloperToken':'teamcenterAdminToken',sessione.token);
       if(input)input.value='';
-      showScreen('adminMenu');
+      showScreen(adminLoginDestination);
       toast('Accesso amministratore effettuato');
     }catch(error){
-      clearAdminToken();
+      sessionStorage.removeItem(adminLoginDestination==='profile'?'teamcenterDeveloperToken':'teamcenterAdminToken');
       if(message)message.textContent=error.message||'Password non corretta.';
     }finally{
       if(button){button.disabled=false;button.textContent=oldText||'Accedi';}
@@ -319,10 +322,11 @@
     const confirmation=$('#profileSaveConfirmation');if(confirmation)confirmation.classList.remove('show');
     const status=$('#profileCloudStatus');if(status)status.textContent='Sincronizzazione in corso…';
     try{
-      const token=sessionStorage.getItem('teamcenterAdminToken')||'';
+      const token=sessionStorage.getItem('teamcenterDeveloperToken')||'';
       if(!token){
+        adminLoginDestination='profile';
         showScreen('adminLogin');
-        throw new Error('Sessione amministratore scaduta. Accedi di nuovo.');
+        throw new Error('Sessione Sviluppatore scaduta. Accedi di nuovo.');
       }
       const saved=await window.TeamCenterAPI.saveMaster(data,token);
       masterApi=saved||{...data};
@@ -1518,12 +1522,19 @@
   $('#teamPasswordInput')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&!$('#teamSelectionEnterBtn')?.disabled)enterSelectedTeam();});
   $('#mainTeamBtn')?.addEventListener('click',showTeamSelection);
   $('#mainAdminBtn')?.addEventListener('click',openAdministrationFromMain);
+  $('#developerEntryBtn')?.addEventListener('click',async()=>{
+    adminLoginDestination='profile';
+    const token=sessionStorage.getItem('teamcenterDeveloperToken')||'';
+    if(token){try{await window.TeamCenterAPI.verificaSessioneDeveloper(token);showScreen('profile');return;}catch(_){sessionStorage.removeItem('teamcenterDeveloperToken');}}
+    const title=$('#adminLoginTitle');if(title)title.textContent='Accesso Sviluppatore';
+    await apriProfiloAmministratore();
+  });
   $('#globalMainHomeBtn')?.addEventListener('click',showMainHome);
   $('#teamSelectionEnterBtn')?.addEventListener('click',enterSelectedTeam);
 
   document.addEventListener('click',e=>{
     const module=e.target.closest('[data-open-module]')?.dataset.openModule;
-    if(module==='profile'){apriProfiloAmministratore()}
+    if(module==='profile'){adminLoginDestination='profile';apriProfiloAmministratore()}
     if(module==='roster'){apriRosa()}
     if(module==='staff'){apriStaff()}
     if(module==='training'){showScreen('training');window.TeamCenterAllenamenti?.showMenu()}
