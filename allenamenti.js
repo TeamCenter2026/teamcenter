@@ -116,6 +116,13 @@ window.TeamCenterAllenamenti = (() => {
       const select = event.target.closest('[data-training-player]');
       if (!select) return;
       state.statuses.set(select.dataset.trainingPlayer, select.value);
+      const row = select.closest('.training-player-row');
+      const classes = ['is-present', 'is-absent', 'is-injured', 'is-justified', 'is-unset'];
+      select.classList.remove(...classes);
+      row?.classList.remove(...classes);
+      const nextClass = statusClass(select.value);
+      select.classList.add(nextClass);
+      row?.classList.add(nextClass);
       updateSummary();
     });
 
@@ -230,7 +237,7 @@ window.TeamCenterAllenamenti = (() => {
       const id = String(player.IDGiocatore || '');
       const current = state.statuses.get(id) || '';
 
-      return `<article class="training-player-row">
+      return `<article class="training-player-row ${statusClass(current)}">
         <div class="training-player-copy">
           <strong>${escapeHtml(fullName(player))}</strong>
           <span>Anno ${escapeHtml(player.Anno || '—')}</span>
@@ -248,8 +255,8 @@ window.TeamCenterAllenamenti = (() => {
     const value = String(status || '').toLowerCase();
     if (value === 'presente') return 'is-present';
     if (value === 'assente') return 'is-absent';
-    if (value === 'giustificato') return 'is-absent';
-    if (value === 'infortunato') return 'is-absent';
+    if (value === 'giustificato') return 'is-justified';
+    if (value === 'infortunato') return 'is-injured';
     return 'is-unset';
   }
 
