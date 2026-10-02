@@ -1039,20 +1039,6 @@ body.match20-report-open{
 .main-entry-screen{position:relative;min-height:calc(100vh - 190px);padding-bottom:64px}
 .developer-entry-btn{position:absolute;right:16px;bottom:16px;border:0;background:transparent;color:#777;font-size:12px;font-weight:600;cursor:pointer;padding:10px 12px;text-decoration:underline;text-underline-offset:3px}
 .developer-entry-btn:hover,.developer-entry-btn:focus-visible{color:var(--granata,#741f35)}
+.training-status-select.is-justified,.training-status-select.is-injured{background:#fdecec;border-color:#ec9a9a;color:#a32222}
 
-
-/* TeamCenter 2.5.8: placeholder archivio moduli */
-.training-development-label{display:inline-block;margin:18px 0 8px;padding:10px 18px;border-radius:8px;background:#f5e8ec;color:#79233e;font-weight:800;letter-spacing:.12em}
-#trainingModulePhysical>.back-link,#trainingModuleDetail>.back-link{margin-bottom:20px}
-
-/* 2.5.9 - Presenze: colore su tutta la riga, coerente con lo stato */
-.training-player-row.is-present{background:#e9f8ef;border-color:#7bcf98;color:#176a39}
-.training-player-row.is-absent{background:#fdecec;border-color:#ec9a9a;color:#a32222}
-.training-player-row.is-injured{background:#fff7df;border-color:#e6c968;color:#886a05}
-.training-player-row.is-justified{background:#f0f1f3;border-color:#b9bec7;color:#4b5563}
-.training-player-row.is-unset{background:#fff}
-.training-status-select.is-injured{background:#fff7df;border-color:#e6c968;color:#886a05}
-.training-status-select.is-justified{background:#f0f1f3;border-color:#b9bec7;color:#4b5563}
-.training-summary-item.injured{background:#fff7df;color:#886a05}
-.training-summary-item.justified{background:#f0f1f3;color:#4b5563}
-.training-player-row.is-absent .training-player-copy span,.training-player-row.is-injured .training-player-copy span,.training-player-row.is-justified .training-player-copy span,.training-player-row.is-present .training-player-copy span{color:inherit;opacity:.8}
+.callup-player-entry{display:flex;align-items:center;gap:8px}.callup-player-entry .callup-check-card{flex:1;min-width:0}.callup-role-select{width:62px;min-height:45px;border:1px solid #aaa;border-radius:10px;background:white;font-weight:800;text-align:center}.callup-staff-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:10px 0}.callup-staff-two-col>div{min-width:0}.callup-staff-two-col strong{color:var(--granata);font-size:.82rem}.callup-staff-two-col p{font-size:.85rem;line-height:1.4;margin:10px 0}.callup-preview-staff-white{display:block}

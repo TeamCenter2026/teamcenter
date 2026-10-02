@@ -19,6 +19,7 @@ window.TeamCenterConvocazioni = (() => {
     history: [],
     selectedPlayers: new Set(),
     selectedStaff: new Set(),
+    playerRoles: new Map(),
     initialized: false
   };
 
@@ -79,6 +80,7 @@ window.TeamCenterConvocazioni = (() => {
 
     $('#callupTeamSelect')?.addEventListener('change', async () => {
       state.selectedPlayers.clear();
+      state.playerRoles.clear();
       await loadPlayers();
     });
 
@@ -90,8 +92,23 @@ window.TeamCenterConvocazioni = (() => {
       const checkbox = event.target.closest('[data-player-id]');
       if (!checkbox) return;
       if (checkbox.checked) state.selectedPlayers.add(checkbox.dataset.playerId);
-      else state.selectedPlayers.delete(checkbox.dataset.playerId);
+      else { state.selectedPlayers.delete(checkbox.dataset.playerId); state.playerRoles.delete(checkbox.dataset.playerId); }
       updateCounts();
+    });
+
+    $('#callupPlayersList')?.addEventListener('change', event => {
+      const select = event.target.closest('[data-player-role]');
+      if (!select) return;
+      const id = select.dataset.playerRole;
+      const role = select.value;
+      if (role) {
+        for (const [otherId, otherRole] of state.playerRoles) {
+          if (otherId !== id && otherRole === role) state.playerRoles.delete(otherId);
+        }
+        state.selectedPlayers.add(id);
+        state.playerRoles.set(id, role);
+      } else state.playerRoles.delete(id);
+      renderPlayers(); updateCounts();
     });
 
     $('#callupStaffList')?.addEventListener('change', event => {
@@ -110,6 +127,7 @@ window.TeamCenterConvocazioni = (() => {
 
     $('#callupClearPlayers')?.addEventListener('click', () => {
       state.selectedPlayers.clear();
+      state.playerRoles.clear();
       renderPlayers();
       updateCounts();
     });
@@ -230,14 +248,16 @@ window.TeamCenterConvocazioni = (() => {
 
     list.innerHTML = players.map(player => {
       const id = String(player.IDGiocatore || '');
-      return `<label class="callup-check-card">
+      return `<div class="callup-player-entry"><label class="callup-check-card">
         <input type="checkbox" data-player-id="${escapeHtml(id)}" ${state.selectedPlayers.has(id) ? 'checked' : ''}>
         <span class="callup-check-mark">✓</span>
         <span class="callup-check-copy">
           <strong>${escapeHtml(fullName(player))}</strong>
           <small>Anno ${escapeHtml(player.Anno || '—')}</small>
         </span>
-      </label>`;
+      </label><select class="callup-role-select" data-player-role="${escapeHtml(id)}" aria-label="Capitano o vicecapitano di ${escapeHtml(fullName(player))}">
+        <option value="">—</option><option value="C" ${state.playerRoles.get(id)==='C'?'selected':''}>C</option><option value="V" ${state.playerRoles.get(id)==='V'?'selected':''}>V</option>
+      </select></div>`;
     }).join('');
   }
 
@@ -329,7 +349,7 @@ window.TeamCenterConvocazioni = (() => {
       orarioConvocazione: $('#callupMeetingInput').value,
       sede: venue,
       indirizzo: venue === 'CASA' ? homeAddress() : $('#callupAwayAddressInput').value.trim(),
-      giocatori: selectedPlayers(),
+      giocatori: selectedPlayers().map(player => ({...player, Fascia: state.playerRoles.get(String(player.IDGiocatore || '')) || ''})),
       staff: selectedStaff()
     };
   }
@@ -384,17 +404,17 @@ window.TeamCenterConvocazioni = (() => {
       const first = left[index];
       const second = right[index];
       return `<div class="callup-preview-num">${first ? index + 1 : ''}</div>
-        <div class="callup-preview-name">${first ? escapeHtml(fullName(first)) : ''}</div>
+        <div class="callup-preview-name">${first ? escapeHtml(fullName(first).toUpperCase() + (first.Fascia ? ` (${first.Fascia})` : '')) : ''}</div>
         <div class="callup-preview-num">${second ? split + index + 1 : ''}</div>
-        <div class="callup-preview-name">${second ? escapeHtml(fullName(second)) : ''}</div>`;
+        <div class="callup-preview-name">${second ? escapeHtml(fullName(second).toUpperCase() + (second.Fascia ? ` (${second.Fascia})` : '')) : ''}</div>`;
     }).join('');
 
-    const staffRows = data.staff.length
-      ? data.staff.map(item =>
-          `<div class="callup-preview-staff-role">${escapeHtml(item.Ruolo || '')}</div>
-           <div class="callup-preview-staff-name">${escapeHtml(fullName(item))}</div>`
-        ).join('')
-      : '<div class="callup-preview-staff-role">Staff</div><div class="callup-preview-staff-name">—</div>';
+    const coaches = data.staff.filter(item => /^(allenatore|vice\s*allenatore|viceallenatore|direttore)$/i.test(String(item.Ruolo||'').trim()));
+    const directors = data.staff.filter(item => /dirigente/i.test(String(item.Ruolo||'')));
+    const staffRows = `<div class="callup-staff-two-col">
+      <div><strong>ALLENATORE / VICE / DIRETTORE</strong>${coaches.map(item => `<p><b>${escapeHtml(item.Ruolo.toUpperCase())}</b><br>${escapeHtml(fullName(item).toUpperCase())}</p>`).join('') || '—'}</div>
+      <div><strong>DIRIGENTI</strong>${directors.map(item => `<p>${escapeHtml(fullName(item).toUpperCase())}</p>`).join('') || '—'}</div>
+    </div>`;
 
     $('#callupPreview').innerHTML = `
       <div class="callup-preview-sheet callup-preview-sheet-white">
@@ -435,7 +455,7 @@ window.TeamCenterConvocazioni = (() => {
         <div class="callup-preview-players callup-preview-players-white">${rows}</div>
 
         <div class="callup-preview-title">STAFF</div>
-        <div class="callup-preview-staff-head"><span>RUOLO</span><span>NOME</span></div>
+        
         <div class="callup-preview-staff callup-preview-staff-white">${staffRows}</div>
       </div>`;
   }
@@ -465,7 +485,8 @@ window.TeamCenterConvocazioni = (() => {
           id: player.IDGiocatore,
           cognome: player.Cognome,
           nome: player.Nome,
-          anno: player.Anno
+          anno: player.Anno,
+          fascia: player.Fascia || ''
         }))),
         staff: JSON.stringify(data.staff.map(item => ({
           id: item.IDStaff,
@@ -550,7 +571,8 @@ window.TeamCenterConvocazioni = (() => {
         IDGiocatore: player.IDGiocatore || player.id || '',
         Cognome: player.Cognome || player.cognome || '',
         Nome: player.Nome || player.nome || '',
-        Anno: player.Anno || player.anno || ''
+        Anno: player.Anno || player.anno || '',
+        Fascia: player.Fascia || player.fascia || ''
       }));
       state.staff = savedStaff.map(member => ({
         IDStaff: member.IDStaff || member.id || '',
@@ -559,6 +581,7 @@ window.TeamCenterConvocazioni = (() => {
         Ruolo: member.Ruolo || member.ruolo || ''
       }));
       state.selectedPlayers = new Set(state.players.map(player => String(player.IDGiocatore || '')));
+      state.playerRoles = new Map(state.players.filter(player => ['C','V'].includes(player.Fascia)).map(player => [String(player.IDGiocatore), player.Fascia]));
       state.selectedStaff = new Set(state.staff.map(member => String(member.IDStaff || '')));
 
       $('#callupCompetitionInput').value = item.Campionato || '';
@@ -620,6 +643,7 @@ window.TeamCenterConvocazioni = (() => {
     setToday();
 
     state.selectedPlayers.clear();
+    state.playerRoles.clear();
     state.selectedStaff.clear();
 
     renderVenue();
@@ -801,8 +825,8 @@ window.TeamCenterConvocazioni = (() => {
 
       ctx.fillStyle = ink;
       ctx.font = '800 21px Arial';
-      if (first) ctx.fillText(fullName(first), 135, rowY + 32);
-      if (second) ctx.fillText(fullName(second), 692, rowY + 32);
+      if (first) ctx.fillText(fullName(first).toUpperCase() + (first.Fascia ? ` (${first.Fascia})` : ''), 135, rowY + 32);
+      if (second) ctx.fillText(fullName(second).toUpperCase() + (second.Fascia ? ` (${second.Fascia})` : ''), 692, rowY + 32);
 
       ctx.strokeStyle = line;
       ctx.lineWidth = 1.5;
@@ -832,28 +856,23 @@ window.TeamCenterConvocazioni = (() => {
 
     y += 32;
 
-    const staff = data.staff.length
-      ? data.staff
-      : [{ Ruolo: 'Staff', Cognome: '—', Nome: '' }];
-
-    staff.forEach((item, index) => {
-      const rowY = y + index * 50;
-
-      ctx.fillStyle = primary;
-      ctx.font = '900 20px Arial';
-      ctx.fillText(item.Ruolo || '', 88, rowY + 31);
-
-      ctx.fillStyle = ink;
-      ctx.font = '800 21px Arial';
-      ctx.fillText(fullName(item), 400, rowY + 31);
-
-      ctx.strokeStyle = line;
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(70, rowY + 48);
-      ctx.lineTo(1170, rowY + 48);
-      ctx.stroke();
-    });
+    const leftStaff = data.staff.filter(item => /^(allenatore|vice\s*allenatore|viceallenatore|direttore)$/i.test(String(item.Ruolo||'').trim()));
+    const rightStaff = data.staff.filter(item => /dirigente/i.test(String(item.Ruolo||'')));
+    ctx.fillStyle = primary; ctx.font = '900 18px Arial';
+    ctx.fillText('ALLENATORE / VICE / DIRETTORE', 88, y + 27);
+    ctx.fillText('DIRIGENTI', 645, y + 27);
+    y += 45;
+    const staffRows = Math.max(leftStaff.length, rightStaff.length);
+    for(let i=0;i<staffRows;i++){
+      const yy=y+i*60;
+      if(leftStaff[i]){
+        ctx.fillStyle=primary;ctx.font='800 17px Arial';ctx.fillText(String(leftStaff[i].Ruolo).toUpperCase(),88,yy+17);
+        ctx.fillStyle=ink;ctx.font='800 19px Arial';ctx.fillText(fullName(leftStaff[i]).toUpperCase(),88,yy+42);
+      }
+      if(rightStaff[i]){
+        ctx.fillStyle=ink;ctx.font='800 19px Arial';ctx.fillText(fullName(rightStaff[i]).toUpperCase(),645,yy+30);
+      }
+    }
 
     return canvas;
   }

@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.5.9-presenze-colori';
+const CACHE='teamcenter-2.6.0-convocazioni';
 const ASSETS=[
   './',
   './index.html',
