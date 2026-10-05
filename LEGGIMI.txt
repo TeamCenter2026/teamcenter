@@ -1,0 +1,19 @@
+TEAMCENTER 2.6.2 - SOLO PWA / AGGIORNAMENTO
+
+Base: TeamCenter 2.6.0 Convocazioni fornita dall'utente.
+Non modifica convocazioni, allenamenti, login, Apps Script o database.
+
+CARICA SU GITHUB:
+- index.html
+- sw.js
+- manifest.webmanifest
+- cartella icons completa
+
+IMPORTANTE:
+1. Carica tutti i file in un solo aggiornamento/commit.
+2. Attendi che GitHub Pages termini con segno verde su Deploy.
+3. Apri prima il sito nel browser e verifica che funzioni.
+4. Poi apri la PWA. Il service worker 2.6.2 elimina le vecchie cache TeamCenter.
+5. Se una vecchia PWA resta aperta, chiudila completamente e riaprila una volta.
+
+Non serve modificare Google Apps Script.
