@@ -1,4 +1,4 @@
-const CACHE='teamcenter-2.6.0-convocazioni';
+const CACHE='teamcenter-2.6.1-pwa';
 const ASSETS=[
   './',
   './index.html',
@@ -15,7 +15,11 @@ const ASSETS=[
   './allenamenti.js',
   './convocazioni.js',
   './report.js',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/maskable-512.png',
+  './icons/apple-touch-icon.png'
 ];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
 self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])));

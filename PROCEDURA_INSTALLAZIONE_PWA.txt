@@ -1,0 +1,26 @@
+TEAMCENTER PWA 2.6.1 — INSTALLAZIONE
+
+FILE DA CARICARE SU GITHUB
+- index.html
+- manifest.webmanifest
+- sw.js
+- cartella icons/ completa
+
+Non serve modificare Google Apps Script o il database.
+
+ANDROID (Chrome)
+1. Apri TeamCenter dal suo indirizzo HTTPS in Chrome.
+2. Tocca il menu ⋮ in alto a destra.
+3. Scegli "Installa app" oppure "Aggiungi a schermata Home".
+4. Conferma "Installa".
+5. Comparirà l'icona CSV Breda tra le app / nella Home e TeamCenter si aprirà senza la normale barra del browser.
+
+IPHONE / iPAD (Safari)
+1. Apri TeamCenter in Safari (non nel browser interno di WhatsApp/Facebook).
+2. Tocca Condividi (quadrato con freccia verso l'alto).
+3. Scegli "Aggiungi alla schermata Home".
+4. Controlla il nome TeamCenter e tocca "Aggiungi".
+5. L'icona CSV Breda comparirà nella Home e aprirà TeamCenter come web app.
+
+DOPO L'AGGIORNAMENTO
+Se il telefono mostra ancora la vecchia icona/cache, chiudi TeamCenter e riaprilo. Se era già installato, può essere utile rimuovere l'icona dalla Home e aggiungerla nuovamente.

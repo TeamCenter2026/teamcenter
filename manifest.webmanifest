@@ -1,12 +1,18 @@
 {
-  "name": "TeamCenter",
+  "id": "./",
+  "name": "CSV Breda TeamCenter",
   "short_name": "TeamCenter",
-  "description": "Profilo, allenamenti, convocazioni e gestione match CSV Breda",
+  "description": "TeamCenter CSV Breda: squadre, allenamenti, convocazioni e match",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f7f9",
+  "orientation": "any",
+  "background_color": "#ffffff",
   "theme_color": "#741f35",
-  "lang": "it",
-  "icons": []
+  "lang": "it-IT",
+  "icons": [
+    {"src":"icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"icons/maskable-512.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
+  ]
 }
