@@ -1,60 +1,33 @@
-const CACHE = 'teamcenter-2.6.2-pwa';
-const SHELL = [
+const CACHE='teamcenter-2.6.0-convocazioni';
+const ASSETS=[
   './',
   './index.html',
-  './styles.css?v=2.6.0',
-  './manifest.webmanifest',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  './styles.css',
+  './api.js',
+  './bootstrap.js',
+  './app.js',
+  './storage.js',
+  './profile.js',
+  './callup.js',
+  './match.js',
+  './image.js',
+  './pdf.js',
+  './allenamenti.js',
+  './convocazioni.js',
+  './report.js',
+  './manifest.webmanifest'
 ];
-
-self.addEventListener('install', event => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(SHELL))
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then(keys => Promise.all(
-        keys.filter(key => key !== CACHE).map(key => caches.delete(key))
-      )),
-      self.clients.claim()
-    ])
-  );
-});
-
-self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
-  const url = new URL(event.request.url);
-  if (url.origin !== self.location.origin) return;
-
-  // HTML/navigazione: prima rete, cache solo se offline
-  if (event.request.mode === 'navigate' || url.pathname.endsWith('.html') || url.pathname.endsWith('/')) {
-    event.respondWith(
-      fetch(event.request, {cache:'no-store'})
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put('./index.html', copy));
-          return response;
-        })
-        .catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-
-  // JS/CSS/manifest: prima rete per ricevere subito le nuove versioni
+self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));});
+self.addEventListener('activate',e=>e.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),self.clients.claim()])));
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
   event.respondWith(
-    fetch(event.request, {cache:'no-store'})
-      .then(response => {
-        if (response && response.ok) {
-          const copy = response.clone();
-          caches.open(CACHE).then(cache => cache.put(event.request, copy));
-        }
+    fetch(event.request,{cache:'no-store'})
+      .then(response=>{
+        const copy=response.clone();
+        caches.open(CACHE).then(cache=>cache.put(event.request,copy));
         return response;
       })
-      .catch(() => caches.match(event.request))
+      .catch(()=>caches.match(event.request).then(response=>response||caches.match('./index.html')))
   );
 });

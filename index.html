@@ -5,11 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#741f35" />
   <meta name="description" content="TeamCenter: profilo società, convocazioni, gestione match e report per società sportive." />
-  <link rel="manifest" href="manifest.webmanifest?v=2.6.2" />
-  <link rel="apple-touch-icon" href="icons/icon-180.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="TeamCenter" />
+  <link rel="manifest" href="manifest.webmanifest" />
   <title>Team Center</title>
   <link rel="stylesheet" href="styles.css?v=2.6.0" />
 </head>
@@ -970,19 +966,5 @@
 <script src="convocazioni.js?v=2.6.0"></script>
 <script src="report.js?v=2.5.4"></script>
 <script src="app.js?v=2.5.4"></script>
-
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    try {
-      const reg = await navigator.serviceWorker.register('./sw.js?v=2.6.2', { updateViaCache: 'none' });
-      await reg.update();
-    } catch (err) {
-      console.warn('Service Worker non disponibile:', err);
-    }
-  });
-}
-</script>
-
 </body>
 </html>
