@@ -1,0 +1,23 @@
+TEAMCENTER PWA 2.6.1 SAFE
+
+Questa modifica parte dalla copia del repository scaricata dopo il deployment #50 verde.
+Non modifica logiche TeamCenter, Apps Script, login, convocazioni, match, allenamenti o PDF.
+
+FILE MODIFICATI:
+- index.html
+- app.js
+- sw.js
+- manifest.webmanifest
+
+FILE/ICONE RIUTILIZZATI:
+- icons/apple-touch-icon.png
+- icons/icon-192.png
+- icons/icon-512.png
+- icons/maskable-512.png
+
+SCELTA CACHE:
+- rete sempre prioritaria per HTML/JS/CSS;
+- cache usata solo come fallback offline;
+- il Service Worker viene registrato con updateViaCache='none';
+- a ogni avvio viene richiesto un controllo aggiornamento;
+- le vecchie cache TeamCenter vengono eliminate all'attivazione del nuovo Service Worker.

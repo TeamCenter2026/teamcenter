@@ -1626,7 +1626,11 @@
     fillSetup();fillCallupForm();renderAll();
     showScreen('mainHome');
     tickHandle=setInterval(()=>{if(state.timer.running){renderTimer()}},20);
-    if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{})}
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js?v=2.6.1',{updateViaCache:'none'})
+        .then(reg=>reg.update())
+        .catch(()=>{});
+    }
   }
   bootstrap();
 })();
