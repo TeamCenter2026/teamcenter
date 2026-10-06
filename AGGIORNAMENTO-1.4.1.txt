@@ -14,3 +14,4 @@ Se ancora appare la vecchia versione:
 - Chrome > F12 > Application > Service Workers > Unregister
 - Application > Storage > Clear site data
 - Ricarica la pagina.
+REDEPLOY 06-10-2026
