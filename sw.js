@@ -1,11 +1,10 @@
-const CACHE = 'teamcenter-pwa-2.6.1';
-const OFFLINE_SHELL = [
+const CACHE = 'teamcenter-pwa-2.6.2';
+const CORE = [
+  './',
   './index.html',
-  './styles.css?v=2.6.0',
-  './manifest.webmanifest?v=2.6.1',
+  './manifest.webmanifest?v=2.6.2',
   './icons/icon-192.png',
   './icons/icon-512.png',
-  './icons/maskable-512.png',
   './icons/apple-touch-icon.png'
 ];
 
@@ -13,41 +12,39 @@ self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE).then(cache =>
-      Promise.allSettled(OFFLINE_SHELL.map(url => cache.add(url)))
+      Promise.allSettled(CORE.map(url => cache.add(url)))
     )
   );
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil((async () => {
-    const keys = await caches.keys();
-    await Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)));
-    await self.clients.claim();
-  })());
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', event => {
-  const request = event.request;
-  if (request.method !== 'GET') return;
-  const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  if (event.request.method !== 'GET') return;
+  if (event.request.url.startsWith('chrome-extension://')) return;
 
-  event.respondWith((async () => {
-    try {
-      const response = await fetch(request, { cache: 'no-store' });
-      if (response && response.ok) {
-        const cache = await caches.open(CACHE);
-        cache.put(request, response.clone()).catch(() => {});
-      }
-      return response;
-    } catch (error) {
-      const cached = await caches.match(request, { ignoreSearch: true });
-      if (cached) return cached;
-      if (request.mode === 'navigate') {
-        const shell = await caches.match('./index.html');
-        if (shell) return shell;
-      }
-      throw error;
-    }
-  })());
+  event.respondWith(
+    fetch(event.request, { cache: 'no-store' })
+      .then(response => {
+        if (response && response.ok && new URL(event.request.url).origin === self.location.origin) {
+          const copy = response.clone();
+          caches.open(CACHE).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(async () => {
+        const cached = await caches.match(event.request);
+        if (cached) return cached;
+        if (event.request.mode === 'navigate') {
+          return (await caches.match('./index.html')) || Response.error();
+        }
+        return Response.error();
+      })
+  );
 });

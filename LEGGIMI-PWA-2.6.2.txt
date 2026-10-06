@@ -1,0 +1,22 @@
+TEAMCENTER PWA 2.6.2 - REGISTRATION FIX
+
+Questa patch non modifica le funzioni TeamCenter.
+Corregge soltanto la parte PWA:
+
+- registra il Service Worker direttamente da index.html, indipendentemente dal bootstrap/API;
+- mantiene anche la registrazione in app.js sulla stessa URL;
+- evita che l'installazione del Service Worker fallisca se una risorsa opzionale non è disponibile;
+- aggiunge i meta tag necessari per l'esperienza iPhone/iPad;
+- mantiene strategia network-first per evitare versioni vecchie bloccate in cache.
+
+CARICARE NELLA ROOT DEL REPOSITORY:
+index.html
+app.js
+sw.js
+manifest.webmanifest
+cartella icons
+
+Dopo il deployment verde:
+1. Aprire TeamCenter in una nuova scheda normale (non GitHub).
+2. F12 > Application > Service Workers.
+3. Deve comparire un Service Worker con source sw.js.
