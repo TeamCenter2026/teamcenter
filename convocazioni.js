@@ -844,8 +844,6 @@ window.TeamCenterConvocazioni = (() => {
 
     y += 38;
     ctx.font = '900 18px Arial';
-    ctx.fillText('RUOLO', 88, y);
-    ctx.fillText('NOME', 400, y);
 
     ctx.strokeStyle = primary;
     ctx.lineWidth = 2;
@@ -859,9 +857,7 @@ window.TeamCenterConvocazioni = (() => {
     const leftStaff = data.staff.filter(item => /^(allenatore|vice\s*allenatore|viceallenatore|direttore)$/i.test(String(item.Ruolo||'').trim()));
     const rightStaff = data.staff.filter(item => /dirigente/i.test(String(item.Ruolo||'')));
     ctx.fillStyle = primary; ctx.font = '900 18px Arial';
-    ctx.fillText('ALLENATORE / VICE / DIRETTORE', 88, y + 27);
-    ctx.fillText('DIRIGENTI', 645, y + 27);
-    y += 45;
+    y += 12;
     const staffRows = Math.max(leftStaff.length, rightStaff.length);
     for(let i=0;i<staffRows;i++){
       const yy=y+i*60;

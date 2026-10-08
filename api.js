@@ -108,6 +108,7 @@ window.TeamCenterAPI = (() => {
     getSquadre: () => request('squadre'),
     getGiocatori: idSquadra => request('giocatori', { idSquadra }),
     saveGiocatore: data => request('salvaGiocatore', data),
+    deleteGiocatore: data => request('eliminaGiocatore', data),
     getStaff: () => request('staff'),
     saveStaff: data => request('salvaStaff', data),
     getAllenamenti: () => request('allenamenti'),

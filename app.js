@@ -609,6 +609,7 @@
         <div class="player-card-side">
           <span class="player-status ${attivo?'active':'inactive'}">${attivo?'Attivo':'Non attivo'}</span>
           <button class="player-edit-btn" type="button" data-edit-player="${escapeHtml(id)}">Modifica</button>
+          <button class="player-edit-btn player-delete-btn" type="button" data-delete-player="${escapeHtml(id)}">Elimina</button>
         </div>
       </article>`;
     }).join('');
@@ -1497,7 +1498,21 @@
     if(item)apriModuloStaff(item);
   });
 
-  $('#rosterList')?.addEventListener('click',event=>{
+  $('#rosterList')?.addEventListener('click',async event=>{
+    const deleteButton=event.target.closest('[data-delete-player]');
+    if(deleteButton){
+      const player=rosaApi.find(g=>String(g.IDGiocatore||'')===deleteButton.dataset.deletePlayer);
+      if(!player)return;
+      const fullName=`${player.Cognome||''} ${player.Nome||''}`.trim();
+      if(!window.confirm(`Eliminare definitivamente ${fullName} dalla rosa? Le convocazioni e gli allenamenti già salvati rimarranno invariati.`))return;
+      deleteButton.disabled=true;
+      try{
+        await window.TeamCenterAPI.deleteGiocatore({idGiocatore:String(player.IDGiocatore),idSquadra:String(player.IDSquadra||rosterTeamId)});
+        await caricaRosa();
+        toast(`${fullName} eliminato dalla rosa`);
+      }catch(error){toast(error.message||'Eliminazione non riuscita');deleteButton.disabled=false;}
+      return;
+    }
     const button=event.target.closest('[data-edit-player]');
     if(!button)return;
     const player=rosaApi.find(g=>String(g.IDGiocatore||'')===button.dataset.editPlayer);

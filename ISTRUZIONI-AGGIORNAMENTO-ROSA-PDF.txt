@@ -1,0 +1,8 @@
+AGGIORNAMENTO TEAMCENTER - ROSA / PDF CONVOCAZIONI
+
+1. GOOGLE APPS SCRIPT: sostituire il codice attuale con Codice-TeamCenter-AGGIORNATO-ELIMINA-GIOCATORE.gs (salvare prima una copia di sicurezza). Salvare e aggiornare la VERSIONE del deployment web app ESISTENTE, senza crearne uno nuovo.
+2. GITHUB: caricare i file dello ZIP mantenendo la stessa struttura, poi attendere il deployment Pages verde.
+3. Verificare eliminazione giocatore di prova e PDF convocazioni.
+
+L'eliminazione cancella la riga del foglio GIOCATORI, non i JSON storici in ALLENAMENTI, CONVOCAZIONI o MATCH.
+ATTENZIONE: lo ZIP contiene anche file storici: il codice Apps Script da usare è esclusivamente il file AGGIORNATO indicato sopra.

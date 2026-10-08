@@ -1042,3 +1042,7 @@ body.match20-report-open{
 .training-status-select.is-justified,.training-status-select.is-injured{background:#fdecec;border-color:#ec9a9a;color:#a32222}
 
 .callup-player-entry{display:flex;align-items:center;gap:8px}.callup-player-entry .callup-check-card{flex:1;min-width:0}.callup-role-select{width:62px;min-height:45px;border:1px solid #aaa;border-radius:10px;background:white;font-weight:800;text-align:center}.callup-staff-two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:10px 0}.callup-staff-two-col>div{min-width:0}.callup-staff-two-col strong{color:var(--granata);font-size:.82rem}.callup-staff-two-col p{font-size:.85rem;line-height:1.4;margin:10px 0}.callup-preview-staff-white{display:block}
+
+/* TeamCenter: azione eliminazione rosa */
+.player-delete-btn{color:#a31f31;border-color:#d9a1aa}
+.player-delete-btn:hover{background:#fff0f2}
