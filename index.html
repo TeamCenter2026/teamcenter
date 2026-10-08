@@ -449,9 +449,30 @@
         <div class="page-tools">
           <button id="trainingModulesBackBtn" class="back-link" type="button">← Torna indietro</button>
         </div>
-        <div class="card training-card training-placeholder-card">
+        <div id="trainingModuleCategories" class="card training-card">
           <div class="eyebrow">Moduli allenamento</div>
-          <h2>Sezione in aggiornamento</h2>
+          <h2>Scegli la categoria</h2>
+          <div class="training-area-actions">
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="tecnico">⚽ Tecnico</button>
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="tattico">📋 Tattico</button>
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="fisico">🏃 Fisico</button>
+          </div>
+        </div>
+        <div id="trainingModulePhysical" class="card training-card hidden">
+          <button id="trainingPhysicalBackBtn" class="back-link" type="button">← Categorie</button>
+          <div class="eyebrow">Moduli allenamento</div>
+          <h2>Preparazione fisica</h2>
+          <div class="training-area-actions">
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="forza">💪 Forza</button>
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="velocita">⚡ Velocità</button>
+            <button class="minimal-module-button training-area-button" type="button" data-module-area="resistenza">🏃 Resistenza</button>
+          </div>
+        </div>
+        <div id="trainingModuleDetail" class="card training-card hidden">
+          <button id="trainingModuleDetailBackBtn" class="back-link" type="button">← Indietro</button>
+          <div class="eyebrow" id="trainingModuleBreadcrumb">Moduli allenamento</div>
+          <h2 id="trainingModuleDetailTitle">Categoria</h2>
+          <p class="section-copy">Sezione in aggiornamento</p>
         </div>
       </div>
 

@@ -857,6 +857,7 @@ window.TeamCenterConvocazioni = (() => {
     const leftStaff = data.staff.filter(item => /^(allenatore|vice\s*allenatore|viceallenatore|direttore)$/i.test(String(item.Ruolo||'').trim()));
     const rightStaff = data.staff.filter(item => /dirigente/i.test(String(item.Ruolo||'')));
     ctx.fillStyle = primary; ctx.font = '900 18px Arial';
+    ctx.fillText('DIRIGENTI', 645, y + 17);
     y += 12;
     const staffRows = Math.max(leftStaff.length, rightStaff.length);
     for(let i=0;i<staffRows;i++){
@@ -866,7 +867,7 @@ window.TeamCenterConvocazioni = (() => {
         ctx.fillStyle=ink;ctx.font='800 19px Arial';ctx.fillText(fullName(leftStaff[i]).toUpperCase(),88,yy+42);
       }
       if(rightStaff[i]){
-        ctx.fillStyle=ink;ctx.font='800 19px Arial';ctx.fillText(fullName(rightStaff[i]).toUpperCase(),645,yy+30);
+        ctx.fillStyle=ink;ctx.font='800 19px Arial';ctx.fillText(fullName(rightStaff[i]).toUpperCase(),645,yy+48);
       }
     }
 
